@@ -10,11 +10,17 @@
 #
 WINGS_VCREDIST_VERSION=2.0.50727.4053
 
-OS=`uname -o`
+OS=`uname -o 2> /dev/null`
 if [ X$OS != XMsys ]; then
-    echo "This script is supposed to be run in the" \
-	 "msys environment on windows only." >&2
-    exit 1
+    OS=`uname -s`
+    if [ X${OS:0:7} != XMINGW32 ]; then
+        OS=`uname -s`
+        if [ X${OS:0:6} != XCYGWIN ]; then
+            echo "This script is supposed to be run in the" \
+            "msys environment on windows only." >&2
+            exit 1
+        fi
+    fi
 fi
 
 # Configurable stuff.

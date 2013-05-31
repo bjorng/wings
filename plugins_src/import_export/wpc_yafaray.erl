@@ -702,7 +702,7 @@ material_dialog(_Name, Mat) ->
         proplists:get_value(dispersion_power, YafaRay,  ?DEF_DISPERSION_POWER),
     DispersionSamples =
         proplists:get_value(dispersion_samples, YafaRay, ?DEF_DISPERSION_SAMPLES),
-	FakeShadows =
+        FakeShadows =
         proplists:get_value(fake_shadows, YafaRay,      ?DEF_FAKE_SHADOWS),
     Roughness =
         proplists:get_value(roughness, YafaRay,         ?DEF_ROUGHNESS),
@@ -829,22 +829,22 @@ material_dialog(_Name, Mat) ->
                                 {label,?__(84,"Absorption")},
                                 {label,?__(85,"Scatter")},
                                 {label,?__(86,"AttgridScale")}
-							]},
+                                                        ]},
                             {vframe,[
                                 {text,Volume_Sigma_a,[range(volume_sigma_a),key(volume_sigma_a)]},
                                 {text,Volume_Sigma_s,[range(volume_sigma_s),key(volume_sigma_s)]},
                                 {text,Volume_Attgridscale,[range(volume_attgridscale),key(volume_attgridscale)]}
-							]},
+                                                        ]},
                             {vframe,[
                                 {label,?__(133,"Min/Max X")},
                                 {label,?__(134,"Min/Max Y")},
                                 {label,?__(135,"Min/Max Z")}
-							]},
+                                                        ]},
                             {vframe,[
                                 {text,Volume_Minmax_X,[range(volume_minmax_x),key(volume_minmax_x)]},
                                 {text,Volume_Minmax_Y,[range(volume_minmax_y),key(volume_minmax_y)]},
                                 {text,Volume_Minmax_Z,[range(volume_minmax_z),key(volume_minmax_z)]}
-							]}
+                                                        ]}
                         ], [hook(open, [member, ?KEY(volume_type), uniformvolume])]
                         },
 
@@ -858,7 +858,7 @@ material_dialog(_Name, Mat) ->
                                 {label,?__(88,"Absorption")},
                                 {label,?__(89,"Scatter")},
                                 {label,?__(86,"AttgridScale")}
-							]},
+                                                        ]},
                             {vframe,[
                                 {text,Volume_Sigma_a,[range(volume_sigma_a),key(volume_sigma_a)]},
                                 {text,Volume_Sigma_s,[range(volume_sigma_s),key(volume_sigma_s)]},
@@ -894,32 +894,32 @@ material_dialog(_Name, Mat) ->
                                 {label,?__(127,"Absorption")},
                                 {label,?__(128,"Scatter")},
                                 {label,?__(129,"AttgridScale")}
-							]},
+                                                        ]},
                             {vframe,[
                                 {text,Volume_Sigma_a,[range(volume_sigma_a),key(volume_sigma_a)]},
                                 {text,Volume_Sigma_s,[range(volume_sigma_s),key(volume_sigma_s)]},
                                 {text,Volume_Attgridscale,[range(volume_attgridscale),key(volume_attgridscale)]}
-							]},
+                                                        ]},
                             {vframe,[
                                 {label,?__(130,"Sharpness")},
                                 {label,?__(131,"Cover")},
                                 {label,?__(132,"Density")}
-							]},
+                                                        ]},
                             {vframe,[
                                 {text,Volume_Sharpness,[range(volume_sharpness),key(volume_sharpness)]},
                                 {text,Volume_Cover,[range(volume_cover),key(volume_cover)]},
                                 {text,Volume_Density,[range(volume_density),key(volume_density)]}
-							]},
+                                                        ]},
                             {vframe,[
                                 {label,?__(139,"Min/Max X")},
                                 {label,?__(140,"Min/Max Y")},
                                 {label,?__(141,"Min/Max Z")}
-							]},
+                                                        ]},
                             {vframe,[
                                 {text,Volume_Minmax_X,[range(volume_minmax_x),key(volume_minmax_x)]},
                                 {text,Volume_Minmax_Y,[range(volume_minmax_y),key(volume_minmax_y)]},
                                 {text,Volume_Minmax_Z,[range(volume_minmax_z),key(volume_minmax_z)]}
-							]}
+                                                        ]}
                         ],[hook(open, [member, ?KEY(volume_type), noisevolume])]
                         }
 
@@ -932,16 +932,16 @@ material_dialog(_Name, Mat) ->
                         {vframe,[
                             {label,?__(121,"Power")},
                             {label,?__(122,"Samples")}
-						]},
+                                                ]},
                         {vframe,[
                             {text,Meshlight_Power,[range(meshlight_power),{width,5},key(meshlight_power)]},
                             {text,Meshlight_Samples,[range(meshlight_samples),{width,5},key(meshlight_samples)]}
-						]},
+                                                ]},
                         {vframe,[
                             {label,?__(123,"Color")}]},
                         {vframe,[
                             {slider, {color, Meshlight_Color, [key(meshlight_color)]}}
-						]},
+                                                ]},
                         {vframe,[
                             {button,"Set Default",keep,[diffuse_hook(?KEY(meshlight_color))]},
                             {?__(124,"Double Sided"),Meshlight_Double_Sided,[key(meshlight_double_sided)]}
@@ -972,11 +972,11 @@ material_dialog(_Name, Mat) ->
                 {"Translucent (SSS)",translucent}, % add flags for YafaRay 0.1.3 exp?
                 {"Light Material",lightmat},
                 {"Blend",blend_mat}
-                ],
-                ShaderType, [key(shader_type),layout]},
+            ], ShaderType, [key(shader_type),layout]
+            },
 
-%%% Define Dialog for Shiny Diffuse Material
-%%%
+        %%% Define Dialog for Shiny Diffuse Material
+        %%%
 
             {hframe,[
                 {vframe,[
@@ -990,8 +990,9 @@ material_dialog(_Name, Mat) ->
                     {label, "Mirror Reflection"},
                     {label, "Emit Light"},
                     {"Oren-Nayar",OrenNayar,[key(oren_nayar)]},
-                    {"Fresnel Effect",TIR,[key(tir)]},panel]
-                },
+                    {"Fresnel Effect",TIR,[key(tir)]},
+                    panel
+                ]},
                 {vframe,[
                     {slider, {text, IOR,[range(ior),{width,5}, key(ior)]}},
                     {slider, {color, Reflected, [key(reflected)]}},
@@ -1002,21 +1003,22 @@ material_dialog(_Name, Mat) ->
                     {slider, {text,DiffuseReflect,[range(diffuse_reflect), key(diffuse_reflect)]}},
                     {slider, {text,SpecularReflect,[range(specular_reflect), key(specular_reflect)]}},
                     {slider, {text,Emit,[range(emit),{width,8}, key(emit)]}},
-
+                    %%
                     {hframe,[
                         {label, "Sigma"},
                         {text,OrenNayar_Sigma,[
                             range(oren_nayar_sigma),
                             key(oren_nayar_sigma),
-                            hook(enable, ['not',[member,?KEY(oren_nayar), ?DEF_OREN_NAYAR]])]}]
-                        }]
-                },
+                            hook(enable, ['not',[member,?KEY(oren_nayar), ?DEF_OREN_NAYAR]])
+                        ]}
+                    ]}
+                ]},
                 {vframe,[
                     panel,panel,
                         {button,"Set Default",keep,[diffuse_hook(?KEY(transmitted))]}
-                    ]}
-            ],
-            [hook(open, [member, ?KEY(shader_type), shinydiffuse])]},
+                ]}
+            ], hook(open, [member, ?KEY(shader_type), shinydiffuse])]
+            },
 
 %%% Define Dialog for Glass Material
 %%%
@@ -2113,119 +2115,127 @@ light_dialog(_Name, ambient, Ps) ->
     Search = proplists:get_value(search, Ps, ?DEF_SEARCH),
     %%
 
-    [{hradio,[{?__(57,"Hemilight"),hemilight}
+    [{hradio,[
+        {?__(57,"Hemilight"), hemilight}
+        ],
+        Type,[layout,key(type)]},
+    %% Hemilight and Pathlight
 
-              ],
-      Type,[layout,key(type)]},
-     %% Hemilight and Pathlight
 
+    %% Pathlight
+        {vframe,[
+            {hframe,[
+                {"",Cache,[key(cache)]},
+                {hframe,[
+                    {vframe,[
+                        {label,?__(68,"Size")},
+                        {label,?__(69,"Angle Threshold")},
+                        panel,
+                        {label,?__(70,"Shadow Threshold")},
+                        {?__(71,"Gradient"),Gradient,[key(gradient)]},
+                        {label,?__(72,"Search")}
+                    ]},
+                    {vframe,[
+                        {text,CacheSize,[key(cache_size),range(cache_size)]},
+                        {text,AngleThreshold,[{key,AngleKey},AngleRange]},
+                        {slider,[{key,AngleKey},AngleRange]},
+                        {text,ShadowThreshold,[key(shadow_threshold), range(shadow_threshold)]},
+                        {?__(73,"Show Samples"),ShowSamples,[key(show_samples)]},
+                        {text,Search,[key(search),range(cache_search)]}
+                    ]}
+                ],[{title,?__(74,"Irradiance Cache")},{minimized, CacheMinimized}, key(cache_minimized),hook(enable, ?KEY(cache))]
+                }
+            ],[hook(enable, ['not',?KEY(direct)])]
+            }
+        ],[hook(open, [member,?KEY(type),pathlight])]
+        },
+    %% Global Photonlight
 
-     %% Pathlight
-     {vframe,
-      [{hframe,
-        [{"",Cache,[key(cache)]},
-         {hframe,
-          [{vframe,
-            [{label,?__(68,"Size")},
-             {label,?__(69,"Angle Threshold")},
-             panel,
-             {label,?__(70,"Shadow Threshold")},
-             {?__(71,"Gradient"),Gradient,[key(gradient)]},
-             {label,?__(72,"Search")}]},
-           {vframe,
-            [{text,CacheSize,[key(cache_size),range(cache_size)]},
-             {text,AngleThreshold,[{key,AngleKey},AngleRange]},
-             {slider,[{key,AngleKey},AngleRange]},
-             {text,ShadowThreshold,[key(shadow_threshold),
-                                    range(shadow_threshold)]},
-             {?__(73,"Show Samples"),ShowSamples,[key(show_samples)]},
-             {text,Search,[key(search),range(cache_search)]}]}],
-          [{title,?__(74,"Irradiance Cache")},
-           {minimized,CacheMinimized},key(cache_minimized),
-           hook(enable, ?KEY(cache))]}],
-        [hook(enable, ['not',?KEY(direct)])]}],
-      [hook(open, [member,?KEY(type),pathlight])]},
-     %% Global Photonlight
-
-     %% Backgrounds
-     {vframe,
-      [{hradio,[{?__(79,"HDRI"),'HDRI'},
+    %% Backgrounds
+        {vframe,[
+            {hradio,[
+                {?__(79,"HDRI"),'HDRI'},
                 {?__(80,"Image"),image},
                 {?__(81,"Constant"),constant},
                 {?__(105,"Gradient"),gradientback},
-                {?__(82,"None"), undefined}],Bg,[layout,key(background)]},
-
-%% HDRI Background
-       {hframe,[{label,?__(83,"Filename")},
-                {button,{text,BgFnameHDRI,
-                         [key(background_filename_HDRI),
-                          {props,BrowsePropsHDRI}]}},
+                {?__(82,"None"), undefined}
+            ],Bg,[layout,key(background)]
+            },
+        %% HDRI Background
+            {hframe,[
+                {label,?__(83,"Filename")},
+                {button,{text,BgFnameHDRI,[key(background_filename_HDRI),{props,BrowsePropsHDRI}]}},
                 {label,?__(61,"Samples")},
                 {text,Samples,[range(samples),key(samples)]}
-                ],
-        [hook(open, [member,?KEY(background),'HDRI'])]},
-%% Image Background
-       {hframe,[{label,?__(84,"Filename")},
-                {button,{text,BgFnameImage,
-                         [key(background_filename_image),
-                          {props,BrowsePropsImage}]}},
-                          {label,?__(60,"Samples")},
+            ],[hook(open, [member,?KEY(background),'HDRI'])]
+            },
+        %% Image Background
+            {hframe,[
+                {label,?__(84,"Filename")},
+                {button,{text,BgFnameImage,[key(background_filename_image), {props,BrowsePropsImage}]}},
+                {label,?__(60,"Samples")},
                 {text,Samples,[range(samples),key(samples)]}
-                          ],
-        [hook(open, [member,?KEY(background),image])]},
-%% HDRI Background Settings
-       {hframe,
-        [{hframe,[{label,?__(85,"Exposure")},
-                  {text,BgExpAdj,[key(background_exposure_adjust),
-                                  range(exposure_adjust)]},
-                  {menu,[{?__(86,"Light Probe (Angular)"),probe},{?__(87,"Spherical (Lat-Long)"),spherical}],
-                   BgMapping,[key(background_mapping)]}],
-          [hook(open, [member,?KEY(background),'HDRI'])]},
-         {hframe,[{label,?__(88,"Power")},
-                  {text,BgPower,[key(background_power),range(power)]}],
-          [hook(open, [member,?KEY(background),image])]},
-         {?__(89,"Enlight"),BgEnlight,[key(background_enlight)]},
-         {?__(96,"Prefilter"),BgPrefilter,[key(background_prefilter)]}],
-        [hook(open, [member,?KEY(background),'HDRI',image])]},
+            ],[hook(open, [member,?KEY(background),image])]
+            },
+        %% HDRI Background Settings
+            {hframe,[
+                {hframe,[
+                    {label,?__(85,"Exposure")},
+                    {text,BgExpAdj,[key(background_exposure_adjust), range(exposure_adjust)]},
+                    {menu,[
+                        {?__(86,"Light Probe (Angular)"),probe},
+                        {?__(87,"Spherical (Lat-Long)"),spherical}
+                    ],BgMapping,[key(background_mapping)]
+                    }
+                ],[hook(open, [member,?KEY(background),'HDRI'])]
+                },
+                {hframe,[
+                    {label,?__(88,"Power")},
+                    {text,BgPower,[key(background_power),range(power)]}
+                ],[hook(open, [member,?KEY(background),image])]
+                },
+                {?__(89,"Enlight"),BgEnlight,[key(background_enlight)]},
+                {?__(96,"Prefilter"),BgPrefilter,[key(background_prefilter)]}
+            ],[hook(open, [member,?KEY(background),'HDRI',image])]
+            },
 
-%% Constant Background
-       {hframe,[{label,?__(90,"Color")},
+        %% Constant Background
+            {hframe,[
+                {label,?__(90,"Color")},
                 {color,BgColor,[key(background_color)]},
                 {label,?__(109,"Power")},
-                  {text,ConstantBackPower,[key(constant_back_power),range(power)]}
-                ],
-        [hook(open, [member,?KEY(background),constant])]},
+                {text,ConstantBackPower,[key(constant_back_power),range(power)]}
+            ],[hook(open, [member,?KEY(background),constant])]
+            },
 
-%% Gradient Background
-       {hframe,[{label,?__(106,"Horizon Color")},
-                {color,HorizonColor,[key(horizon_color)]},
-                {label,?__(107,"Zenith Color")},
-                {color,ZenithColor,[key(zenith_color)]},
-                {label,?__(108,"Power")},
-                  {text,GradientBackPower,[key(gradient_back_power),range(power)]}
-                ],
-        [hook(open, [member,?KEY(background),gradientback])]}
+        %% Gradient Background
+            {hframe,[
+                {label,?__(106,"Horizon Color")},{color,HorizonColor,[key(horizon_color)]},
+                {label,?__(107,"Zenith Color")},{color,ZenithColor,[key(zenith_color)]},
+                {label,?__(108,"Power")},{text,GradientBackPower,[key(gradient_back_power),range(power)]}
+            ],[hook(open, [member,?KEY(background),gradientback])]
+            }
 
-        ],
-      [{title,?__(91,"Background")}]}];
+        ],[{title,?__(91,"Background")}]
+        }
+    ];
 
 %% Area Light Dialog
 
 light_dialog(_Name, area, Ps) ->
-    ArealightSamples = proplists:get_value(arealight_samples, Ps,
-                                           ?DEF_AREALIGHT_SAMPLES),
-
+    ArealightSamples =
+        proplists:get_value(arealight_samples, Ps, ?DEF_AREALIGHT_SAMPLES),
 
     CastShadows =
-                proplists:get_value(cast_shadows, Ps, ?DEF_CAST_SHADOWS),
-
-
+        proplists:get_value(cast_shadows, Ps, ?DEF_CAST_SHADOWS),
 
     [{?__(92,"Cast Shadows"),CastShadows,[key(cast_shadows)]},
-     {hframe,[{label,?__(93,"Samples")},
-              {text,ArealightSamples,[range(samples),key(arealight_samples)]}
-]
-     }];
+        {hframe,[
+            {label,?__(93,"Samples")},
+                {text,ArealightSamples,[range(samples),key(arealight_samples)]}
+        ]}
+    ];
+
 light_dialog(_Name, _Type, _Ps) ->
 %%%    erlang:display({?MODULE,?LINE,{_Name,_Type,_Ps}}),
     [].
@@ -2273,40 +2283,45 @@ light_result(Ps) ->
 
     pref_dialog(St) ->
     [{dialogs,Dialogs},{renderer,Renderer},
-     {options,Options},{shader_type,ShaderType}] =
+    {options,Options},{shader_type,ShaderType}] =
         get_user_prefs([{dialogs,?DEF_DIALOGS},{renderer,?DEF_RENDERER},
                         {options,?DEF_OPTIONS},{shader_type,?DEF_SHADER_TYPE}]),
 
 
 
-    Dialog =
-        [{vframe,
-          [{hframe,
-            [{menu,[{?__(1,"Disabled Dialogs"),disabled},
+    Dialog =[
+        {vframe,[
+            {hframe,[
+                {menu,[
+                    {?__(1,"Disabled Dialogs"),disabled},
                     {?__(2,"Automatic Dialogs"),auto},
-                    {?__(3,"Enabled Dialogs"),enabled}],
-              Dialogs,[{key,dialogs}]},
-             panel,
-             help_button(pref_dialog)]},
-           {hframe,
-            [{vframe,
-              [{label,?__(4,"Executable")},
-               {label,?__(5,"Options")},
-               {label,"Default Shader"}
-               ]},
-             {vframe,
-              [{button,{text,Renderer,[{key,renderer},
-                                       wings_job:browse_props()]}},
-               {text,Options,[{key,options}]},
-        {menu,
-           [{"Shiny Diffuse",shinydiffuse},{"Glass",glass},{"Rough Glass",rough_glass},{"Glossy",glossy},
-           {"Coated Glossy",coatedglossy},{"Translucent (SSS)",translucent},{"Light Material",lightmat}],
-           ShaderType,
-           [{key,shader_type},layout]}
-
-               ]}]}]}],
-    wpa:dialog(?__(6,"YafaRay Options"), Dialog,
-               fun (Attr) -> pref_result(Attr,St) end).
+                    {?__(3,"Enabled Dialogs"),enabled}
+                ],Dialogs,[{key,dialogs}]
+                },panel, help_button(pref_dialog)
+            ]},
+            {hframe,[
+                {vframe,[
+                    {label,?__(4,"Executable")},
+                    {label,?__(5,"Options")},
+                    {label,"Default Shader"}
+                ]},
+                {vframe,[
+                    {button,{text,Renderer,[{key,renderer}, wings_job:browse_props()]}},
+                    {text,Options,[{key,options}]},
+                    {menu,[
+                        {"Shiny Diffuse",shinydiffuse},
+                        {"Glass",glass},
+                        {"Rough Glass",rough_glass},
+                        {"Glossy",glossy},
+                        {"Coated Glossy",coatedglossy},
+                        {"Translucent (SSS)",translucent},
+                        {"Light Material",lightmat}
+                    ],ShaderType, [{key,shader_type},layout]
+                    }
+                ]}
+            ]}
+        ]}
+    ], wpa:dialog(?__(6,"YafaRay Options"), Dialog, fun (Attr) -> pref_result(Attr,St) end).
 
 pref_result(Attr, St) ->
     set_user_prefs(Attr),
@@ -2486,479 +2501,457 @@ export_dialog_qs(Op,
                   {bokeh_rotation,BokehRotation},
                   {dof_distance,Dof_Distance},
                   _Save,_Load,_Reset]) ->
-    BiasFlags = [range(bias),{key,bias}],
-    [{hframe,[{label,?__(1,"Sub-division Steps")},
-              {text,SubDiv,[{key,subdivisions},range(subdivisions)]},
-              case Op of
-                  render ->
-                      {?__(2,"Write .xml file       "),KeepXML,[{key,keep_xml}]};
-                  _ ->
-                      {value,KeepXML,[{key,keep_xml}]}
-              end,
-
-
-
-
+    BiasFlags = [
+        range(bias),
+        {key,bias}],
+        [
+            {hframe,[
+                {label,?__(1,"Sub-division Steps")},
+                {text,SubDiv,[{key,subdivisions},range(subdivisions)]},
+                case Op of
+                    render ->
+                    {?__(2,"Write .xml file       "),KeepXML,[{key,keep_xml}]};
+                    _ ->
+                        {value,KeepXML,[{key,keep_xml}]}
+                end,
 
 %% Start Threads setting
-              {hframe,[{label,"Threads"},
-              {text,ThreadsNumber,[range(threads_number),
-                        {key,threads_number},
-                hook(enable, ['not',[member,threads_auto,true]])
-                   ]}
-                   ]},
+                {hframe,[
+                    {label,"Threads"},
+                    {text,ThreadsNumber,[range(threads_number),
+                        {key,threads_number}, hook(enable, ['not',[member,threads_auto,true]])
+                    ]}
+                ]},
 %% End Threads setting
+                {?__(160,"Auto"),ThreadsAuto,[{key,threads_auto}]}
 
-              {?__(160,"Auto"),ThreadsAuto,[{key,threads_auto}]}
+            ],[{title,?__(3,"Pre-rendering")}]
+            },
 
-                   ],
-
-      [{title,?__(3,"Pre-rendering")}]},
-
-
-     {hframe,
-        [
-
-     {vframe,
-        [{menu,[{?__(114,"Direct Light"),directlighting},
-        {?__(115,"Photon Mapping - Global Illumination"),photonmapping},
-        {?__(140,"Path Tracing - Global Illumination"),pathtracing},
-        {?__(116,"Bidirectional Path Tracing - Global Illumination"),bidirectional}
-        ],
-          Lighting_Method,
-          [{key,lighting_method},layout]},
+            {hframe,[
+                {vframe,[
+                    {menu,[
+                        {?__(114,"Direct Light"),directlighting},
+                        {?__(115,"Photon Mapping - Global Illumination"),photonmapping},
+                        {?__(140,"Path Tracing - Global Illumination"),pathtracing},
+                        {?__(116,"Bidirectional Path Tracing - Global Illumination"),bidirectional}
+                    ], Lighting_Method, [{key,lighting_method},layout]
+                    },
 
 %% Start Direct Lighting Menu Section
 
 
-          {hframe,
-         [
-
- {vframe,
-        [{menu,[{?__(82,"Caustics Off"),false},{?__(83,"Caustics On"),true}],
-          UseCaustics,
-          [{key,use_caustics},layout]},
-         {hframe,
-     [
-     {vframe,
-        [{label,?__(84,"Photons")},
-         {label,?__(85,"Depth")}]},
-       {vframe,
-        [{text,Caustic_Photons,[range(caustic_photons),{key,caustic_photons}]},
-         {text,Caustic_Depth,[range(caustic_depth),{key,caustic_depth}]}]},
-
-     {vframe,
-        [{label,?__(86,"Mix")},
-         {label,?__(87,"Radius")}]},
-       {vframe,
-        [{text,Caustic_Mix,[range(caustic_mix),{key,caustic_mix}]},
-         {text,Caustic_Radius,[range(caustic_radius),{key,caustic_radius}]}]}
-   ],
-            [hook(open, [member,use_caustics,true])]}]},
-
- {vframe,
-        [{menu,[{?__(95,"Ambient Occlusion Off"),false},{?__(96,"Ambient Occlusion On"),true}],
-          Do_AO,
-          [{key,do_ao},layout]},
-         {hframe,
-     [
-     {vframe,
-        [{label,?__(97,"AO Distance")},
-         {label,?__(98,"AO Samples")}]},
-       {vframe,
-        [{text,AO_Distance,[range(ao_distance),{key,ao_distance}]},
-         {text,AO_Samples,[range(ao_samples),{key,ao_samples}]}]},
-
-     {vframe,
-        [{label,?__(99,"AO Color")}]},
-       {vframe,
-        [{color,AO_Color,[{key,ao_color}]}]}
-   ],
-            [hook(open, [member,do_ao,true])]}]}
-
-
-         ],
-       [hook(open, [member,lighting_method,directlighting])]},
+                    {hframe,[
+                        {vframe,[
+                            {menu,[
+                                {?__(82,"Caustics Off"),false},
+                                {?__(83,"Caustics On"),true}
+                            ],UseCaustics, [{key,use_caustics},layout]
+                            },
+                            {hframe,[
+                                {vframe,[
+                                    {label,?__(84,"Photons")},
+                                    {label,?__(85,"Depth")}
+                                ]},
+                                {vframe,[
+                                    {text,Caustic_Photons,[range(caustic_photons),{key,caustic_photons}]},
+                                    {text,Caustic_Depth,[range(caustic_depth),{key,caustic_depth}]}
+                                ]},
+                                {vframe,[
+                                    {label,?__(86,"Mix")},
+                                    {label,?__(87,"Radius")}
+                                ]},
+                                {vframe,[
+                                    {text,Caustic_Mix,[range(caustic_mix),{key,caustic_mix}]},
+                                    {text,Caustic_Radius,[range(caustic_radius),{key,caustic_radius}]}
+                                ]}
+                            ],[hook(open, [member,use_caustics,true])]
+                            }
+                        ]},
+                        {vframe,[
+                            {menu,[
+                                {?__(95,"Ambient Occlusion Off"),false},
+                                {?__(96,"Ambient Occlusion On"),true}
+                            ], Do_AO, [{key,do_ao},layout]
+                            },
+                            {hframe,[
+                                {vframe,[
+                                {label,?__(97,"AO Distance")},
+                                {label,?__(98,"AO Samples")}
+                            ]},
+                                {vframe, [
+                                {text,AO_Distance,[range(ao_distance),{key,ao_distance}]},
+                                {text,AO_Samples,[range(ao_samples),{key,ao_samples}]}
+                            ]},
+                                {vframe,[
+                                {label,?__(99,"AO Color")}
+                            ]},
+                                {vframe,[
+                                {color,AO_Color,[{key,ao_color}]}
+                            ]}
+                            ],[hook(open, [member,do_ao,true])]
+                            }
+                    ]}
+                    ],[hook(open, [member,lighting_method,directlighting])]
+                    },
 
  %% Start Photon Mapping Menu Section
 
-
-          {hframe,
-         [
-
-     {vframe,
-        [{label,?__(121,"Photons")},
-         {label,?__(122,"Bounces")},
-         {label,?__(123,"Search")},
-         {label,?__(124,"Diffuse Radius")}
-         ]},
-       {vframe,
-        [{text,PM_Diffuse_Photons,[range(pm_diffuse_photons),{key,pm_diffuse_photons}]},
-        {text,PM_Bounces,[range(pm_bounces),{key,pm_bounces}]},
-         {text,PM_Search,[range(pm_search),{key,pm_search}]},
-         {text,PM_Diffuse_Radius,[range(pm_diffuse_radius),{key,pm_diffuse_radius}]}
-         ]},
-
-
-     {vframe,
-        [{label,?__(125,"Caustic Photons")},
-         {label,?__(126,"Caustic Radius")},
-         {label,?__(127,"Caustic Mix")}
-         ]},
-       {vframe,
-        [{text,PM_Caustic_Photons,[range(pm_caustic_photons),{key,pm_caustic_photons}]},
-         {text,PM_Caustic_Radius,[range(pm_caustic_radius),{key,pm_caustic_radius}]},
-         {text,PM_Caustic_Mix,[range(pm_caustic_mix),{key,pm_caustic_mix}]},
-         {?__(157,"Use Bkgnd"),PM_Use_Background,[{key,pm_use_background}]}
-         ]},
-
- {vframe,
-        [{menu,[{?__(128,"Final Gather Off"),false},{?__(129,"Final Gather On"),true}],
-          PM_Use_FG,
-          [{key,pm_use_fg},layout]},
-         {hframe,
-     [
-     {vframe,
-        [{label,?__(130,"FG Bounces")},
-         {label,?__(131,"FG Samples")}
-         ]},
-       {vframe,
-        [{text,PM_FG_Bounces,[range(pm_fg_bounces),{key,pm_fg_bounces}]},
-         {text,PM_FG_Samples,[range(pm_fg_samples),{key,pm_fg_samples}]},
-         {?__(132,"Show Map"),PM_FG_Show_Map,[{key,pm_fg_show_map}]}
-         ]}
-
-
-   ],
-            [hook(open, [member,pm_use_fg,true])]}]}
-
-         ],
-       [hook(open, [member,lighting_method,photonmapping])]},
-
-
+                    {hframe,[
+                        {vframe,[
+                            {label,?__(121,"Photons")},
+                            {label,?__(122,"Bounces")},
+                            {label,?__(123,"Search")},
+                            {label,?__(124,"Diffuse Radius")}
+                        ]},
+                        {vframe,[
+                            {text,PM_Diffuse_Photons,[range(pm_diffuse_photons),{key,pm_diffuse_photons}]},
+                            {text,PM_Bounces,[range(pm_bounces),{key,pm_bounces}]},
+                            {text,PM_Search,[range(pm_search),{key,pm_search}]},
+                            {text,PM_Diffuse_Radius,[range(pm_diffuse_radius),{key,pm_diffuse_radius}]}
+                        ]},
+                        {vframe,[
+                            {label,?__(125,"Caustic Photons")},
+                            {label,?__(126,"Caustic Radius")},
+                            {label,?__(127,"Caustic Mix")}
+                        ]},
+                        {vframe,[
+                            {text,PM_Caustic_Photons,[range(pm_caustic_photons),{key,pm_caustic_photons}]},
+                            {text,PM_Caustic_Radius,[range(pm_caustic_radius),{key,pm_caustic_radius}]},
+                            {text,PM_Caustic_Mix,[range(pm_caustic_mix),{key,pm_caustic_mix}]},
+                            {?__(157,"Use Bkgnd"),PM_Use_Background,[{key,pm_use_background}]}
+                        ]},
+                        {vframe,[
+                            {menu,[
+                                {?__(128,"Final Gather Off"),false},
+                                {?__(129,"Final Gather On"),true}
+                            ],PM_Use_FG, [{key,pm_use_fg},layout]
+                            },
+                            {hframe,[
+                        {vframe,[
+                            {label,?__(130,"FG Bounces")},
+                            {label,?__(131,"FG Samples")}
+                        ]},
+                        {vframe,[
+                            {text,PM_FG_Bounces,[range(pm_fg_bounces),{key,pm_fg_bounces}]},
+                            {text,PM_FG_Samples,[range(pm_fg_samples),{key,pm_fg_samples}]},
+                            {?__(132,"Show Map"),PM_FG_Show_Map,[{key,pm_fg_show_map}]}
+                        ]}
+                        ],[hook(open, [member,pm_use_fg,true])]
+                        }
+                        ]}
+                    ],[hook(open, [member,lighting_method,photonmapping])]
+                    },
 
  %% Start Path Tracing Menu Section
 
+                    {hframe,[
+                        {vframe,[
+                            {label,?__(141,"Photons")},
+                            {label,?__(142,"Bounces")}
+                        ]},
+                        {vframe,[
+                            {text,PT_Diffuse_Photons,[range(pt_diffuse_photons),{key,pt_diffuse_photons}]},
+                            {text,PT_Bounces,[range(pt_bounces),{key,pt_bounces}]}
+                        ]},
+                        {vframe,[
+                            {label,?__(145,"Caustic Type")},
+                            {label,?__(146,"Caustic Radius")},
+                            {label,?__(147,"Caustic Mix")},
+                            {label,?__(148,"Caustic Depth")}
+                        ]},
+                        {vframe,[
+                            {menu,[
+                                {?__(153,"path"),path},
+                                {?__(154,"photons"),photons},
+                                {?__(155,"both"),both},
+                                {?__(156,"none"),none}
+                            ],PT_Caustic_Type, [{key,pt_caustic_type},layout]
+                            },
+                            {text,PT_Caustic_Radius,[range(pt_caustic_radius),{key,pt_caustic_radius}]},
+                            {text,PT_Caustic_Mix,[range(pt_caustic_mix),{key,pt_caustic_mix}]},
+                            {text,PT_Caustic_Depth,[range(pt_caustic_depth),{key,pt_caustic_depth}]}
+                        ]},
+                        {vframe,[
+                            {hframe,[
+                                {vframe,[
+                                    {label,?__(152,"Path Samples")},
+                                    {?__(158,"Use Bkgnd"),PT_Use_Background,[{key,pt_use_background}]}
+                                ]},
+                                {vframe,[
+                                    {text,PT_Samples,[range(pt_samples),{key,pt_samples}]}
+                                ]}
+                            ]}
+                        ]}
+                    ],[hook(open, [member,lighting_method,pathtracing])]
+                    }
+                ],[{title,?__(113,"Lighting")}]
+                }
+            ]},
+            {hframe,[
+                {menu,[
+                    {?__(89,"None"),none},
+                    {?__(90,"SingleScatter"),singlescatterintegrator}
+                ],Volintegr_Type, [{key,volintegr_type},layout]
+                },
+                {hframe,[
+                    {vframe,[
+                        {?__(91,"Adaptive"),Volintegr_Adaptive,[{key,volintegr_adaptive}]},
+                        {?__(92,"Optimize"),Volintegr_Optimize,[{key,volintegr_optimize}]}
+                    ]},
+                    {vframe,[
+                        {label,?__(93,"StepSize")}
+                    ]},
+                    {vframe,[
+                        {text,Volintegr_Stepsize,[range(volintegr_stepsize),{key,volintegr_stepsize}]}
+                    ]}
+                ],[hook(open, [member,volintegr_type,singlescatterintegrator])]
+                }
+            ],[{title,?__(88,"Volumetrics")}]
+            },
 
-
-          {hframe,
-         [
-
-     {vframe,
-        [{label,?__(141,"Photons")},
-         {label,?__(142,"Bounces")}
-         ]},
-       {vframe,
-        [{text,PT_Diffuse_Photons,[range(pt_diffuse_photons),{key,pt_diffuse_photons}]},
-        {text,PT_Bounces,[range(pt_bounces),{key,pt_bounces}]}
-         ]},
-
-
-     {vframe,
-        [{label,?__(145,"Caustic Type")},
-        {label,?__(146,"Caustic Radius")},
-         {label,?__(147,"Caustic Mix")},
-         {label,?__(148,"Caustic Depth")}
-         ]},
-       {vframe,
-        [{menu,[{?__(153,"path"),path},
-        {?__(154,"photons"),photons},
-        {?__(155,"both"),both},
-        {?__(156,"none"),none}],
-          PT_Caustic_Type,
-          [{key,pt_caustic_type},layout]},
-
-        {text,PT_Caustic_Radius,[range(pt_caustic_radius),{key,pt_caustic_radius}]},
-         {text,PT_Caustic_Mix,[range(pt_caustic_mix),{key,pt_caustic_mix}]},
-         {text,PT_Caustic_Depth,[range(pt_caustic_depth),{key,pt_caustic_depth}]}
-         ]},
-
- {vframe,
-        [
-         {hframe,
-     [
-     {vframe,
-        [{label,?__(152,"Path Samples")},
-        {?__(158,"Use Bkgnd"),PT_Use_Background,[{key,pt_use_background}]}
-         ]},
-       {vframe,
-        [{text,PT_Samples,[range(pt_samples),{key,pt_samples}]}
-         ]}
-
-
-   ]
-            }]}
-
-         ],
-       [hook(open, [member,lighting_method,pathtracing])]}],
-
-
-[{title,?__(113,"Lighting")}]}]},
-
-
-
-
-     {hframe,
-        [{menu,[{?__(89,"None"),none},{?__(90,"SingleScatter"),singlescatterintegrator}],
-          Volintegr_Type,
-          [{key,volintegr_type},layout]},
-         {hframe,
-         [
-     {vframe,
-      [{?__(91,"Adaptive"),Volintegr_Adaptive,[{key,volintegr_adaptive}]},
-       {?__(92,"Optimize"),Volintegr_Optimize,[{key,volintegr_optimize}]}]},
-
-     {vframe,
-        [{label,?__(93,"StepSize")}
-         ]},
-       {vframe,
-        [{text,Volintegr_Stepsize,[range(volintegr_stepsize),{key,volintegr_stepsize}]}
-         ]}],
-       [hook(open, [member,volintegr_type,singlescatterintegrator])]}],
-      [{title,?__(88,"Volumetrics")}]},
-
-
-
-     {hframe,
-        [{menu,[{?__(75,"Disabled"),false},{?__(76,"Enabled"),true}],
-          UseSSS,
-          [{key,use_sss},layout]},
-         {hframe,
-         [
-     {vframe,
-        [{label,?__(77,"Photons")},
-         {label,?__(78,"Depth")}]},
-       {vframe,
-        [{text,SSS_Photons,[range(sss_photons),{key,sss_photons}]},
-         {text,SSS_Depth,[range(sss_depth),{key,sss_depth}]}]},
-
-     {vframe,
-        [{label,?__(79,"Scale")},
-         {label,?__(80,"SingleScatter Samples")}]},
-       {vframe,
-        [{text,SSS_Scale,[range(sss_scale),{key,sss_scale}]},
-         {text,SSS_SingleScatter_Samples,[range(sss_singlescatter_samples),{key,sss_singlescatter_samples}]}]}
-   ],
-            [hook(open, [member,use_sss,true])]}],
-      [{title,?__(74,"SubSurface Scattering - YafaRay 0.1.3 - Photon Mapping, Path Tracing")}]},
-
-
-
-
-
-
-      {hframe,
-     [{vframe,
-        [{label,?__(4,"Raydepth")},
-         {label,?__(5,"Gamma")}
-         ]},
-       {vframe,
-        [{text,Raydepth,[range(raydepth),{key,raydepth}]},
-         {text,Gamma,[range(gamma),{key,gamma}]}
-         ]},
-       {vframe,
-        [{label,?__(6,"Bias")},
-         {label,?__(7,"Exposure")}]},
-       {vframe,
-        [{text,Bias,BiasFlags},
-         {text,Exposure,[range(exposure),{key,exposure}]}]},
-       {vframe,
-        [
-        {vframe,[{menu,[{?__(133,"Transp Shadows Off"),false},{?__(134,"Transp Shadows On"),true}],
-          TransparentShadows,
-          [{key,transparent_shadows},layout]},
-
-         {hframe,
-
-          [
-       {vframe,
-        [{label,?__(135,"Depth")}]},
-       {vframe,
-        [{text,ShadowDepth,[range(shadow_depth),{key,shadow_depth}]}]}
-        ],
-          [hook(open, [member,transparent_shadows,true])]}]}
-         ]}],
-      [{title,?__(8,"Render")}]},
-     {hframe,
-        [{menu,[{Ext++" ("++Desc++")",Format}
-                || {Format,Ext,Desc} <- wings_job:render_formats(),
+            {hframe,[
+                {menu,[
+                    {?__(75,"Disabled"),false},
+                    {?__(76,"Enabled"),true}
+                ],UseSSS,[{key,use_sss},layout]
+                },
+                {hframe,[
+                    {vframe,[
+                        {label,?__(77,"Photons")},
+                        {label,?__(78,"Depth")}
+                    ]},
+                    {vframe,[
+                        {text,SSS_Photons,[range(sss_photons),{key,sss_photons}]},
+                        {text,SSS_Depth,[range(sss_depth),{key,sss_depth}]}
+                    ]},
+                    {vframe,[
+                        {label,?__(79,"Scale")},
+                        {label,?__(80,"SingleScatter Samples")}
+                    ]},
+                    {vframe,[
+                        {text,SSS_Scale,[range(sss_scale),{key,sss_scale}]},
+                        {text,SSS_SingleScatter_Samples,[range(sss_singlescatter_samples),
+                            {key,sss_singlescatter_samples}]}
+                    ]}
+                ],[hook(open, [member,use_sss,true])]
+                }
+            ],[{title,?__(74,"SubSurface Scattering - YafaRay 0.1.3 - Photon Mapping, Path Tracing")}]
+            },
+            {hframe,[
+                {vframe,[
+                    {label,?__(4,"Raydepth")},
+                    {label,?__(5,"Gamma")}
+                ]},
+                {vframe,[
+                    {text,Raydepth,[range(raydepth),{key,raydepth}]},
+                    {text,Gamma,[range(gamma),{key,gamma}]}
+                ]},
+                {vframe,[
+                    {label,?__(6,"Bias")},
+                    {label,?__(7,"Exposure")}
+                ]},
+                {vframe,[
+                    {text,Bias,BiasFlags},
+                    {text,Exposure,[range(exposure),{key,exposure}]}
+                ]},
+                {vframe,[
+                    {vframe,[
+                        {menu,[
+                            {?__(133,"Transp Shadows Off"),false},
+                            {?__(134,"Transp Shadows On"),true}
+                        ],TransparentShadows,[{key,transparent_shadows},layout]
+                        },
+                        {hframe,[
+                            {vframe,[
+                                {label,?__(135,"Depth")}
+                            ]},
+                            {vframe,[
+                                {text,ShadowDepth,[range(shadow_depth),{key,shadow_depth}]}
+                            ]}
+                        ],[hook(open, [member,transparent_shadows,true])]
+                        }
+                    ]}
+                ]}
+            ],[{title,?__(8,"Render")}]
+            },
+            {hframe,[
+                {menu,[
+                    {Ext++" ("++Desc++")",Format}
+                    || {Format,Ext,Desc} <- wings_job:render_formats(),
                    (Format == tga) or (Format == tif) or (Format == png) or
-                   (Format == hdr) or (Format == exr)],
-          RenderFormat,
-          [{key,render_format},layout]},
-         {hframe,
-          [{?__(9,"Float"),ExrFlagFloat,[{key,exr_flag_float}]},
-           {?__(10,"Zbuf"),ExrFlagZbuf,[{key,exr_flag_zbuf}]},
-           {label," "++?__(11,"Compression:")},
-           {menu,
-            [{?__(12,"none"),compression_none},
-             {"piz",compression_piz},
-             {"rle",compression_rle},
-             {"pxr24",compression_pxr24},
-             {"zip",compression_zip}],
-            ExrFlagCompression,
-            [{key,exr_flag_compression}]}],
-          [hook(open, [member,render_format,exr])]}],
-      [{title,?__(13,"Output")}]},
-     {hframe,
-      [
-      {vframe,
-        [{hframe,
-          [{vframe,
-            [{label,?__(14,"AA_passes")},
-             {label,?__(15,"AA_minsamples")}]},
-           {vframe,
-            [{text,AA_passes,[range(aa_passes),{key,aa_passes}]},
-             {text,AA_minsamples,[range(aa_minsamples),
-                                  {key,aa_minsamples}]}]}]},
-         {?__(16,"AA_jitterfirst"),AA_jitterfirst,[{key,aa_jitterfirst}]}]},
-
-       {vframe,
-        [{hframe,
-          [{vframe,
-            [{label,?__(17,"AA_threshold")},
-             {label,?__(18,"AA_pixelwidth")}]},
-           {vframe,
-            [{text,AA_threshold,[range(aa_threshold),{key,aa_threshold}]},
-             {text,AA_pixelwidth,[range(aa_pixelwidth),{key,aa_pixelwidth}]}]}]},
-         {?__(19,"Clamp RGB"),ClampRGB,[{key,clamp_rgb}]}]},
-
-
-
-         {vframe,
-         [
-         {menu,[{?__(136,"Box Filter"),box},
-        {?__(137,"Gaussian Filter"),gauss},
-        {?__(138,"Mitchell-Netravali Filter"),mitchell},
-        {?__(139,"Lanczos Filter"),lanczos}],
-          AA_Filter_Type,
-          [{key,aa_filter_type},layout]}
-         ]}
-
-         ],
-      [{title,?__(20,"Anti-Aliasing")}]},
-     {hframe,
-      [{label,?__(21,"Default Color")},
-       {color,BgColor,[{key,background_color}]},
-       {label,?__(22,"Alpha Channel:")},
-       {menu,[{?__(23,"Off"),false},{?__(61,"On"),true},
-              {?__(24,"Premultiply"),premultiply},{?__(25,"Backgroundmask"),backgroundmask}],
-        SaveAlpha,
-        [{key,save_alpha}]},
-         {?__(159,"Transp Refraction"),BackgroundTranspRefract,[{key,background_transp_refract}]}],
-      [{title,?__(26,"Background")}]},
-
-
-
-
-
-
-     {hframe,
-      [{vframe,
-
-        [{menu,[{?__(102,"Perspective"),perspective},
-        {?__(103,"Orthographic"),orthographic},
-        {?__(104,"Architect"),architect},
-        {?__(105,"Fish Eye (Angular)"),angular}],
-          Lens_Type,
-          [{key,lens_type},layout]},
-
-          {hframe,
-         [
-
-     {vframe,
-        [{label,?__(108,"Scale")}
-         ]},
-       {vframe,
-        [{text,Lens_Ortho_Scale,[range(lens_ortho_scale),{key,lens_ortho_scale}]}
-         ]}],
-       [hook(open, [member,lens_type,orthographic])]},
-
-
-          {hframe,
-         [
-     {vframe,
-      [{?__(109,"Circular"),Lens_Angular_Circular,[{key,lens_angular_circular}]},
-       {?__(110,"Mirrored"),Lens_Angular_Mirrored,[{key,lens_angular_mirrored}]}]},
-
-     {vframe,
-        [{label,?__(111,"Circle/Max Angle")},
-         {label,?__(112,"Frame/Angle")}
-         ]},
-       {vframe,
-        [{text,Lens_Angular_Max_Angle,[range(lens_angular_max_angle),{key,lens_angular_max_angle}]},
-         {text,Lens_Angular_Angle,[range(lens_angular_angle),{key,lens_angular_angle}]}
-         ]}],
-       [hook(open, [member,lens_type,angular])]},
-
-
-
-
-
-                 {hframe,[panel,{?__(32,"Use QMC"),BokehUseQMC,
-                         [{key,bokeh_use_QMC},
-                          hook(enable,
-                               ['not',[member,aperture,0.0]])]}]},
-         panel]},
-       {vframe,
-        [{label,?__(33,"Width")},
-         {label,?__(34,"Aperture")},
-         {label,?__(35,"DOF Type")},
-         {label,?__(36,"DOF Rotation")},
-         {label,?__(100,"DOF Distance")}]},
-       {vframe,
-        [{hframe,
-          [{vframe,[{text,Width,[range(pixels),{key,width},{width,6}]},
-                    {text,Aperture,[range(aperture),{key,aperture},{width,6}]},
-                    {menu,[{?__(37,"Disk1"),disk1},{?__(38,"Disk2"),disk2},
-                           {?__(39,"Triangle"),triangle},
-                           {?__(40,"Square"),square},{?__(41,"Pentagon"),pentagon},
-                           {?__(42,"Hexagon"),hexagon},{?__(43,"Ring"),ring}],
-                     BokehType,[{key,bokeh_type},
-                                hook(enable,
-                                     ['not',[member,aperture,0.0]])]}]},
-           {vframe,[{label,?__(44,"Height")},
-                    {label,?__(45,"f-stop")},
-                    {label,?__(46,"Bias")}]},
-
-
-
-
-           {vframe,[{text,Height,[range(pixels),{key,height},{width,6}]},
-                    {menu,[{F,math:sqrt(A)}
-                           || {F,A} <- [{"1.0",1/1},{"1.4",1/2},{"2",1/4},
+                   (Format == hdr) or (Format == exr)
+                ],RenderFormat,[{key,render_format},layout]
+                },
+                {hframe,[
+                    {?__(9,"Float"),ExrFlagFloat,[{key,exr_flag_float}]},
+                    {?__(10,"Zbuf"),ExrFlagZbuf,[{key,exr_flag_zbuf}]},
+                    {label," "++?__(11,"Compression:")},
+                    {menu,[
+                        {?__(12,"none"),compression_none},
+                        {"piz",compression_piz},
+                        {"rle",compression_rle},
+                        {"pxr24",compression_pxr24},
+                        {"zip",compression_zip}
+                    ],ExrFlagCompression,[{key,exr_flag_compression}]
+                    }
+                ],[hook(open, [member,render_format,exr])]
+                }
+            ],[{title,?__(13,"Output")}]
+            },
+            {hframe,[
+                {vframe,[
+                    {hframe,[
+                        {vframe,[
+                            {label,?__(14,"AA_passes")},
+                            {label,?__(15,"AA_minsamples")}
+                        ]},
+                        {vframe,[
+                            {text,AA_passes,[range(aa_passes),{key,aa_passes}]},
+                            {text,AA_minsamples,[range(aa_minsamples),{key,aa_minsamples}]}
+                        ]}
+                    ]},
+                    {?__(16,"AA_jitterfirst"),AA_jitterfirst,[{key,aa_jitterfirst}]}
+                ]},
+                {vframe,[
+                    {hframe,[
+                        {vframe,[
+                            {label,?__(17,"AA_threshold")},
+                            {label,?__(18,"AA_pixelwidth")}
+                        ]},
+                        {vframe,[
+                            {text,AA_threshold,[range(aa_threshold),{key,aa_threshold}]},
+                            {text,AA_pixelwidth,[range(aa_pixelwidth),{key,aa_pixelwidth}]}
+                        ]}
+                    ]},
+                    {?__(19,"Clamp RGB"),ClampRGB,[{key,clamp_rgb}]}
+                ]},
+                {vframe,[
+                    {menu,[
+                        {?__(136,"Box Filter"),box},
+                        {?__(137,"Gaussian Filter"),gauss},
+                        {?__(138,"Mitchell-Netravali Filter"),mitchell},
+                        {?__(139,"Lanczos Filter"),lanczos}
+                    ],AA_Filter_Type,[{key,aa_filter_type},layout]
+                    }
+                ]}
+            ],[{title,?__(20,"Anti-Aliasing")}]
+            },
+            {hframe,[
+                {label,?__(21,"Default Color")},
+                {color,BgColor,[{key,background_color}]},
+                {label,?__(22,"Alpha Channel:")},
+                {menu,[
+                    {?__(23,"Off"),false},
+                    {?__(61,"On"),true},
+                    {?__(24,"Premultiply"),premultiply},
+                    {?__(25,"Backgroundmask"),backgroundmask}
+                ],SaveAlpha,[{key,save_alpha}]
+                },
+                {?__(159,"Transp Refraction"),BackgroundTranspRefract,[{key,background_transp_refract}]}
+            ],[{title,?__(26,"Background")}]
+            },
+        %% Camera
+            {hframe,[
+                {vframe,[
+                    {menu,[
+                        {?__(102,"Perspective"),perspective},
+                        {?__(103,"Orthographic"),orthographic},
+                        {?__(104,"Architect"),architect},
+                        {?__(105,"Fish Eye (Angular)"),angular}
+                    ],Lens_Type,[{key,lens_type},layout]
+                    },
+                    {hframe,[
+                        {vframe,[
+                            {label,?__(108,"Scale")}
+                        ]},
+                        {vframe,[
+                            {text,Lens_Ortho_Scale,[range(lens_ortho_scale),{key,lens_ortho_scale}]}
+                        ]}
+                    ],[hook(open, [member,lens_type,orthographic])]
+                    },
+                    {hframe,[
+                        {vframe,[
+                            {?__(109,"Circular"),Lens_Angular_Circular,[{key,lens_angular_circular}]},
+                            {?__(110,"Mirrored"),Lens_Angular_Mirrored,[{key,lens_angular_mirrored}]}
+                        ]},
+                        {vframe,[
+                            {label,?__(111,"Circle/Max Angle")},
+                            {label,?__(112,"Frame/Angle")}
+                        ]},
+                        {vframe,[
+                            {text,Lens_Angular_Max_Angle,[range(lens_angular_max_angle),{key,lens_angular_max_angle}]},
+                            {text,Lens_Angular_Angle,[range(lens_angular_angle),{key,lens_angular_angle}]}
+                        ]}
+                    ],[hook(open, [member,lens_type,angular])]
+                    },
+                    {hframe,[
+                        panel,
+                        {?__(32,"Use QMC"),BokehUseQMC, [{key,bokeh_use_QMC},hook(enable,['not',[member,aperture,0.0]])]
+                        }
+                    ]},panel
+                ]},
+                {vframe,[
+                    {label,?__(33,"Width")},
+                    {label,?__(34,"Aperture")},
+                    {label,?__(35,"DOF Type")},
+                    {label,?__(36,"DOF Rotation")},
+                    {label,?__(100,"DOF Distance")}
+                ]},
+                {vframe,[
+                    {hframe,[
+                        {vframe,[
+                            {text,Width,[range(pixels),{key,width},{width,6}]},
+                            {text,Aperture,[range(aperture),{key,aperture},{width,6}]},
+                            {menu,[
+                                {?__(37,"Disk1"),disk1},
+                                {?__(38,"Disk2"),disk2},
+                                {?__(39,"Triangle"),triangle},
+                                {?__(40,"Square"),square},
+                                {?__(41,"Pentagon"),pentagon},
+                                {?__(42,"Hexagon"),hexagon},
+                                {?__(43,"Ring"),ring}
+                            ], BokehType,[{key,bokeh_type},hook(enable,['not',[member,aperture,0.0]])]
+                            }
+                        ]},
+                        {vframe,[
+                            {label,?__(44,"Height")},
+                            {label,?__(45,"f-stop")},
+                            {label,?__(46,"Bias")}
+                        ]},
+                        %%
+                        {vframe,[
+                            {text,Height,[range(pixels),{key,height},{width,6}]},
+                            {menu,[
+                                {F,math:sqrt(A)}
+                                || {F,A} <- [{"1.0",1/1},{"1.4",1/2},{"2",1/4},
                                         {"2.8",1/8},{"4",1/16},{"5.6",1/32},
                                         {"8",1/64},{"11",1/128},{"16",1/256},
                                         {"22",1/512},{"32",1/1024},
-                                        {?__(47,"pinhole"),0.0}]],
-                     Aperture,[{key,aperture}]},
-                    {menu,[{?__(48,"Uniform"),uniform},{?__(49,"Center"),center},
-                           {?__(50,"Edge"),edge}],
-                     BokehBias,[{key,bokeh_bias},
-                                hook(enable,
-                                     ['not',[member,aperture,0.0]])]}]
-
-
-
-
-                                     }]},
-         {slider,{text,BokehRotation,
-                  [range(bokeh_rotation),
-                   {key,bokeh_rotation},
-                   hook(enable,
-                        ['not',[member,aperture,0.0]])]}},
-
-         {slider,{text,Dof_Distance,
-                  [range(dof_distance),
-                   {key,dof_distance},
-                   hook(enable,
-                        ['not',[member,aperture,0.0]])]}}
-                        ]}],
-      [{title,?__(51,"Camera")}]},
-
-     {hframe,[{button,?__(55,"Save"),done,[{info,?__(56,"Save to user preferences")}]},
-              {button,?__(57,"Load"),done,[{info,?__(58,"Load from user preferences")}]},
-              {button,?__(59,"Reset"),done,[{info,?__(60,"Reset to default values")}]}]}].
+                                        {?__(47,"pinhole"),0.0}]
+                            ],Aperture,[{key,aperture}]
+                            },
+                            {menu,[
+                                {?__(48,"Uniform"),uniform},
+                                {?__(49,"Center"),center},
+                                {?__(50,"Edge"),edge}
+                            ],BokehBias,[{key,bokeh_bias},hook(enable,['not',[member,aperture,0.0]])]
+                            }
+                        ]}
+                    ]},
+                    {slider,{text,BokehRotation,[range(bokeh_rotation),{key,bokeh_rotation},
+                        hook(enable,['not',[member,aperture,0.0]])]}},
+                    {slider,{text,Dof_Distance,[range(dof_distance),{key,dof_distance},
+                        hook(enable,['not',[member,aperture,0.0]])]}}
+                ]}
+            ],[{title,?__(51,"Camera")}]
+            },
+            {hframe,[
+                {button,?__(55,"Save"),done,[{info,?__(56,"Save to user preferences")}]},
+                {button,?__(57,"Load"),done,[{info,?__(58,"Load from user preferences")}]},
+                {button,?__(59,"Reset"),done,[{info,?__(60,"Reset to default values")}]}
+            ]}
+        ].
 
 %%% Increase split_list # +1 per line if add Render Settings to Dialog
 %%%
@@ -3286,14 +3279,22 @@ export_shinydiffuse_shader(F, Name, Mat, ExportDir, YafaRay) ->
     TIR = proplists:get_value(tir, YafaRay, ?DEF_TIR),
 
 
-    Transparency = proplists:get_value(transparency, YafaRay, ?DEF_TRANSPARENCY),
-    TransmitFilter = proplists:get_value(transmit_filter, YafaRay, ?DEF_TRANSMIT_FILTER),
-    Translucency = proplists:get_value(translucency, YafaRay, ?DEF_TRANSLUCENCY),
-    DiffuseReflect = proplists:get_value(diffuse_reflect, YafaRay, ?DEF_DIFFUSE_REFLECT),
-    SpecularReflect = proplists:get_value(specular_reflect, YafaRay, ?DEF_SPECULAR_REFLECT),
-    Emit = proplists:get_value(emit, YafaRay, ?DEF_EMIT),
-    OrenNayar = proplists:get_value(oren_nayar, YafaRay, ?DEF_OREN_NAYAR),
-    DefAbsorptionColor = def_absorption_color(proplists:get_value(diffuse, OpenGL)),
+    Transparency =
+        proplists:get_value(transparency, YafaRay, ?DEF_TRANSPARENCY),
+    TransmitFilter =
+        proplists:get_value(transmit_filter, YafaRay, ?DEF_TRANSMIT_FILTER),
+    Translucency =
+        proplists:get_value(translucency, YafaRay, ?DEF_TRANSLUCENCY),
+    DiffuseReflect =
+        proplists:get_value(diffuse_reflect, YafaRay, ?DEF_DIFFUSE_REFLECT),
+    SpecularReflect =
+        proplists:get_value(specular_reflect, YafaRay, ?DEF_SPECULAR_REFLECT),
+    Emit =
+        proplists:get_value(emit, YafaRay, ?DEF_EMIT),
+    OrenNayar =
+        proplists:get_value(oren_nayar, YafaRay, ?DEF_OREN_NAYAR),
+    DefAbsorptionColor =
+        def_absorption_color(proplists:get_value(diffuse, OpenGL)),
 
     AbsorptionColor =
         proplists:get_value(absorption_color, YafaRay, DefAbsorptionColor),
@@ -4504,9 +4505,6 @@ count_equal([H|T], C, K, R) ->
 
 
 
-
-
-
     export_object_1(F, NameStr, Mesh0=#e3d_mesh{he=He0}, DefaultMaterial, MatPs, Id) ->
     YafaRay = proplists:get_value(?TAG, MatPs, []),
     _OpenGL = proplists:get_value(opengl, MatPs),
@@ -4574,7 +4572,7 @@ count_equal([H|T], C, K, R) ->
                 case Object_Type of
                 mesh ->
                     println(F," "),
-                    println(F, "<mesh vertices=\"~w\" faces=\"~w\"  has_uv=\"~s\" id=\"~w\" type=\"0\">",[length(Vs),length(Fs), HasUV, Id]),
+                    println(F, "<mesh id=\"~w\" vertices=\"~w\" faces=\"~w\"  has_uv=\"~s\"  type=\"0\">",[Id, length(Vs), length(Fs), HasUV]),
                     println(F," ");
 
                 volume ->

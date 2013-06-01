@@ -1017,7 +1017,7 @@ material_dialog(_Name, Mat) ->
                     panel,panel,
                         {button,"Set Default",keep,[diffuse_hook(?KEY(transmitted))]}
                 ]}
-            ], hook(open, [member, ?KEY(shader_type), shinydiffuse])]
+            ],[hook(open, [member, ?KEY(shader_type), shinydiffuse])]
             },
 
 %%% Define Dialog for Glass Material
@@ -1397,314 +1397,302 @@ modulator_dialog({modulator,Ps}, Maps, M) when is_list(Ps) ->
     TypeTag = {?TAG,type,M},
     MapsFrame = [{hradio,[{atom_to_list(Map),{map,Map}} || {Map,_} <- Maps],
                   Type,[{key,TypeTag},layout]}],
-    [{vframe,
-      [{hframe,[{?__(5,"Enabled"),Enabled,[{key,{?TAG,enabled,M}}]},
-                {menu,[{?__(6,"Mix"),mix},{?__(7,"Add"),add},{?__(8,"Mul"),mul},{?__(109,"Sub"),sub},
-                {?__(110,"Scr"),scr},{?__(111,"Div"),divide},{?__(112,"Dif"),dif},{?__(113,"Dar"),dar},{?__(114,"Lig"),lig}],Mode,
-                 [hook(enable, {?TAG,enabled,M})]},
-                panel,
-                {button,?__(9,"Delete"),done}
+        [{vframe,[
+            {hframe,[
+                {?__(5,"Enabled"),Enabled,[{key,{?TAG,enabled,M}}]},
+                {menu,[
+                    {?__(6,"Mix"),mix},
+                    {?__(7,"Add"),add},
+                    {?__(8,"Mul"),mul},
+                    {?__(109,"Sub"),sub},
+                    {?__(110,"Scr"),scr},
+                    {?__(111,"Div"),divide},
+                    {?__(112,"Dif"),dif},
+                    {?__(113,"Dar"),dar},
+                    {?__(114,"Lig"),lig}
+                ],Mode, [hook(enable, {?TAG,enabled,M})]
+                },panel,{button,?__(9,"Delete"),done}
+            ]},
+            {vframe,[ % hook(enable, {?TAG,enabled,M})
+                {hframe,[
+                    {menu,[
+                        {?__(115,"Alpha Off"),off},
+                        {?__(116,"Alpha Transparency"),transparency},
+                        {?__(117,"Diffuse+Alpha Transparency"),diffusealphatransparency},
+                        {?__(118,"Alpha Translucency"),translucency},
+                        {?__(119,"Specularity"),specularity},
+                        {?__(120,"Stencil"),stencil}
+                    ],AlphaIntensity
+                    }
                 ]},
-       {vframe, % hook(enable, {?TAG,enabled,M})
-        [{hframe,[{menu,[{?__(115,"Alpha Off"),off},{?__(116,"Alpha Transparency"),transparency},
-                {?__(117,"Diffuse+Alpha Transparency"),diffusealphatransparency},
-                {?__(118,"Alpha Translucency"),translucency},{?__(119,"Specularity"),specularity},{?__(120,"Stencil"),stencil}],AlphaIntensity
-                 }]},
-
-        {hframe,[{label,?__(10,"SizeX")},{text,SizeX,[range(size)]},
-                  {label,?__(11,"SizeY")},{text,SizeY,[range(size)]},
-                  {label,?__(12,"SizeZ")},{text,SizeZ,[range(size)]}]},
-         {hframe,[{vframe,[{label,?__(13,"Diffuse")++" "},
-                           {label,?__(14,"Specular")},
-
-                           {label,?__(16,"Shininess")},
-                           {label,?__(17,"Normal")}]},
-                  {vframe,[{slider,{text,Diffuse,[range(modulation)]}},
-                           {slider,{text,Specular,[range(modulation)]}},
-
-                           {slider,{text,Shininess,[range(modulation)]}},
-                           {slider,{text,Normal,[range(modulation)]}}]}]}]
-        ++MapsFrame++
-        [{hradio,[{?__(18,"Image"),image},{?__(19,"Clouds"),clouds},
-                  {?__(20,"Marble"),marble},{?__(21,"Wood"),wood},{?__(46,"Voronoi"),voronoi},
-                  {?__(62,"Musgrave"),musgrave},{?__(82,"Distorted Noise"),distorted_noise}],
-          Type,[{key,TypeTag},layout]},
-         {vframe,
-          [{hframe,
-            [{hframe,
-              [{label,?__(22,"Filename")},
-               {button,{text,Filename,[{props,BrowseProps}]}}],
-              [hook(open, [member,{?TAG,type,M},image])]},
+                {hframe,[
+                    {label,?__(10,"SizeX")},{text,SizeX,[range(size)]},
+                    {label,?__(11,"SizeY")},{text,SizeY,[range(size)]},
+                    {label,?__(12,"SizeZ")},{text,SizeZ,[range(size)]}
+                ]},
+                {hframe,[
+                    {vframe,[
+                        {label,?__(13,"Diffuse")++" "},
+                        {label,?__(14,"Specular")},
+                        {label,?__(16,"Shininess")},
+                        {label,?__(17,"Normal")}
+                    ]},
+                    {vframe,[
+                        {slider,{text,Diffuse,[range(modulation)]}},
+                        {slider,{text,Specular,[range(modulation)]}},
+                        {slider,{text,Shininess,[range(modulation)]}},
+                        {slider,{text,Normal,[range(modulation)]}}
+                    ]}
+                ]}
+            ]
+            ++MapsFrame++
+            [{hradio,[
+                {?__(18,"Image"),image},
+                {?__(19,"Clouds"),clouds},
+                {?__(20,"Marble"),marble},
+                {?__(21,"Wood"),wood},
+                {?__(46,"Voronoi"),voronoi},
+                {?__(62,"Musgrave"),musgrave},
+                {?__(82,"Distorted Noise"),distorted_noise}
+            ],Type,[{key,TypeTag},layout]
+            },
+            {vframe,[
+                {hframe,[
+                    {hframe,[
+                        {label,?__(22,"Filename")},
+                        {button,{text,Filename,[{props,BrowseProps}]}}
+                    ],[hook(open, [member,{?TAG,type,M},image])]
+                    },
 
 %% Clouds,Marble,Wood Specific Procedurals
 
-             {hframe,
-              [{label,?__(23,"Texture")},{color,Color1},
-               {label,?__(24,"Base")},{color,Color2},
-               {?__(25,"Hard Noise"),Hard},
+                    {hframe,[
+                        {label,?__(23,"Texture")},{color,Color1},
+                        {label,?__(24,"Base")},{color,Color2},
+                        {?__(25,"Hard Noise"),Hard},
 
 
 %%% Start Noise Basis Select
 
-               {menu,[{?__(36,"Blender-Basis"),blender},
-        {?__(37,"Cellnoise"),cellnoise},
-        {?__(38,"New Perlin"),newperlin},
-        {?__(39,"Perlin"),stdperlin},
-        {?__(40,"Voronoi Crackle"),voronoi_crackle},
-        {?__(41,"Voronoi F1"),voronoi_f1},
-        {?__(42,"Voronoi F2"),voronoi_f2},
-        {?__(43,"Voronoi F3"),voronoi_f3},
-        {?__(44,"Voronoi F4"),voronoi_f4},
-        {?__(45,"Voronoi F1F2"),voronoi_f2f1}
-        ],
-          NoiseBasis,
-         [hook(enable, {?TAG,enabled,M})]}
+                        {menu,[
+                            {?__(36,"Blender-Basis"),blender},
+                            {?__(37,"Cellnoise"),cellnoise},
+                            {?__(38,"New Perlin"),newperlin},
+                            {?__(39,"Perlin"),stdperlin},
+                            {?__(40,"Voronoi Crackle"),voronoi_crackle},
+                            {?__(41,"Voronoi F1"),voronoi_f1},
+                            {?__(42,"Voronoi F2"),voronoi_f2},
+                            {?__(43,"Voronoi F3"),voronoi_f3},
+                            {?__(44,"Voronoi F4"),voronoi_f4},
+                            {?__(45,"Voronoi F1F2"),voronoi_f2f1}
+                        ],NoiseBasis,[hook(enable, {?TAG,enabled,M})]
+                        }
 
-%%% End Noise Basis Select
+    %%% End Noise Basis Select
 
+                    ],[hook(open, [member,{?TAG,type,M},clouds,marble,wood,musgrave,distorted_noise])]
+                    }
 
-               ],
-              [hook(open, [member,{?TAG,type,M},clouds,marble,wood,musgrave,distorted_noise])]}
+                ]},
 
-              ]},
+        %% Clouds,Marble,Wood Specific Procedurals Line 2
+                {hframe,[
+                    {hframe,[
+                        {label,?__(26,"Noise Size")},{text,NoiseSize,[range(noise_size)]}
+                    ],[hook(open, [member,{?TAG,type,M},clouds,marble,wood])]
+                    },
 
+    %% Clouds,Marble,Wood Specific Procedurals Line 2
 
-%% Clouds,Marble,Wood Specific Procedurals Line 2
-        {hframe,
-             [{hframe,
-              [{label,?__(26,"Noise Size")},{text,NoiseSize,[range(noise_size)]}
-              ],
-              [hook(open, [member,{?TAG,type,M},clouds,marble,wood])]},
+                    {hframe,[
+                        {label,?__(27,"Noise Depth")},{text,Depth,[range(noise_depth)]}
+                    ],[hook(open, [member,{?TAG,type,M},clouds,marble,wood])]
+                    }
+                ]},
 
+    %% Marble Specific Procedurals
+                {hframe,[
+                    {hframe,[
+                        {label,?__(28,"Sharpness")},{text,Sharpness,[range(sharpness)]}
+                    ],[hook(open, [member,{?TAG,type,M},marble])]
+                    },
 
-%% Clouds,Marble,Wood Specific Procedurals Line 2
+    %% Marble,Wood Specific Procedurals
 
-             {hframe,
-              [{label,?__(27,"Noise Depth")},{text,Depth,[range(noise_depth)]}],
-              [hook(open, [member,{?TAG,type,M},clouds,marble,wood])]}
-              ]},
+                    {hframe,[
+                        {hframe,[
+                            {label,?__(29,"Turbulence")},{text,Turbulence,[range(turbulence)]},
 
-%% Marble Specific Procedurals
-        {hframe,
-           [{hframe,
-            [{label,?__(28,"Sharpness")},{text,Sharpness,[range(sharpness)]}
-             ],
-            [hook(open, [member,{?TAG,type,M},marble])]},
+    %%% Start Shape Select
+                            {menu,[
+                                {?__(30,"sin"),"sin"},
+                                {?__(31,"saw"),saw},
+                                {?__(32,"tri"),tri}
+                            ],Shape,[hook(enable, {?TAG,enabled,M})]
+                            }
+    %%% End Shape Select
+                        ],[hook(open, [member,{?TAG,type,M},marble,wood])]
+                        }
+                    ]},
 
+        %% Wood Specific Procedurals
+                    {hframe,[
+                        %%% Start Wood Type Select
+                        {menu,[
+                            {?__(33,"Rings"),rings},
+                            {?__(34,"Bands"),bands}
+                        ],WoodType,[hook(enable, {?TAG,enabled,M})]
+                        }
 
-%% Marble,Wood Specific Procedurals
+        %%% End Wood Type Select
 
-            {hframe,
-            [
-             {hframe,
-              [{label,?__(29,"Turbulence")},{text,Turbulence,[range(turbulence)]},
+                    ],[hook(open, [member,{?TAG,type,M},wood])]
+                    },
 
-%%% Start Shape Select
-
-               {menu,[{?__(30,"sin"),"sin"},
-        {?__(31,"saw"),saw},
-        {?__(32,"tri"),tri}
-        ],
-          Shape,
-         [hook(enable, {?TAG,enabled,M})]}
-
-%%% End Shape Select
-
-              ],
-              [hook(open, [member,{?TAG,type,M},marble,wood])]}]},
-
-
-
-%% Wood Specific Procedurals
-           {hframe,
-            [
-
-%%% Start Wood Type Select
-
-               {menu,[{?__(33,"Rings"),rings},
-        {?__(34,"Bands"),bands}
-        ],
-          WoodType,
-         [hook(enable, {?TAG,enabled,M})]}
-
-%%% End Wood Type Select
-
-             ],
-            [hook(open, [member,{?TAG,type,M},wood])]},
-
-%%% Voronoi Specific Procedurals
-         {vframe,[
-           {hframe,
-            [
+    %%% Voronoi Specific Procedurals
+                    {vframe,[
+                        {hframe,[
 
 %%% Start Voronoi Cell Type Select
 
-               {menu,[{?__(47,"Intensity"),intensity},
-        {?__(48,"Color"),col1},
-        {?__(49,"Color+Outline"),col2},
-        {?__(50,"Color+Outline+Intensity"),col3}
-        ],
-          CellType,
-         [hook(enable, {?TAG,enabled,M})]},
+                            {menu,[
+                                {?__(47,"Intensity"),intensity},
+                                {?__(48,"Color"),col1},
+                                {?__(49,"Color+Outline"),col2},
+                                {?__(50,"Color+Outline+Intensity"),col3}
+                            ],CellType,[hook(enable, {?TAG,enabled,M})]
+                            },
 
 %%% End Voronoi Cell Type Select
 
 %%% Start Voronoi Cell Shape Select
 
-               {menu,[{?__(51,"Actual Distance"),actual},
-        {?__(52,"Distance Squared"),squared},
-        {?__(53,"Manhattan"),manhattan},
-        {?__(54,"Chebychev"),chebychev},
-        {?__(55,"Minkovsky"),minkovsky}
-        ],
-          CellShape,
-         [hook(enable, {?TAG,enabled,M})]}
+                            {menu,[
+                                {?__(51,"Actual Distance"),actual},
+                                {?__(52,"Distance Squared"),squared},
+                                {?__(53,"Manhattan"),manhattan},
+                                {?__(54,"Chebychev"),chebychev},
+                                {?__(55,"Minkovsky"),minkovsky}
+                            ],CellShape,[hook(enable, {?TAG,enabled,M})]
+                            }
 
 %%% End Voronoi Cell Shape Select
 
-%%% Close Voronoi Line 1
-             ],
-            [hook(open, [member,{?TAG,type,M},voronoi])]},
+        %%% Close Voronoi Line 1
+                        ],[hook(open, [member,{?TAG,type,M},voronoi])]
+                        },
 
 %%% End Voronoi Line 1
 
 %%% Start Voronoi Line 2
-        {hframe,
-             [{hframe,
-              [{label,?__(56,"Cell Size")},{text,CellSize,[range(cell_size)]},
-              {label,?__(57,"Intensity")},{text,Intensity,[range(intensity)]}
-              ],
-              [hook(open, [member,{?TAG,type,M},voronoi])]}
-
-              ]},
+                        {hframe,[
+                            {hframe,[
+                                {label,?__(56,"Cell Size")},{text,CellSize,[range(cell_size)]},
+                                {label,?__(57,"Intensity")},{text,Intensity,[range(intensity)]}
+                            ],[hook(open, [member,{?TAG,type,M},voronoi])]
+                            }
+                        ]},
 
 %%% End Voronoi Line 2
 
 %%% Start Voronoi Line 3
 
-        {hframe,
-             [{hframe,
-              [{label,?__(58,"W1")},{text,CellWeight1,[range(cell_weight1)]},
-              {label,?__(59,"W2")},{text,CellWeight2,[range(cell_weight2)]},
-              {label,?__(60,"W3")},{text,CellWeight3,[range(cell_weight3)]},
-              {label,?__(61,"W4")},{text,CellWeight4,[range(cell_weight4)]}
-              ],
-              [hook(open, [member,{?TAG,type,M},voronoi])]}
-
-              ]}
-
+                        {hframe,[
+                            {hframe,[
+                                {label,?__(58,"W1")},{text,CellWeight1,[range(cell_weight1)]},
+                                {label,?__(59,"W2")},{text,CellWeight2,[range(cell_weight2)]},
+                                {label,?__(60,"W3")},{text,CellWeight3,[range(cell_weight3)]},
+                                {label,?__(61,"W4")},{text,CellWeight4,[range(cell_weight4)]}
+                            ],[hook(open, [member,{?TAG,type,M},voronoi])]
+                            }
+                        ]}
 %%% End Voronoi Line 3
 
 %%% Close Voronoi
-
-             ],
-            [hook(open, [member,{?TAG,type,M},voronoi])]},
+                    ],[hook(open, [member,{?TAG,type,M},voronoi])]
+                    },
 
 %%% End Voronoi Specific Procedurals
 
-
-
 %%% Start Musgrave Specific Procedurals
-         {vframe,[
-           {hframe,
-            [
-
+                    {vframe,[
+                        {hframe,[
 
 %%% Start Musgrave Type Select
-
-               {menu,[{?__(63,"Multifractal"),multifractal},
-        {?__(64,"Ridged"),ridgedmf},
-        {?__(65,"Hybrid"),hybridmf},
-        {?__(66,"FBM"),fBm}
-        ],
-          MusgraveType,
-         [hook(enable, {?TAG,enabled,M})]},
-
+                            {menu,[
+                                {?__(63,"Multifractal"),multifractal},
+                                {?__(64,"Ridged"),ridgedmf},
+                                {?__(65,"Hybrid"),hybridmf},
+                                {?__(66,"FBM"),fBm}
+                            ],MusgraveType,[hook(enable, {?TAG,enabled,M})]
+                            },
 %%% End Musgrave Type Select
-
-
-
-        {label,?__(77,"Noise Size")},{text,MusgraveNoiseSize,[range(musgrave_noisesize)]},
-        {label,?__(78,"Intensity")},{text,MusgraveIntensity,[range(musgrave_intensity)]}
+                            {label,?__(77,"Noise Size")},{text,MusgraveNoiseSize,[range(musgrave_noisesize)]},
+                            {label,?__(78,"Intensity")},{text,MusgraveIntensity,[range(musgrave_intensity)]}
 
 %%% Close Musgrave Line 1
-             ],
-            [hook(open, [member,{?TAG,type,M},musgrave])]},
+                        ],[hook(open, [member,{?TAG,type,M},musgrave])]
+                        },
 %%% End Musgrave Line 1
 
-
 %%% Start Musgrave Line 2
-
-        {hframe,
-             [{hframe,
-              [{label,?__(79,"Contrast (H)")},{text,MusgraveContrast,[range(musgrave_contrast)]},
-              {label,?__(80,"Lacunarity")},{text,MusgraveLacunarity,[range(musgrave_lacunarity)]},
-              {label,?__(81,"Octaves")},{text,MusgraveOctaves,[range(musgrave_octaves)]}
-              ],
-              [hook(open, [member,{?TAG,type,M},musgrave])]}
-
-              ]}
-
+                        {hframe,[
+                            {hframe,[
+                                {label,?__(79,"Contrast (H)")},{text,MusgraveContrast,[range(musgrave_contrast)]},
+                                {label,?__(80,"Lacunarity")},{text,MusgraveLacunarity,[range(musgrave_lacunarity)]},
+                                {label,?__(81,"Octaves")},{text,MusgraveOctaves,[range(musgrave_octaves)]}
+                            ],[hook(open, [member,{?TAG,type,M},musgrave])]
+                            }
+                        ]}
 %%% End Musgrave Line 2
 
-
-
 %%% Close Musgrave
-             ],
-            [hook(open, [member,{?TAG,type,M},musgrave])]},
-
-
+                    ],[hook(open, [member,{?TAG,type,M},musgrave])]
+                    },
 %%% End Musgrave Specific Procedurals
 
 %%%% Start Distorted Noise Specific Procedurals
 
 
-         {vframe,[
-           {hframe,
-            [
-
+                    {vframe,[
+                        {hframe,[
 %%% Start Distorted Noise Type Select
 
-               {menu,[{?__(87,"Blender-Distort"),blender},
-        {?__(88,"Cellnoise"),cellnoise},
-        {?__(89,"New Perlin"),newperlin},
-        {?__(90,"Perlin"),stdperlin},
-        {?__(91,"Voronoi Crackle"),voronoi_crackle},
-        {?__(92,"Voronoi F1"),voronoi_f1},
-        {?__(93,"Voronoi F2"),voronoi_f2},
-        {?__(94,"Voronoi F3"),voronoi_f3},
-        {?__(95,"Voronoi F4"),voronoi_f4},
-        {?__(96,"Voronoi F1F2"),voronoi_f2f1}
-        ],
-          DistortionType,
-         [hook(enable, {?TAG,enabled,M})]},
-
+                            {menu,[
+                                {?__(87,"Blender-Distort"),blender},
+                                {?__(88,"Cellnoise"),cellnoise},
+                                {?__(89,"New Perlin"),newperlin},
+                                {?__(90,"Perlin"),stdperlin},
+                                {?__(91,"Voronoi Crackle"),voronoi_crackle},
+                                {?__(92,"Voronoi F1"),voronoi_f1},
+                                {?__(93,"Voronoi F2"),voronoi_f2},
+                                {?__(94,"Voronoi F3"),voronoi_f3},
+                                {?__(95,"Voronoi F4"),voronoi_f4},
+                                {?__(96,"Voronoi F1F2"),voronoi_f2f1}
+                            ],DistortionType,[hook(enable, {?TAG,enabled,M})]
+                            },
 %%% End Distorted Noise Type Select
-
-        {label,?__(107,"Noise Size")},{text,DistortionNoiseSize,[range(distortion_noisesize)]},
-        {label,?__(108,"Distortion")},{text,DistortionIntensity,[range(distortion_intensity)]}
-
+                            {label,?__(107,"Noise Size")},{text,DistortionNoiseSize,[range(distortion_noisesize)]},
+                            {label,?__(108,"Distortion")},{text,DistortionIntensity,[range(distortion_intensity)]}
 
 %%% Close Distorted Noise Line 1
-             ],
-            [hook(open, [member,{?TAG,type,M},distorted_noise])]}
+                        ],[hook(open, [member,{?TAG,type,M},distorted_noise])]
+                        }
 %%% End Distorted Noise Line 1
 
 
 %%% Close Distorted Noise
-             ],
-            [hook(open, [member,{?TAG,type,M},distorted_noise])]}
-
-
+                    ],[hook(open, [member,{?TAG,type,M},distorted_noise])]
+                    }
 
 %%%% End Distorted Noise
-        ]}
+                ]}
+            ]}
+            ],[hook(enable, {?TAG,enabled,M})]
+            }],[{title,?__(35,"Modulator")++" "++integer_to_list(M)++mod_legend(Enabled, Mode, Type)},
+                {minimized,Minimized}]
+        }];
 
-            ]}],
-        [hook(enable, {?TAG,enabled,M})]}],
-      [{title,
-        ?__(35,"Modulator")++" "++integer_to_list(M)++mod_legend(Enabled, Mode, Type)},
-       {minimized,Minimized}]}];
 modulator_dialog(_Modulator, _Maps, _) ->
     []. % Discard old modulators that anyone may have
 
@@ -1840,28 +1828,28 @@ light_dialog(_Name, point, Ps) ->
 
     ArealightRadius = proplists:get_value(arealight_radius, Ps,
                                            ?DEF_AREALIGHT_RADIUS),
-    ArealightSamples = proplists:get_value(arealight_samples, Ps,
-                                           ?DEF_AREALIGHT_SAMPLES),
+    ArealightSamples =
+        proplists:get_value(arealight_samples, Ps, ?DEF_AREALIGHT_SAMPLES),
 
-
-    [{vframe,
-      [{hradio,[{?__(3,"Pointlight"),pointlight},
-                {?__(5,"Spherelight"),spherelight}],Type,[key(type),layout]},
-       {?__(11,"Cast Shadows"),CastShadows,
-        [key(cast_shadows),
-         hook(open, [member,?KEY(type),pointlight])]},
-       {vframe,
-        [{hframe,[{label,?__(15,"Radius")},
-                  {text,ArealightRadius,[range(arealight_radius),
-                                         key(arealight_radius)]}
-                  ]},
-         {hframe,[{label,?__(17,"Samples")},
-                  {text,ArealightSamples,[range(samples),
-                                          key(arealight_samples)]}
-
-]
-         }],
-        [hook(open, [member,?KEY(type),spherelight])]}]}];
+    [{vframe,[
+        {hradio,[
+            {?__(3,"Pointlight"),pointlight},
+            {?__(5,"Spherelight"),spherelight}
+        ],Type,[key(type),layout]
+        },
+        {?__(11,"Cast Shadows"),CastShadows,[key(cast_shadows),hook(open,[member,?KEY(type),pointlight])]},
+        {vframe,[
+            {hframe,[
+                {label,?__(15,"Radius")},
+                {text,ArealightRadius,[range(arealight_radius), key(arealight_radius)]}
+            ]},
+            {hframe,[
+                {label,?__(17,"Samples")},
+                {text,ArealightSamples,[range(samples),key(arealight_samples)]}
+            ]}
+        ],[hook(open, [member,?KEY(type),spherelight])]
+        }
+    ]}];
 
 %% Spot Light Dialog
 light_dialog(_Name, spot, Ps) ->
@@ -1878,46 +1866,45 @@ light_dialog(_Name, spot, Ps) ->
                                       ?DEF_SPOT_IES_SAMPLES),
 
 
-    BrowsePropsIES = [{dialog_type,open_dialog},
-                       {extensions,[{".ies",?__(99,"IES")}
-                                    ]}],
+    BrowsePropsIES = [
+        {dialog_type,open_dialog},
+        {extensions,[{".ies",?__(99,"IES")}]}
+    ],
 
     %%
-    [{hframe,
-      [{hradio,[{?__(29,"Spotlight"),spotlight},
-                {?__(30,"IES"),spot_ies}],Type,[layout,key(type)]}
-                ]},
-     {vframe,
-      [{hframe,[{?__(97,"Photon Only"),SpotPhotonOnly,[key(spot_photon_only)]},
-              {?__(34,"Cast Shadows"),CastShadows,[key(cast_shadows)]},
+    [
+        {hframe,[
+            {hradio,[
+                {?__(29,"Spotlight"),spotlight},
+                {?__(30,"IES"),spot_ies}
+            ],Type,[layout,key(type)]
+            }
+        ]},
+        {vframe,[
+            {hframe,[
+                {?__(97,"Photon Only"),SpotPhotonOnly,[key(spot_photon_only)]},
+                {?__(34,"Cast Shadows"),CastShadows,[key(cast_shadows)]},
                 {?__(98,"Soft Shadows"),SpotSoftShadows,[key(spot_soft_shadows)]},
-   {label,?__(35,"Samples")},{text,SpotIESSamples,[range(spot_ies_samples),key(spot_ies_samples),
-
- hook(enable, ['not',[member,?KEY(spot_soft_shadows),
-                                            ?DEF_SPOT_SOFT_SHADOWS]])
-
-   ]}
-
-
-                ]}
-                ],
-      [hook(open, [member,?KEY(type), spotlight])]},
-     {vframe,[{hframe,[{label,?__(100,"Filename")},
-                {button,{text,SpotIESFilename,
-                         [key(spot_ies_filename),
-                          {props,BrowsePropsIES}]}}]},
-
-     {hframe,
-     [{hframe,[{?__(38,"Soft Shadows"),SpotSoftShadows,[key(spot_soft_shadows)]},
-   {label,?__(37,"Samples")},{text,SpotIESSamples,[range(spot_ies_samples),key(spot_ies_samples),
-
- hook(enable, ['not',[member,?KEY(spot_soft_shadows),
-                                            ?DEF_SPOT_SOFT_SHADOWS]])]}
-
-               ]}
-]}],
-
-      [hook(open, [member,?KEY(type), spot_ies])]}];
+                {label,?__(35,"Samples")},{text,SpotIESSamples,[range(spot_ies_samples),key(spot_ies_samples),
+                    hook(enable, ['not',[member,?KEY(spot_soft_shadows), ?DEF_SPOT_SOFT_SHADOWS]])]}
+            ]}
+        ],[hook(open, [member,?KEY(type), spotlight])]
+        },
+    {vframe,[
+        {hframe,[
+            {label,?__(100,"Filename")},
+            {button,{text,SpotIESFilename, [key(spot_ies_filename),{props,BrowsePropsIES}]}}
+        ]},
+        {hframe,[
+            {hframe,[
+                {?__(38,"Soft Shadows"),SpotSoftShadows,[key(spot_soft_shadows)]},
+                {label,?__(37,"Samples")},{text,SpotIESSamples,[range(spot_ies_samples),key(spot_ies_samples),
+                     hook(enable, ['not',[member,?KEY(spot_soft_shadows),?DEF_SPOT_SOFT_SHADOWS]])]}
+            ]}
+        ]}
+    ],[hook(open, [member,?KEY(type), spot_ies])]
+    }
+    ];
 
 %% Infinite Light Dialog
 light_dialog(_Name, infinite, Ps) ->
@@ -1946,118 +1933,102 @@ light_dialog(_Name, infinite, Ps) ->
     D_var = proplists:get_value(d_var, Ps, ?DEF_SUNSKY_VAR),
     E_var = proplists:get_value(e_var, Ps, ?DEF_SUNSKY_VAR),
     %%
-    [{vframe,
-
     [
-{hradio,[{?__(110,"Sunlight"),sunlight},
-                {?__(111,"Directional"),directional}],Type,[key(type),layout]},
-
-
-
-%% Sunlight Settings Start
-       {hframe,[{label,?__(114,"Samples")},
-                  {text,SunSamples,[key(sun_samples),range(sun_samples)]},
-                {label,?__(115,"Angle")},
-                 {text,SunAngle,[key(sun_angle),range(sun_angle)]}
-                ],
-        [hook(open, [member,?KEY(type),sunlight])]},
-
-       {?__(42,"Cast Shadows"),CastShadows,
-        [key(cast_shadows),
-         hook(open, [member,?KEY(type),sunlight])]},
+        {vframe,[
+            {hradio,[
+                {?__(110,"Sunlight"),sunlight},
+                {?__(111,"Directional"),directional}
+            ],Type,[key(type),layout]
+            },
+            %% Sunlight Settings Start
+            {hframe,[
+                {label,?__(114,"Samples")}, {text,SunSamples,[key(sun_samples),range(sun_samples)]},
+                {label,?__(115,"Angle")}, {text,SunAngle,[key(sun_angle),range(sun_angle)]}
+            ],[hook(open, [member,?KEY(type),sunlight])]
+            },
+            {?__(42,"Cast Shadows"),CastShadows,[key(cast_shadows), hook(open, [member,?KEY(type),sunlight])]},
 
 %% Sunlight Settings End
-
-                {?__(112,"Infinite"),InfiniteTrue,
-                [key(infinite_true),
-                hook(open, [member,?KEY(type),directional])]},
-
+            {?__(112,"Infinite"),InfiniteTrue,[key(infinite_true),hook(open, [member,?KEY(type),directional])]},
 
 %% Directional Semi-infinite Radius
-       {hframe,[{label,?__(113,"Semi-infinite Radius")},
-%% Start Enable Disable Text field
-                {text,InfiniteRadius,[range(infinite_radius),key(infinite_radius),
- hook(enable, ['not',[member,?KEY(infinite_true),
-                                            ?DEF_INFINITE_TRUE]])]}
-%% End Enable Disable Text field
-                ],
-        [hook(open, [member,?KEY(type),directional])]},
-
+            {hframe,[
+                {label,?__(113,"Semi-infinite Radius")},{text,InfiniteRadius,[range(infinite_radius),key(infinite_radius),
+                hook(enable, ['not',[member,?KEY(infinite_true),?DEF_INFINITE_TRUE]])]}
+            ],[hook(open, [member,?KEY(type),directional])]
+            },
 %% End Directional Semi-infinite Radius
 
-
-     {vframe,
-      [{hradio,[{?__(43,"Constant"),constant},
-                {?__(101,"Gradient"),gradientback},
-                {?__(44,"Sunsky"),sunsky},
-                {?__(45,"None"), undefined}],Bg,[layout,key(background)]},
+            {vframe,[
+                {hradio,[
+                    {?__(43,"Constant"),constant},
+                    {?__(101,"Gradient"),gradientback},
+                    {?__(44,"Sunsky"),sunsky},
+                    {?__(45,"None"), undefined}
+                ],Bg,[layout,key(background)]
+                },
 %% Constant Background
-       {hframe,[{label,?__(46,"Color")},
-                {color,BgColor,[key(background_color)]},
-                {label,?__(104,"Power")},
-                  {text,ConstantBackPower,[key(constant_back_power),range(power)]}
-                ],
-        [hook(open, [member,?KEY(background),constant])]},
+                {hframe,[
+                    {label,?__(46,"Color")},{color,BgColor,[key(background_color)]},
+                    {label,?__(104,"Power")},{text,ConstantBackPower,[key(constant_back_power),range(power)]}
+                ],[hook(open, [member,?KEY(background),constant])]
+                },
 %% Gradient Background
-       {hframe,[{label,?__(102,"Horizon Color")},
-                {color,HorizonColor,[key(horizon_color)]},
-                {label,?__(103,"Zenith Color")},
-                {color,ZenithColor,[key(zenith_color)]},
-                {label,?__(104,"Power")},
-                  {text,GradientBackPower,[key(gradient_back_power),range(power)]}
-                ],
-        [hook(open, [member,?KEY(background),gradientback])]},
-
+                {hframe,[
+                    {label,?__(102,"Horizon Color")},{color,HorizonColor,[key(horizon_color)]},
+                    {label,?__(103,"Zenith Color")},{color,ZenithColor,[key(zenith_color)]},
+                    {label,?__(104,"Power")},{text,GradientBackPower,[key(gradient_back_power),range(power)]}
+                ],[hook(open, [member,?KEY(background),gradientback])]
+                },
 %% Sunsky Background
-       {vframe,
-        [{hframe,[]},
-         {hframe,
-          [{vframe,[{label,?__(47,"Turbidity")},
-                    {label,"a: "++?__(48,"Horizon Brightness")},
-                    {label,"b: "++?__(49,"Horizon Spread")},
-                    {label,"c: "++?__(50,"Sun Brightness")},
-                    {label,"d: "++?__(51,"Sun Contraction")},
-                    {label,"e: "++?__(52,"Sun Backscatter")}]},
-           {vframe,[{text,Turbidity,[range(turbidity),key(turbidity)]},
-                    {text,A_var,[key(a_var)]},
-                    {text,B_var,[key(b_var)]},
-                    {text,C_var,[key(c_var)]},
-                    {text,D_var,[key(d_var)]},
-                    {text,E_var,[key(e_var)]}]}]},
-
+                {vframe,[
+                    {hframe,[]},
+                    {hframe,[
+                        {vframe,[
+                            {label,?__(47,"Turbidity")},
+                            {label,"a: "++?__(48,"Horizon Brightness")},
+                            {label,"b: "++?__(49,"Horizon Spread")},
+                            {label,"c: "++?__(50,"Sun Brightness")},
+                            {label,"d: "++?__(51,"Sun Contraction")},
+                            {label,"e: "++?__(52,"Sun Backscatter")}
+                        ]},
+                        {vframe,[
+                            {text,Turbidity,[range(turbidity),key(turbidity)]},
+                            {text,A_var,[key(a_var)]},
+                            {text,B_var,[key(b_var)]},
+                            {text,C_var,[key(c_var)]},
+                            {text,D_var,[key(d_var)]},
+                            {text,E_var,[key(e_var)]}
+                        ]}
+                    ]},
 %% Start Skylight Settings
-                {?__(116,"Skylight"),SkyBackgroundLight,
-                [key(sky_background_light),
-                hook(open, [member,?KEY(background),sunsky])]},
-
+                    {?__(116,"Skylight"),SkyBackgroundLight,[key(sky_background_light),
+                        hook(open, [member,?KEY(background),sunsky])]},
 %% Skylight Power
-       {hframe,[{label,?__(117,"Power")},
-%% Start Enable Disable Text field
-                {text,SkyBackgroundPower,[range(sky_background_power),key(sky_background_power),
- hook(enable, ['not',[member,?KEY(sky_background_light),
-                                            ?DEF_SKY_BACKGROUND_LIGHT]])]}
+                    {hframe,[
+                        {label,?__(117,"Power")},
+                        {text,SkyBackgroundPower,[range(sky_background_power),key(sky_background_power),
+                            hook(enable, ['not',[member,?KEY(sky_background_light), ?DEF_SKY_BACKGROUND_LIGHT]])]}
 %% End Enable Disable Text field
-                ],
-        [hook(open, [member,?KEY(background),sunsky])]},
-%% End Skylight Power
-
+                    ],[hook(open, [member,?KEY(background),sunsky])]
+                    },
 %% Skylight Samples
-       {hframe,[{label,?__(118,"Samples")},
-%% Start Enable Disable Text field
-                {text,SkyBackgroundSamples,[range(sky_background_samples),key(sky_background_samples),
- hook(enable, ['not',[member,?KEY(sky_background_light),
-                                            ?DEF_SKY_BACKGROUND_LIGHT]])]}
+                    {hframe,[
+                        {label,?__(118,"Samples")},
+                        {text,SkyBackgroundSamples,[range(sky_background_samples),key(sky_background_samples),
+                            hook(enable, ['not',[member,?KEY(sky_background_light), ?DEF_SKY_BACKGROUND_LIGHT]])]}
 %% End Enable Disable Text field
-                ],
-        [hook(open, [member,?KEY(background),sunsky])]}
+                    ],[hook(open, [member,?KEY(background),sunsky])]
+                    }
 %% End Skylight Samples
 
 %% End Skylight Settings
-
-
-                    ],
-        [hook(open, [member,?KEY(background),sunsky])]}],
-      [{title,?__(53,"Background")}]}]}];
+                ],[hook(open, [member,?KEY(background),sunsky])]
+                }
+            ],[{title,?__(53,"Background")}]
+            }
+        ]}
+    ];
 
 %% Ambient Light Dialog
 light_dialog(_Name, ambient, Ps) ->
@@ -2094,10 +2065,7 @@ light_dialog(_Name, ambient, Ps) ->
     Samples = proplists:get_value(samples, Ps, ?DEF_SAMPLES),
 
 
-
-
     %%
-
 
 
     %%
@@ -3903,8 +3871,6 @@ export_rough_glass_shader(F, Name, Mat, ExportDir, YafaRay) ->
 
                     [DispersionPower,DispersionSamples
                     ])
-
-
     end,
 
      FakeShadows =
@@ -4258,14 +4224,13 @@ export_texture(F, Name, Type, Ps) ->
 
 
             %% Coordinate rotation, see export_pos/3.
-            println(F, " <noise_type1 sval=\"~s\"/>"++
-                        " <noise_type2 sval=\"~s\"/>~n"
-                     "    <size fval=\"~.6f\"/>"++
-                     "    <distort fval=\"~.6f\"/>~n",
-                    [NoiseBasis,DistortionType,DistortionNoiseSize,
-                    DistortionIntensity]);
-
-
+            println(F,
+                "       <noise_type1 sval=\""++NoiseBasis++"\"/>~n"
+                "       <noise_type2 sval=\""++DistortionType++"\"/>~n"
+                "       <size fval=\"~.6f\"/>~n"
+                "       <distort fval=\"~.6f\"/>~n",
+                [DistortionNoiseSize,DistortionIntensity]
+                %%[NoiseBasis,DistortionType,DistortionNoiseSize,DistortionIntensity]);
         _ ->
             ok
     end,
@@ -4810,9 +4775,10 @@ export_light(F, Name, point, OpenGL, YafaRay) ->
 
 
 
-            println(F,"       <radius fval=\"~.10f\"/>"++
-                            "~n       <samples ival=\"~w\"/>
-                                ", [ArealightRadius,ArealightSamples]
+            println(F,
+                    "   <radius fval=\"~.10f\"/>~n"++
+                    "   <samples ival=\"~w\"/>
+                    ", [ArealightRadius,ArealightSamples]
                     )
     end,
     export_pos(F, from, Position),
@@ -4892,8 +4858,6 @@ export_light(F, Name, infinite, OpenGL, YafaRay) ->
 
 
 
-
-
 %% Export Spot Light
 
 export_light(F, Name, spot, OpenGL, YafaRay) ->
@@ -4922,9 +4886,16 @@ export_light(F, Name, spot, OpenGL, YafaRay) ->
             SpotExponent =
                 proplists:get_value(spot_exponent, OpenGL, ?DEF_SPOT_EXPONENT),
             Blend = proplists:get_value(blend, YafaRay, ?DEF_BLEND),
-            print(F, "<type sval=\"spotlight\"/> <cast_shadows bval=\"~s\"/> <photon_only bval=\"~s\"/> <size ival=\"~.3f\"/>~n"++
-                  "       <beam_falloff fval=\"~.10f\"/> <blend fval=\"~.3f\"/> <soft_shadows bval=\"~s\"/> <samples ival=\"~w\"/>",
-                  [format(CastShadows), SpotPhotonOnly, ConeAngle, SpotExponent, Blend,SpotSoftShadows,SpotIESSamples]);
+            print(F,
+                "       <type sval=\"spotlight\"/>~n"
+                "       <cast_shadows bval=\"~s\"/>~n"
+                "       <photon_only bval=\"~s\"/>~n"
+                "       <size ival=\"~.3f\"/>~n"
+                "       <beam_falloff fval=\"~.10f\"/>~n"
+                "       <blend fval=\"~.3f\"/>~n"
+                "       <soft_shadows bval=\"~s\"/>~n"
+                "       <samples ival=\"~w\"/>",
+                [format(CastShadows), SpotPhotonOnly, ConeAngle, SpotExponent, Blend,SpotSoftShadows,SpotIESSamples]);
 
         spot_ies ->
 
@@ -4938,9 +4909,13 @@ export_light(F, Name, spot, OpenGL, YafaRay) ->
             SpotIESSamples = proplists:get_value(spot_ies_samples, YafaRay,
                                       ?DEF_SPOT_IES_SAMPLES),
 
-            println(F, "<type sval=\"ieslight\"/> <angle fval=\"~.3f\"/> <soft_shadows bval=\"~s\"/> <samples ival=\"~w\"/>~n"++
-                    "       <file sval=\"~s\"/>",
-                    [ConeAngle,SpotSoftShadows,SpotIESSamples,SpotIESFilename])
+            println(F,
+                "       <type sval=\"ieslight\"/>~n"
+                "       <angle fval=\"~.3f\"/>~n"
+                "       <soft_shadows bval=\"~s\"/>~n"
+                "       <samples ival=\"~w\"/>~n"
+                "       <file sval=\"~s\"/>",
+                [ConeAngle,SpotSoftShadows,SpotIESSamples,SpotIESFilename])
     end,
     export_pos(F, from, Position),
     export_pos(F, to, AimPoint),

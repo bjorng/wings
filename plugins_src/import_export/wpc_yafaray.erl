@@ -4224,13 +4224,14 @@ export_texture(F, Name, Type, Ps) ->
 
 
             %% Coordinate rotation, see export_pos/3.
-            println(F,
-                "       <noise_type1 sval=\""++NoiseBasis++"\"/>~n"
-                "       <noise_type2 sval=\""++DistortionType++"\"/>~n"
-                "       <size fval=\"~.6f\"/>~n"
-                "       <distort fval=\"~.6f\"/>~n",
-                [DistortionNoiseSize,DistortionIntensity]
-                %%[NoiseBasis,DistortionType,DistortionNoiseSize,DistortionIntensity]);
+            println(F, " <noise_type1 sval=\"~s\"/>"++
+                        " <noise_type2 sval=\"~s\"/>~n"
+                     "    <size fval=\"~.6f\"/>"++
+                     "    <distort fval=\"~.6f\"/>~n",
+                    [NoiseBasis,DistortionType,DistortionNoiseSize,
+                    DistortionIntensity]);
+
+
         _ ->
             ok
     end,

@@ -2765,14 +2765,14 @@ export_dialog_qs(Op,
                     }
                 ],[hook(open, [member,render_format,exr])]
                 }
-            ],[{title,?__(13,"Output")}]
+            ],[{title,?__(13,"Image Output")}]
             },
             {hframe,[
                 {vframe,[
                     {hframe,[
                         {vframe,[
-                            {label,?__(14,"AA_passes")},
-                            {label,?__(15,"AA_minsamples")}
+                            {label,?__(14,"AA. Passes")},
+                            {label,?__(15,"Min. Samples")}
                         ]},
                         {vframe,[
                             {text,AA_passes,[range(aa_passes),{key,aa_passes}]},
@@ -2784,8 +2784,8 @@ export_dialog_qs(Op,
                 {vframe,[
                     {hframe,[
                         {vframe,[
-                            {label,?__(17,"AA_threshold")},
-                            {label,?__(18,"AA_pixelwidth")}
+                            {label,?__(17,"Threshold")},
+                            {label,?__(18,"Pixelwidth")}
                         ]},
                         {vframe,[
                             {text,AA_threshold,[range(aa_threshold),{key,aa_threshold}]},
@@ -3698,23 +3698,29 @@ export_glass_shader(F, Name, Mat, ExportDir, YafaRay) ->
     OpenGL = proplists:get_value(opengl, Mat),
     Maps = proplists:get_value(maps, Mat, []),
     Modulators = proplists:get_value(modulators, YafaRay, def_modulators(Maps)),
+    %%
     foldl(fun ({modulator,Ps}=M, N) when is_list(Ps) ->
-                  case export_texture(F, [Name,$_,format(N)],
-                                      Maps, ExportDir, M) of
-                      off -> N+1;
-                      ok ->
-                          println(F),
-                          N+1
-                  end;
-              (_, N) ->
-                  N % Ignore old modulators
-          end, 1, Modulators),
-    println(F, "<material name=\"~s\">~n"++
-            "<type sval=\"glass\"/>", [Name]),
+        case export_texture(F, [Name,$_,format(N)],
+                            Maps, ExportDir, M) of
+            off -> N+1;
+            ok ->
+                println(F),
+                N+1
+        end;
+        (_, N) ->
+            N % Ignore old modulators
+    end, 1, Modulators),
+    println(F,
+        "<material name=\"~s\">~n"
+        "       <type sval=\"glass\"/>",
+        [Name]),
+
     DiffuseA = {_,_,_,Opacity} = proplists:get_value(diffuse, OpenGL),
 
     Specular = alpha(proplists:get_value(specular, OpenGL)),
+
     DefReflected = Specular,
+
     DefTransmitted = def_transmitted(DiffuseA),
 
     %% XXX Wings scaling of shininess is weird. Commonly this value
@@ -3735,63 +3741,58 @@ export_glass_shader(F, Name, Mat, ExportDir, YafaRay) ->
 
     DefAbsorptionColor = def_absorption_color(proplists:get_value(diffuse, OpenGL)),
 
-    AbsorptionColor =
-        proplists:get_value(absorption_color, YafaRay, DefAbsorptionColor),
+    AbsorptionColor = proplists:get_value(absorption_color, YafaRay, DefAbsorptionColor),
 
-
-  case AbsorptionColor of
-    [ ] -> ok;
-    {_AbsR,_AbsG,_AbsB} ->
-        AbsD =
-        proplists:get_value(absorption_dist, YafaRay,
-                    ?DEF_ABSORPTION_DIST),
+    case AbsorptionColor of
+        [ ] -> ok;
+        {_AbsR,_AbsG,_AbsB} ->
+            AbsD =
+                proplists:get_value(absorption_dist, YafaRay, ?DEF_ABSORPTION_DIST),
+        %%
         export_rgb(F, absorption,
                proplists:get_value(absorption_color, YafaRay, AbsorptionColor)),
 
-            println(F, "<absorption_dist fval=\"~.10f\"/>"
-            "        <transmit_filter fval=\"~.10f\"/>~n"
-
-            ,[AbsD,TransmitFilter])
-
+            println(F,
+                "       <absorption_dist fval=\"~.10f\"/>~n"
+                "       <transmit_filter fval=\"~.10f\"/>~n",
+                [AbsD,TransmitFilter])
     end,
     DispersionPower =
         proplists:get_value(dispersion_power, YafaRay, ?DEF_DISPERSION_POWER),
+    %%
     case DispersionPower of
         0.0 -> ok;
         _   ->
             DispersionSamples =
-                proplists:get_value(dispersion_samples, YafaRay,
-                                    ?DEF_DISPERSION_SAMPLES),
+                proplists:get_value(dispersion_samples, YafaRay, ?DEF_DISPERSION_SAMPLES),
 
-            println(F, "        <dispersion_power fval=\"~.10f\"/>~n"
-                    "        <dispersion_samples ival=\"~w\"/>~n",
-
-                    [DispersionPower,DispersionSamples
-                    ])
-
-
+            println(F,
+                "       <dispersion_power fval=\"~.10f\"/>~n"
+                "       <dispersion_samples ival=\"~w\"/>~n",
+                [DispersionPower,DispersionSamples])
     end,
 
     FakeShadows =
         proplists:get_value(fake_shadows, YafaRay, ?DEF_FAKE_SHADOWS),
 
-    println(F, "        <IOR fval=\"~.10f\"/>~n"
-                "        <glass_internal_reflect_depth ival=\"~w\"/>~n"
-                "           <fake_shadows bval=\"~s\"/>~n"
+    println(F,
+        "       <IOR fval=\"~.10f\"/>~n"
+        "       <glass_internal_reflect_depth ival=\"~w\"/>~n"
+        "       <fake_shadows bval=\"~s\"/>~n"
+        "",
+        [IOR,Glass_IR_Depth,format(FakeShadows)]),
 
-            "",
-            [IOR,Glass_IR_Depth,format(FakeShadows)]),
     foldl(fun ({modulator,Ps}=M, N) when is_list(Ps) ->
-                  case export_modulator(F, [Name,$_,format(N)],
-                                        Maps, M, Opacity) of
-                      off -> N+1;
-                      ok ->
-                          println(F),
-                          N+1
-                  end;
-              (_, N) ->
-                  N % Ignore old modulators
-          end, 1, Modulators),
+                case export_modulator(F, [Name,$_,format(N)],Maps, M, Opacity) of
+
+                    off -> N+1;
+                    ok ->
+                        println(F),
+                        N+1
+                end;
+            (_, N) ->
+                N % Ignore old modulators
+        end, 1, Modulators),
     println(F, "</material>").
 
 
@@ -4001,17 +4002,18 @@ export_blend_mat_shader(F, Name, Mat, ExportDir, YafaRay) ->
     OpenGL = proplists:get_value(opengl, Mat),
     Maps = proplists:get_value(maps, Mat, []),
     Modulators = proplists:get_value(modulators, YafaRay, def_modulators(Maps)),
+    %%
     foldl(fun ({modulator,Ps}=M, N) when is_list(Ps) ->
-                  case export_texture(F, [Name,$_,format(N)],
-                                      Maps, ExportDir, M) of
-                      off -> N+1;
-                      ok ->
-                          println(F),
-                          N+1
-                  end;
-              (_, N) ->
-                  N % Ignore old modulators
-          end, 1, Modulators),
+        case export_texture(F, [Name,$_,format(N)], Maps, ExportDir, M) of
+            off -> N+1;
+            ok ->
+                println(F),
+                N+1
+        end;
+        (_, N) ->
+            N % Ignore old modulators
+        end, 1, Modulators),
+
     println(F, "<material name=\"~s\">~n"++
             "<type sval=\"blend_mat\"/>", [Name]),
     DiffuseA = {_,_,_,Opacity} = proplists:get_value(diffuse, OpenGL),
@@ -4044,16 +4046,15 @@ export_blend_mat_shader(F, Name, Mat, ExportDir, YafaRay) ->
             "        <blend_value fval=\"~.10f\"/>~n",
             [Blend_Mat1,Blend_Mat2,Blend_Value]),
     foldl(fun ({modulator,Ps}=M, N) when is_list(Ps) ->
-                  case export_modulator(F, [Name,$_,format(N)],
-                                        Maps, M, Opacity) of
-                      off -> N+1;
-                      ok ->
-                          println(F),
-                          N+1
-                  end;
-              (_, N) ->
-                  N % Ignore old modulators
-          end, 1, Modulators),
+        case export_modulator(F, [Name,$_,format(N)], Maps, M, Opacity) of
+            off -> N+1;
+            ok ->
+                println(F),
+                N+1
+        end;
+        (_, N) ->
+            N % Ignore old modulators
+    end, 1, Modulators),
     println(F, "</material>").
 
 %%% End Blend Materials Export
@@ -4087,8 +4088,6 @@ export_texture(F, Name, Maps, ExportDir, {modulator,Ps}) when is_list(Ps) ->
     end.
 
 
-
-
 export_texture(F, Name, image, Filename) ->
     println(F,
         "<texture name=\"~s\">~n"
@@ -4101,30 +4100,38 @@ export_texture(F, Name, Type, Ps) ->
     %%% Start Work-Around for YafaRay Texture Name TEmytex Requirement for Noise Volume
 
     TextureNameChg = re:replace(Name,"w_TEmytex_1","TEmytex",[global]),
-    println(F, "<texture name=\"~s\"> <type sval=\"~s\"/>", [TextureNameChg,format(Type)]),
+    println(F,
+        "<texture name=\"~s\">~n"
+        "       <type sval=\"~s\"/>",
+        [TextureNameChg,format(Type)]),
 
     %%% End Work-Around for YafaRay Texture Name TEmytex Requirement for Noise Volume
 
     Color1 = proplists:get_value(color1, Ps, ?DEF_MOD_COLOR1),
+
     Color2 = proplists:get_value(color2, Ps, ?DEF_MOD_COLOR2),
+
     Hard = proplists:get_value(hard, Ps, ?DEF_MOD_HARD),
-    NoiseBasis =
-        proplists:get_value(noise_basis, Ps, ?DEF_MOD_NOISEBASIS),
-    NoiseSize =
-        proplists:get_value(noise_size, Ps, ?DEF_MOD_NOISESIZE),
+
+    NoiseBasis = proplists:get_value(noise_basis, Ps, ?DEF_MOD_NOISEBASIS),
+
+    NoiseSize = proplists:get_value(noise_size, Ps, ?DEF_MOD_NOISESIZE),
+
     export_rgb(F, color1, Color1),
     export_rgb(F, color2, Color2),
     println(F,
         "       <hard bval=\"~s\"/>~n"
         "       <noise_type sval=\"~s\"/>~n"
-        "       <size fval=\"~.6f\"/>", [format(Hard),NoiseBasis,NoiseSize]),
+        "       <size fval=\"~.6f\"/>",
+        [format(Hard),NoiseBasis,NoiseSize]),
 
     case Type of
 
-    clouds ->
-        Depth =
-            proplists:get_value(depth, Ps, ?DEF_MOD_DEPTH),
-            println(F, "  <depth ival=\"~w\"/>" , [Depth]);
+        clouds ->
+            Depth = proplists:get_value(depth, Ps, ?DEF_MOD_DEPTH),
+            println(F,
+                "       <depth ival=\"~w\"/>",
+                [Depth]);
 
         marble ->
             Depth = proplists:get_value(depth, Ps, ?DEF_MOD_DEPTH),
@@ -4135,7 +4142,12 @@ export_texture(F, Name, Type, Ps) ->
 
             Shape = proplists:get_value(shape, Ps, ?DEF_MOD_SHAPE),
 
-            println(F, "  <depth ival=\"~w\"/>" "      <turbulence fval=\"~.6f\"/>~n" "  <sharpness fval=\"~.6f\"/>" " <shape sval=\"~s\"/>", [Depth,Turbulence,Sharpness,Shape]);
+            println(F,
+                "       <depth ival=\"~w\"/>~n"
+                "       <turbulence fval=\"~.6f\"/>~n"
+                "       <sharpness fval=\"~.6f\"/>~n"
+                "       <shape sval=\"~s\"/>",
+                [Depth,Turbulence,Sharpness,Shape]);
         wood ->
             WoodType = proplists:get_value(wood_type, Ps, ?DEF_MOD_WOODTYPE),
 
@@ -4144,9 +4156,11 @@ export_texture(F, Name, Type, Ps) ->
             Shape = proplists:get_value(shape, Ps, ?DEF_MOD_SHAPE),
 
             %% Coordinate rotation, see export_pos/3.
-            println(F, " <wood_type sval=\"~s\"/>"++
-                     "    <turbulence fval=\"~.6f\"/>~n" " <shape sval=\"~s\"/>",
-                    [WoodType,Turbulence,Shape]);
+            println(F,
+                "       <wood_type sval=\"~s\"/>~n"
+                "       <turbulence fval=\"~.6f\"/>~n"
+                "       <shape sval=\"~s\"/>",
+                [WoodType,Turbulence,Shape]);
 
         voronoi ->
             CellType = proplists:get_value(cell_type, Ps, ?DEF_MOD_CELLTYPE),
@@ -4166,64 +4180,62 @@ export_texture(F, Name, Type, Ps) ->
             CellWeight4 = proplists:get_value(cell_weight4, Ps, ?DEF_MOD_CELL_WEIGHT4),
 
             %% Coordinate rotation, see export_pos/3.
-            println(F, " <color_type sval=\"~s\"/>"++
-                     "   <distance_metric sval=\"~s\"/>~n"
-                     "    <size fval=\"~.6f\"/>"++
-                     "    <intensity fval=\"~.6f\"/>~n"
-                     "    <weight1 fval=\"~.6f\"/>"++
-                     "    <weight2 fval=\"~.6f\"/>~n"
-                     "    <weight3 fval=\"~.6f\"/>"++
-                     "    <weight4 fval=\"~.6f\"/>",
-                    [CellType,CellShape,CellSize,Intensity,CellWeight1,CellWeight2,CellWeight3,CellWeight4]);
+            println(F,
+                "       <color_type sval=\"~s\"/>~n"
+                "       <distance_metric sval=\"~s\"/>~n"
+                "       <size fval=\"~.6f\"/>~n"
+                "       <intensity fval=\"~.6f\"/>~n"
+                "       <weight1 fval=\"~.6f\"/>~n"
+                "       <weight2 fval=\"~.6f\"/>~n"
+                "       <weight3 fval=\"~.6f\"/>~n"
+                "       <weight4 fval=\"~.6f\"/>",
+                [CellType,CellShape,CellSize,Intensity,CellWeight1,CellWeight2,CellWeight3,CellWeight4]);
 
         musgrave ->
-        MusgraveType = proplists:get_value(musgrave_type, Ps,
-                                        ?DEF_MOD_MUSGRAVE_TYPE),
+            MusgraveType = proplists:get_value(musgrave_type, Ps, ?DEF_MOD_MUSGRAVE_TYPE),
 
-        NoiseBasis = proplists:get_value(noise_basis, Ps, ?DEF_MOD_NOISEBASIS),
+            NoiseBasis = proplists:get_value(noise_basis, Ps, ?DEF_MOD_NOISEBASIS),
 
-        MusgraveNoiseSize = proplists:get_value(musgrave_noisesize, Ps, ?DEF_MOD_MUSGRAVE_NOISESIZE),
+            MusgraveNoiseSize = proplists:get_value(musgrave_noisesize, Ps, ?DEF_MOD_MUSGRAVE_NOISESIZE),
 
-        MusgraveIntensity = proplists:get_value(musgrave_intensity, Ps, ?DEF_MOD_MUSGRAVE_INTENSITY),
+            MusgraveIntensity = proplists:get_value(musgrave_intensity, Ps, ?DEF_MOD_MUSGRAVE_INTENSITY),
 
-        MusgraveContrast = proplists:get_value(musgrave_contrast, Ps, ?DEF_MOD_MUSGRAVE_CONTRAST),
+            MusgraveContrast = proplists:get_value(musgrave_contrast, Ps, ?DEF_MOD_MUSGRAVE_CONTRAST),
 
-        MusgraveLacunarity = proplists:get_value(musgrave_lacunarity, Ps, ?DEF_MOD_MUSGRAVE_LACUNARITY),
+            MusgraveLacunarity = proplists:get_value(musgrave_lacunarity, Ps, ?DEF_MOD_MUSGRAVE_LACUNARITY),
 
-        MusgraveOctaves = proplists:get_value(musgrave_octaves, Ps, ?DEF_MOD_MUSGRAVE_OCTAVES),
+            MusgraveOctaves = proplists:get_value(musgrave_octaves, Ps, ?DEF_MOD_MUSGRAVE_OCTAVES),
 
             %% Coordinate rotation, see export_pos/3.
-            println(F, " <musgrave_type sval=\"~s\"/>"++
-                        " <noise_type sval=\"~s\"/>~n"
-                     "    <size fval=\"~.6f\"/>"++
-                     "    <intensity fval=\"~.6f\"/>~n"
-                     "    <H fval=\"~.6f\"/>"++
-                     "    <lacunarity fval=\"~.6f\"/>~n"
-                     "    <octaves fval=\"~.6f\"/>",
-                    [MusgraveType,NoiseBasis,MusgraveNoiseSize,
-                    MusgraveIntensity,MusgraveContrast,MusgraveLacunarity,MusgraveOctaves]);
+            println(F,
+                "       <musgrave_type sval=\"~s\"/>~n"
+                "       <noise_type sval=\"~s\"/>~n"
+                "       <size fval=\"~.6f\"/>~n"
+                "       <intensity fval=\"~.6f\"/>~n"
+                "       <H fval=\"~.6f\"/>~n"
+                "       <lacunarity fval=\"~.6f\"/>~n"
+                "       <octaves fval=\"~.6f\"/>",
+                [MusgraveType, NoiseBasis, MusgraveNoiseSize, MusgraveIntensity,
+                    MusgraveContrast,MusgraveLacunarity,MusgraveOctaves]);
 
         distorted_noise ->
 
-        NoiseBasis = proplists:get_value(noise_basis, Ps, ?DEF_MOD_NOISEBASIS),
+            NoiseBasis = proplists:get_value(noise_basis, Ps, ?DEF_MOD_NOISEBASIS),
 
-        DistortionType = proplists:get_value(distortion_type, Ps,
-                                        ?DEF_MOD_DISTORTION_TYPE),
+            DistortionType = proplists:get_value(distortion_type, Ps, ?DEF_MOD_DISTORTION_TYPE),
 
-        DistortionNoiseSize = proplists:get_value(distortion_noisesize, Ps, ?DEF_MOD_DISTORTION_NOISESIZE),
+            DistortionNoiseSize = proplists:get_value(distortion_noisesize, Ps, ?DEF_MOD_DISTORTION_NOISESIZE),
 
-        DistortionIntensity = proplists:get_value(distortion_intensity, Ps, ?DEF_MOD_DISTORTION_INTENSITY),
+            DistortionIntensity = proplists:get_value(distortion_intensity, Ps, ?DEF_MOD_DISTORTION_INTENSITY),
 
 
             %% Coordinate rotation, see export_pos/3.
-            println(F, " <noise_type1 sval=\"~s\"/>"++
-                        " <noise_type2 sval=\"~s\"/>~n"
-                     "    <size fval=\"~.6f\"/>"++
-                     "    <distort fval=\"~.6f\"/>~n",
-                    [NoiseBasis,DistortionType,DistortionNoiseSize,
-                    DistortionIntensity]);
-
-
+            println(F,
+                "       <noise_type1 sval=\"~s\"/>~n"
+                "       <noise_type2 sval=\"~s\"/>~n"
+                "       <size fval=\"~.6f\"/>~n"
+                "       <distort fval=\"~.6f\"/>~n",
+                [NoiseBasis, DistortionType, DistortionNoiseSize, DistortionIntensity]);
         _ ->
             ok
     end,
@@ -4236,7 +4248,6 @@ export_modulator(F, Texname, Maps, {modulator,Ps}, Opacity) when is_list(Ps) ->
         {false,_,_} ->
             off;
         {true,Mode,Type} ->
-
             AlphaIntensity = proplists:get_value(alpha_intensity, Ps, ?DEF_MOD_ALPHA_INTENSITY),
 
 %%% Start Change Number from Texname for UpperLayer
@@ -4244,7 +4255,7 @@ export_modulator(F, Texname, Maps, {modulator,Ps}, Opacity) when is_list(Ps) ->
             UpperLayerName =
                 case AlphaIntensity of
                         stencil -> re:replace(Texname,"_2","_1",[global]);
-                                _-> re:replace(Texname,"_1","_2",[global])
+                        _-> re:replace(Texname,"_1","_2",[global])
                 end,
 
 %%% End Change Number from Texname for UpperLayer
@@ -4254,7 +4265,7 @@ export_modulator(F, Texname, Maps, {modulator,Ps}, Opacity) when is_list(Ps) ->
             StencilInputName =
                 case AlphaIntensity of
                         stencil -> re:replace(Texname,"_2","_3",[global]);
-                                _-> ""
+                        _-> ""
                 end,
 
 %%% End Change Number from Texname for Stencil Input
@@ -4264,7 +4275,7 @@ export_modulator(F, Texname, Maps, {modulator,Ps}, Opacity) when is_list(Ps) ->
             StencilUpperLayerName2 =
                 case AlphaIntensity of
                         stencil -> re:replace(Texname,"_1","_2",[global]);
-                                _-> ""
+                        _-> ""
                 end,
 
 %%% End Change Number from Texname for Stencil UpperLayer Name 2
@@ -4311,19 +4322,19 @@ export_modulator(F, Texname, Maps, {modulator,Ps}, Opacity) when is_list(Ps) ->
             Split=re:split(Texname,"_",[{return, list}]),
             Num=lists:last(Split),
             UpperLayer =
-                 case {Num,Mode,AlphaIntensity} of
+                case {Num,Mode,AlphaIntensity} of
                         {"1",mix,_} ->  "";
                         {"1",_,_} ->  "<upper_layer sval=\""++UpperLayerName++"\"/>";
                         {"2",_,stencil} ->  "<upper_layer sval=\""++UpperLayerName++"\"/>";
                         _ -> ""
-                 end,
+                end,
 %% End Identify Modulator #
 
             UpperColor =
-                 case Num of
+                case Num of
                         "1" ->  "<upper_color r=\"1\" g=\"1\" b=\"1\" a=\"1\"/>";
                         _ -> ""
-                 end,
+                end,
 
             UseAlpha =
                  case {Num,AlphaIntensity} of
@@ -4335,7 +4346,6 @@ export_modulator(F, Texname, Maps, {modulator,Ps}, Opacity) when is_list(Ps) ->
                         {_,stencil} -> "<use_alpha bval=\"true\"/>";
                         _ -> ""
                  end,
-
 
 
             ShaderType =
@@ -4350,79 +4360,79 @@ export_modulator(F, Texname, Maps, {modulator,Ps}, Opacity) when is_list(Ps) ->
                 end,
 
             ShaderName =
-                 case {Num,Mode} of
+                case {Num,Mode} of
                         {"1",_} ->   "  "++ShaderType++" sval=\""++Texname++"\"/>";
                         {_,mix} ->   "  "++ShaderType++" sval=\""++Texname++"\"/>";
                         _ -> ""
-                 end,
+                end,
 
 
-                 case AlphaIntensity of
+                case AlphaIntensity of
                         stencil ->
 %%Stencil Export Start
-                 println(F, " <!--Start Stencil Section Here-->
+                    println(F,
+                        " <!--Start Stencil Section Here-->
 
-                                <list_element>
-                                <element sval=\"shader_node\"/>
-                                <name sval=\"~s\"/>
-                                <input sval=\"~s_mod\"/>
+                        <list_element>
+                        <element sval=\"shader_node\"/>
+                        <name sval=\"~s\"/>
+                        <input sval=\"~s_mod\"/>
 
-                                <noRGB bval=\"true\"/>
-                                <stencil bval=\"true\"/>
-                                "++UpperLayer++"
+                        <noRGB bval=\"true\"/>
+                        <stencil bval=\"true\"/>
+                        "++UpperLayer++"
 
-                                <type sval=\"layer\"/>
-                                <mode ival=\""++ModeNumber++"\"/>
-                                </list_element>
+                        <type sval=\"layer\"/>
+                        <mode ival=\""++ModeNumber++"\"/>
+                        </list_element>
 
-                                <list_element>
-                                <element sval=\"shader_node\"/>
-                                <name sval=\"~s_mod\"/>
-                                "++TexCo++"
-                                <mapping sval=\"plain\"/>
-                                <texture sval=\"~s\"/>
-                                <type sval=\"texture_mapper\"/>
-                                <bump_strength fval=\"~.3f\"/>
-                                </list_element>
+                        <list_element>
+                        <element sval=\"shader_node\"/>
+                        <name sval=\"~s_mod\"/>
+                        "++TexCo++"
+                        <mapping sval=\"plain\"/>
+                        <texture sval=\"~s\"/>
+                        <type sval=\"texture_mapper\"/>
+                        <bump_strength fval=\"~.3f\"/>
+                        </list_element>
 
-                                <diffuse_shader sval=\"diff_layer2\"/>
-                                <list_element>
-                                <element sval=\"shader_node\"/>
-                                <name sval=\"diff_layer2\"/>
-                                <input sval=\""++StencilInputName++"_mod\"/>
-                                <upper_layer sval=\""++StencilUpperLayerName2++"\"/>
-                                <type sval=\"layer\"/>
-                                <mode ival=\""++ModeNumber++"\"/>
-                                </list_element>
+                        <diffuse_shader sval=\"diff_layer2\"/>
+                        <list_element>
+                        <element sval=\"shader_node\"/>
+                        <name sval=\"diff_layer2\"/>
+                        <input sval=\""++StencilInputName++"_mod\"/>
+                        <upper_layer sval=\""++StencilUpperLayerName2++"\"/>
+                        <type sval=\"layer\"/>
+                        <mode ival=\""++ModeNumber++"\"/>
+                        </list_element>
 
         <!--End Stencil Section Here-->",
-                                [Texname,Texname,Texname,Texname,Normal
-                                ]);
+                    [Texname,Texname,Texname,Texname,Normal]);
 %%Stencil Export End
                         _ ->
 
-                 println(F, "  "++ShaderName++"
-                                <list_element>
-                                <element sval=\"shader_node\"/>
-                                <name sval=\"~s\"/>
-                                <input sval=\"~s_mod\"/>
-                                "++UpperLayer++"
-                                "++UpperColor++"
-                                "++UseAlpha++"
-                                <type sval=\"layer\"/>
-                                <mode ival=\""++ModeNumber++"\"/>
-                                </list_element>
-                                <list_element>
-                                <element sval=\"shader_node\"/>
-                                <name sval=\"~s_mod\"/>
-                                "++TexCo++"
-                                <mapping sval=\"plain\"/>
-                                <texture sval=\"~s\"/>
-                                <type sval=\"texture_mapper\"/>
-                                <bump_strength fval=\"~.3f\"/>
-                                </list_element>",
-                                [Texname,Texname,Texname,Texname,Normal
-                                ])
+                 println(F,
+                    "  "++ShaderName++"
+                    <list_element>
+                    <element sval=\"shader_node\"/>
+                    <name sval=\"~s\"/>
+                    <input sval=\"~s_mod\"/>
+                    "++UpperLayer++"
+                    "++UpperColor++"
+                    "++UseAlpha++"
+                    <type sval=\"layer\"/>
+                    <mode ival=\""++ModeNumber++"\"/>
+                    </list_element>
+                    <list_element>
+                    <element sval=\"shader_node\"/>
+                    <name sval=\"~s_mod\"/>
+                    "++TexCo++"
+                    <mapping sval=\"plain\"/>
+                    <texture sval=\"~s\"/>
+                    <type sval=\"texture_mapper\"/>
+                    <bump_strength fval=\"~.3f\"/>
+                    </list_element>",
+                    [Texname,Texname,Texname,Texname,Normal])
 
                  end
 
@@ -4493,7 +4503,6 @@ count_equal([H|T], C, K, R) ->
                                         true -> ?DEF_AUTOSMOOTH end),
 
 
-
     %% Pre-process mesh
     Mesh1 = #e3d_mesh{} =
         case {He0,UseHardness} of
@@ -4530,7 +4539,9 @@ count_equal([H|T], C, K, R) ->
                 case Object_Type of
                 mesh ->
                     println(F," "),
-                    println(F, "<mesh id=\"~w\" vertices=\"~w\" faces=\"~w\"  has_uv=\"~s\"  type=\"0\">",[Id, length(Vs), length(Fs), HasUV]),
+                    println(F,
+                        "<mesh id=\"~w\" vertices=\"~w\" faces=\"~w\"  has_uv=\"~s\"  type=\"0\">",
+                        [Id, length(Vs), length(Fs), HasUV]),
                     println(F," ");
 
                 volume ->
@@ -4608,7 +4619,7 @@ count_equal([H|T], C, K, R) ->
     export_faces(F, Fs, DefaultMaterial, list_to_tuple(Tx), list_to_tuple(Vc)),
 
 
-             case Object_Type of
+            case Object_Type of
                 mesh ->
                     println(F," "),
                     println(F, "</mesh>"),
@@ -4624,13 +4635,7 @@ count_equal([H|T], C, K, R) ->
                     println(F, "</mesh>"),
                     println(F," ")
 
-
-
-
-                    end,
-
-
-
+                end,
 
 
     case Autosmooth of
@@ -4641,7 +4646,6 @@ count_equal([H|T], C, K, R) ->
     end,
 
     io:format(?__(6,"done")++"~n").
-
 
 
 export_vertices(_F, []) ->
@@ -4658,8 +4662,8 @@ export_vertices(F, [Pos|T]) ->
 %% Hence Z=South, X=East, Y=Up in Wings coordinates.
 %%
 export_pos(F, Type, {X,Y,Z}) ->
-    println(F, ["        <",format(Type)," x=\"",format(Z),
-                "\" y=\"",format(X),"\" z=\"",format(Y),"\"/>"]).
+    println(F,
+        ["\t<",format(Type)," x=\"",format(Z),"\" y=\"",format(X),"\" z=\"",format(Y),"\"/>"]).
 
 %%Add Export UV_Vectors Part 2 Start
 
@@ -4731,7 +4735,6 @@ export_faces(F, [#e3d_face{mat=[Mat|_],tx=Tx,vs=[A,B,C],vc=VCols}|T],
                 export_faces(F, T, DefaultMaterial, TxT, VColT).
 
 
-
 export_light(F, Name, Ps) ->
     case proplists:get_value(visible, Ps, true) of
         true ->
@@ -4750,30 +4753,28 @@ export_light(F, Name, point, OpenGL, YafaRay) ->
     Position = proplists:get_value(position, OpenGL, {0.0,0.0,0.0}),
     Diffuse = proplists:get_value(diffuse, OpenGL, {1.0,1.0,1.0,1.0}),
     Type = proplists:get_value(type, YafaRay, ?DEF_POINT_TYPE),
-    println(F,"<light name=\"~s\"> <type sval=\"~w\"/>  <power fval=\"~.3f\"/> ",
-            [Name,Type,Power]),
+    println(F,
+        "<light name=\"~s\">~n"
+        "       <type sval=\"~w\"/>~n"
+        "       <power fval=\"~.3f\"/>",
+        [Name,Type,Power]),
     case Type of
         pointlight ->
-            CastShadows =
-                proplists:get_value(cast_shadows, YafaRay, ?DEF_CAST_SHADOWS),
+            CastShadows = proplists:get_value(cast_shadows, YafaRay, ?DEF_CAST_SHADOWS),
+
             println(F,"       <cast_shadows bval=\"~s\"/>", [format(CastShadows)]);
 
         spherelight ->
-            ArealightRadius =
-                proplists:get_value(arealight_radius, YafaRay,
-                                    ?DEF_AREALIGHT_RADIUS),
-            ArealightSamples =
-                proplists:get_value(arealight_samples, YafaRay,
-                                    ?DEF_AREALIGHT_SAMPLES),
+            ArealightRadius = proplists:get_value(arealight_radius, YafaRay, ?DEF_AREALIGHT_RADIUS),
 
-
+            ArealightSamples = proplists:get_value(arealight_samples, YafaRay, ?DEF_AREALIGHT_SAMPLES),
 
             println(F,
-                    "   <radius fval=\"~.10f\"/>~n"++
-                    "   <samples ival=\"~w\"/>
-                    ", [ArealightRadius,ArealightSamples]
-                    )
+                "       <radius fval=\"~.10f\"/>~n"
+                "       <samples ival=\"~w\"/>",
+                [ArealightRadius,ArealightSamples])
     end,
+
     export_pos(F, from, Position),
     export_rgb(F, color, Diffuse),
 
@@ -4795,9 +4796,11 @@ export_light(F, Name, infinite, OpenGL, YafaRay) ->
 %% Directional Infinite Light Start
     case Type of
         directional when Power > 0.0 ->
-                    println(F,"<light name=\"~s\"> <type sval=\"~w\"/> "++
-                            "<power fval=\"~.3f\"/>",
-                            [Name, Type, Power]),
+            println(F,
+                "<light name=\"~s\">~n"
+                "       <type sval=\"~w\"/>~n"
+                "       <power fval=\"~.3f\"/>",
+                [Name, Type, Power]),
 
 %% Add Semi-infinite Start
 
@@ -4806,9 +4809,11 @@ export_light(F, Name, infinite, OpenGL, YafaRay) ->
                 false ->
                     InfiniteRadius = proplists:get_value(infinite_radius, YafaRay,
                                                       ?DEF_INFINITE_RADIUS),
-                    println(F, " <infinite bval=\"~s\"/>   <radius fval=\"~.10f\"/>",
-                            [format(InfiniteTrue),InfiniteRadius]),
-                            export_pos(F, from, Position);
+                    println(F,
+                        "       <infinite bval=\"~s\"/>~n"
+                        "       <radius fval=\"~.10f\"/>",
+                        [format(InfiniteTrue),InfiniteRadius]),
+                        export_pos(F, from, Position);
                 true -> ok
             end,
 %% Add Semi-infinite End
@@ -4826,28 +4831,22 @@ export_light(F, Name, infinite, OpenGL, YafaRay) ->
 %% Directional Infinite Light End
 %% Sunlight Infinite Light Start
         sunlight when Power > 0.0 ->
-                    println(F,"<light name=\"~s\"> <type sval=\"~w\"/> "++
-                            "<power fval=\"~.10f\"/> <samples ival=\"~w\"/> <angle fval=\"~.3f\"/>",
-                            [Name, Type, Power, SunSamples, SunAngle]),
-
-
-
-
-                    export_pos(F, direction, Position),
-                    export_rgb(F, color, Diffuse),
-                    println(F, "</light>"),
+            println(F,
+                "<light name=\"~s\">~n"
+                "       <type sval=\"~w\"/>~n"
+                "       <power fval=\"~.10f\"/>~n"
+                "       <samples ival=\"~w\"/>~n"
+                "       <angle fval=\"~.3f\"/>",
+                [Name, Type, Power, SunSamples, SunAngle]),
+            export_pos(F, direction, Position),
+            export_rgb(F, color, Diffuse),
+            println(F, "</light>"),
 
         Bg;
         sunlight -> Bg
 
-
-
 %% Sunlight Infinite Light End
     end;
-
-
-
-
 
 %% Export Spot Light
 
@@ -4858,34 +4857,33 @@ export_light(F, Name, spot, OpenGL, YafaRay) ->
     ConeAngle = proplists:get_value(cone_angle, OpenGL, ?DEF_CONE_ANGLE),
     Diffuse = proplists:get_value(diffuse, OpenGL, {1.0,1.0,1.0,1.0}),
     Type = proplists:get_value(type, YafaRay, ?DEF_SPOT_TYPE),
-    println(F,"<light name=\"~s\"> <power fval=\"~.3f\"/> ",
-            [Name,Power]),
+    println(F,
+        "<light name=\"~s\">~n"
+        "\t<power fval=\"~.3f\"/> ",
+        [Name,Power]),
     case Type of
         spotlight ->
 
-            SpotPhotonOnly =
-                proplists:get_value(spot_photon_only, YafaRay, ?DEF_SPOT_PHOTON_ONLY),
+            SpotPhotonOnly = proplists:get_value(spot_photon_only, YafaRay, ?DEF_SPOT_PHOTON_ONLY),
 
-            SpotSoftShadows =
-                proplists:get_value(spot_soft_shadows, YafaRay, ?DEF_SPOT_SOFT_SHADOWS),
+            SpotSoftShadows = proplists:get_value(spot_soft_shadows, YafaRay, ?DEF_SPOT_SOFT_SHADOWS),
 
-            SpotIESSamples = proplists:get_value(spot_ies_samples, YafaRay,
-                                      ?DEF_SPOT_IES_SAMPLES),
+            SpotIESSamples = proplists:get_value(spot_ies_samples, YafaRay, ?DEF_SPOT_IES_SAMPLES),
 
-            CastShadows =
-                proplists:get_value(cast_shadows, YafaRay, ?DEF_CAST_SHADOWS),
-            SpotExponent =
-                proplists:get_value(spot_exponent, OpenGL, ?DEF_SPOT_EXPONENT),
+            CastShadows = proplists:get_value(cast_shadows, YafaRay, ?DEF_CAST_SHADOWS),
+
+            SpotExponent = proplists:get_value(spot_exponent, OpenGL, ?DEF_SPOT_EXPONENT),
+
             Blend = proplists:get_value(blend, YafaRay, ?DEF_BLEND),
             print(F,
-                "       <type sval=\"spotlight\"/>~n"
-                "       <cast_shadows bval=\"~s\"/>~n"
-                "       <photon_only bval=\"~s\"/>~n"
-                "       <size ival=\"~.3f\"/>~n"
-                "       <beam_falloff fval=\"~.10f\"/>~n"
-                "       <blend fval=\"~.3f\"/>~n"
-                "       <soft_shadows bval=\"~s\"/>~n"
-                "       <samples ival=\"~w\"/>",
+                "\t<type sval=\"spotlight\"/>~n"
+                "\t<cast_shadows bval=\"~s\"/>~n"
+                "\t<photon_only bval=\"~s\"/>~n"
+                "\t<size ival=\"~.3f\"/>~n"
+                "\t<beam_falloff fval=\"~.10f\"/>~n"
+                "\t<blend fval=\"~.3f\"/>~n"
+                "\t<soft_shadows bval=\"~s\"/>~n"
+                "\t<samples ival=\"~w\"/>~n",
                 [format(CastShadows), SpotPhotonOnly, ConeAngle, SpotExponent, Blend,SpotSoftShadows,SpotIESSamples]);
 
         spot_ies ->
@@ -4926,13 +4924,12 @@ export_light(F, Name, ambient, _OpenGL, YafaRay) ->
                     []),
             println(F, "",
                     []),
-            case proplists:get_value(use_maxdistance, YafaRay,
-                                     ?DEF_USE_MAXDISTANCE) of
+            case proplists:get_value(use_maxdistance, YafaRay, ?DEF_USE_MAXDISTANCE) of
                 true ->
-                    Maxdistance = proplists:get_value(maxdistance, YafaRay,
-                                                      ?DEF_MAXDISTANCE),
-                    println(F, "    <maxdistance fval=\"~.10f\"/>",
-                            [Maxdistance]);
+                    Maxdistance = proplists:get_value(maxdistance, YafaRay, ?DEF_MAXDISTANCE),
+                    println(F,
+                        "       <maxdistance fval=\"~.10f\"/>",
+                        [Maxdistance]);
                 false -> ok
             end,
 
@@ -4940,16 +4937,20 @@ export_light(F, Name, ambient, _OpenGL, YafaRay) ->
             Bg;
         hemilight -> Bg;
         pathlight when Power > 0.0 ->
-            println(F,"<light type sval=\"~w\" name sval=\"~s\" power fval=\"~.3f\"",
-                    [Type,Name,Power]),
-            UseQMC = proplists:get_value(use_QMC, YafaRay,
-                                         ?DEF_USE_QMC),
+            println(F,
+                "<light type sval=\"~w\" name sval=\"~s\" power fval=\"~.3f\"",
+                [Type,Name,Power]),
+            UseQMC = proplists:get_value(use_QMC, YafaRay, ?DEF_USE_QMC),
+
             Depth = proplists:get_value(depth, YafaRay, ?DEF_DEPTH),
+
             CausDepth = proplists:get_value(caus_depth, YafaRay, ?DEF_CAUS_DEPTH),
+
             Direct = proplists:get_value(direct, YafaRay, ?DEF_DIRECT),
-            Samples = proplists:get_value(samples, YafaRay,
-                                          ?DEF_SAMPLES),
-            print(F, "       use_QMC=\"~s\" samples=\"~w\" "
+
+            Samples = proplists:get_value(samples, YafaRay, ?DEF_SAMPLES),
+
+            print(F,"       use_QMC=\"~s\" samples=\"~w\" "
                   "depth=\"~w\" caus_depth=\"~w\"",
                   [format(UseQMC),Samples,Depth,CausDepth]),
             case Direct of
@@ -5048,30 +5049,31 @@ export_light(F, Name, area, OpenGL, YafaRay) ->
     AFs = zip_lists(As, Fs),
     foldl(
       fun ({Af,#e3d_face{vs=VsF}}, I) ->
-              case catch Power*Af/Area of
-                  {'EXIT',{badarith,_}} -> I;
-                  Pwr ->
-                      NameI = Name++"_"++integer_to_list(I),
-                      [A,B,C,D] = quadrangle_vertices(VsF, VsT),
-                      println(F, "<light name=\"~s\"> <type sval=\"arealight\"/>"
-                              "<power fval=\"~.3f\"/>~n"
-                              "<samples ival=\"~w\"/>"++
-                              if Dummy -> "";
-                                 true ->
-                                      ""
-                              end++"",
-                              [NameI,Pwr,Samples]++
-                              if Dummy -> [];
-                                 true -> []
-                              end),
-                      export_rgb(F, color, Color),
-                      export_pos(F, corner, A),
-                      export_pos(F, from, B),
-                      export_pos(F, point1, C),
-                      export_pos(F, point2, D),
-                      println(F, "</light>"),
-                      I+1
-              end
+            case catch Power*Af/Area of
+                {'EXIT',{badarith,_}} -> I;
+                Pwr ->
+                    NameI = Name++"_"++integer_to_list(I),
+                    [A,B,C,D] = quadrangle_vertices(VsF, VsT),
+                    println(F,
+                        "<light name=\"~s\"> <type sval=\"arealight\"/>"
+                        "<power fval=\"~.3f\"/>~n"
+                        "<samples ival=\"~w\"/>"++
+                        if Dummy -> "";
+                            true ->
+                                ""
+                        end++"",
+                        [NameI,Pwr,Samples]++
+                        if Dummy -> [];
+                            true -> []
+                        end),
+                    export_rgb(F, color, Color),
+                    export_pos(F, corner, A),
+                    export_pos(F, from, B),
+                    export_pos(F, point1, C),
+                    export_pos(F, point2, D),
+                    println(F, "</light>"),
+                    I+1
+            end
       end, 1, AFs),
     undefined;
 export_light(_F, Name, Type, _OpenGL, _YafaRay) ->
@@ -5101,7 +5103,6 @@ quadrangle_vertices([V1,V2,V3,V4], VsT) ->
      element(V3+1, VsT),element(V4+1, VsT)].
 
 
-
 export_camera(F, Name, Attr) ->
     #camera_info{pos=Pos,dir=Dir,up=Up,fov=Fov} =
         proplists:lookup(camera_info, Attr),
@@ -5118,66 +5119,62 @@ export_camera(F, Name, Attr) ->
     %% YafaRay focal plane is 1 unit wide.
     FocalDist = 0.5 / ((Width/Height) * math:tan(limit_fov(Fov)*0.5*Ro)),
     Aperture = proplists:get_value(aperture, Attr),
-    println(F, "<camera name=\"~s\"> "++
-            "<resx ival=\"~w\"/> <resy ival=\"~w\"/> <focal fval=\"~.10f\"/>"++
-            if Aperture > 0.0 ->
-                    "~n        <dof_distance fval=\"~.10f\"/> <aperture fval=\"~.10f\"/>"
-                        "~n        <use_qmc bval=\"~s\"/> <bokeh_type sval=\"~s\"/>"
-                        "~n        <bokeh_bias sval=\"~s\"/> <bokeh_rotation fval=\"~.10f\"/> <dof_distance fval=\"~.10f\"/>";
-               true -> ""
+    println(F,
+        "<camera name=\"~s\">~n"
+        "\t<resx ival=\"~w\"/>~n"
+        "\t<resy ival=\"~w\"/>~n"
+        "\t<focal fval=\"~.10f\"/>~n"++
+        if Aperture > 0.0 ->
+            "\t<dof_distance fval=\"~.10f\"/>~n"
+            "\t<aperture fval=\"~.10f\"/>~n"
+            "\t<use_qmc bval=\"~s\"/>~n"
+            "\t<bokeh_type sval=\"~s\"/>~n"
+            "\t<bokeh_bias sval=\"~s\"/>~n"
+            "\t<bokeh_rotation fval=\"~.10f\"/>~n"
+            "\t<dof_distance fval=\"~.10f\"/>~n";
+            true -> ""
             end++
 
-
-
-            case Lens_Type of
-                perspective   ->
-                        "~n <type sval=\"~s\"/>";
-
-                orthographic  ->
-                        "~n <type sval=\"~s\"/>"
-                        "<scale fval=\"~.10f\"/>";
-
-                architect     ->
-                        "~n <type sval=\"~s\"/>";
-
-                angular       ->
-                        "~n <type sval=\"~s\"/>"
-                        "<circular bval=\"~s\"/>"
-                        "<mirrored bval=\"~s\"/>"
-                        "~n <max_angle fval=\"~.10f\"/>"
-                        "<angle fval=\"~.10f\"/>"
-
+        case Lens_Type of
+            perspective ->
+                "\t<type sval=\"~s\"/>~n";
+            orthographic ->
+                "\t<type sval=\"~s\"/>~n"
+                "\t<scale fval=\"~.10f\"/>~n";
+            architect ->
+                "\t<type sval=\"~s\"/>~n";
+            angular ->
+                "\t<type sval=\"~s\"/>~n"
+                "\t<circular bval=\"~s\"/>~n"
+                "\t<mirrored bval=\"~s\"/>~n"
+                "\t<max_angle fval=\"~.10f\"/>~n"
+                "\t<angle fval=\"~.10f\"/>~n"
             end,
-
 
             [Name,Width,Height,FocalDist]++
             if Aperture > 0.0 ->
-                    [e3d_vec:len(Dir),
-                     Aperture,
-                     format(proplists:get_value(bokeh_use_QMC, Attr)),
-                     format(proplists:get_value(bokeh_type, Attr)),
-                     format(proplists:get_value(bokeh_bias, Attr)),
-                     proplists:get_value(bokeh_rotation, Attr),
-                     proplists:get_value(dof_distance, Attr)];
-               true -> []
+                [e3d_vec:len(Dir),
+                Aperture,
+                format(proplists:get_value(bokeh_use_QMC, Attr)),
+                format(proplists:get_value(bokeh_type, Attr)),
+                format(proplists:get_value(bokeh_bias, Attr)),
+                proplists:get_value(bokeh_rotation, Attr),
+                proplists:get_value(dof_distance, Attr)];
+                true -> []
             end++
 
 
             case Lens_Type of
-               perspective -> [format(Lens_Type)];
-               orthographic  -> [format(Lens_Type),Lens_Ortho_Scale];
-
-               architect    -> [format(Lens_Type)];
-               angular    -> [format(Lens_Type),
-                        format(Lens_Angular_Circular),
-                        format(Lens_Angular_Mirrored),
-                        Lens_Angular_Max_Angle,
-                        Lens_Angular_Angle]
+                perspective -> [format(Lens_Type)];
+                orthographic  -> [format(Lens_Type),Lens_Ortho_Scale];
+                architect    -> [format(Lens_Type)];
+                angular    -> [format(Lens_Type),
+                    format(Lens_Angular_Circular),
+                    format(Lens_Angular_Mirrored),
+                    Lens_Angular_Max_Angle,
+                    Lens_Angular_Angle]
 
             end
-
-
-
 
             ),
     export_pos(F, from, Pos),
@@ -5198,37 +5195,36 @@ export_background(F, Name, Ps) ->
     case Bg of
 %% Constant Background Export
         constant ->
-    print(F, "<background name=\"~s\">",
-          [Name]),
+            print(F,
+                "<background name=\"~s\">~n", [Name]),
+            println(F,
+                "\t<type sval=\"~s\"/>", [format(Bg)]),
 
-            println(F, "<type sval=\"~s\"/>",
-            [format(Bg)]),
-            BgColor = proplists:get_value(background_color, YafaRay,
-                                          ?DEF_BACKGROUND_COLOR),
+            BgColor = proplists:get_value(background_color, YafaRay, ?DEF_BACKGROUND_COLOR),
+
             export_rgb(F, color, BgColor),
-            ConstantBackPower = proplists:get_value(constant_back_power, YafaRay,
-                                          ?DEF_CONSTANT_BACK_POWER),
-            println(F, "<power fval=\"~w\"/>~n",
-                    [ConstantBackPower]);
 
+            ConstantBackPower = proplists:get_value(constant_back_power, YafaRay, ?DEF_CONSTANT_BACK_POWER),
+            println(F,
+                "\t<power fval=\"~w\"/>~n", [ConstantBackPower]);
 
 %% Gradient Background Export
         gradientback ->
-    print(F, "<background name=\"~s\">",
-          [Name]),
+            print(F,
+                "<background name=\"~s\">~n", [Name]),
 
-            println(F, "<type sval=\"~s\"/>",
-            [format(Bg)]),
-            HorizonColor = proplists:get_value(horizon_color, YafaRay,
-                                          ?DEF_HORIZON_COLOR),
+            println(F,
+                "\t<type sval=\"~s\"/>~n", [format(Bg)]),
+
+            HorizonColor = proplists:get_value(horizon_color, YafaRay, ?DEF_HORIZON_COLOR),
             export_rgb(F, horizon_color, HorizonColor),
-            ZenithColor = proplists:get_value(zenith_color, YafaRay,
-                                          ?DEF_ZENITH_COLOR),
+
+            ZenithColor = proplists:get_value(zenith_color, YafaRay, ?DEF_ZENITH_COLOR),
             export_rgb(F, zenith_color, ZenithColor),
-            GradientBackPower = proplists:get_value(gradient_back_power, YafaRay,
-                                          ?DEF_GRADIENT_BACK_POWER),
-            println(F, "<power fval=\"~w\"/>~n",
-                    [GradientBackPower]);
+
+            GradientBackPower = proplists:get_value(gradient_back_power, YafaRay, ?DEF_GRADIENT_BACK_POWER),
+            println(F,
+                "\t<power fval=\"~w\"/>~n", [GradientBackPower]);
 
 %% Sunsky Background Export
         sunsky ->
@@ -5245,29 +5241,37 @@ export_background(F, Name, Ps) ->
 
     Position = proplists:get_value(position, OpenGL, {1.0,1.0,1.0}),
 
-    print(F, "<background name=\"~s\"> <type sval=\"~s\"/>",
-          [Name,format(Bg)]),
+    print(F,
+        "<background name=\"~s\">~n"
+        "\t<type sval=\"~s\"/>~n",
+        [Name,format(Bg)]),
 
-            println(F, "~n            <turbidity fval=\"~.3f\"/> <a_var fval=\"~.3f\"/>~n"
-                    "            <b_var fval=\"~.3f\"/> <c_var fval=\"~.3f\"/>~n"
-                    "            <d_var fval=\"~.3f\"/> <e_var fval=\"~.3f\"/> "
-                    "<add_sun bval=\"false\"/>",
-                    [Turbidity,A_var,B_var,C_var,D_var,E_var]),
+        println(F,
+            "\t<turbidity fval=\"~.3f\"/>~n"
+            "\t<a_var fval=\"~.3f\"/>~n"
+            "\t<b_var fval=\"~.3f\"/>~n"
+            "\t<c_var fval=\"~.3f\"/>~n"
+            "\t<d_var fval=\"~.3f\"/>~n"
+            "\t<e_var fval=\"~.3f\"/>~n"
+            "\t<add_sun bval=\"false\"/>",
+            [Turbidity,A_var,B_var,C_var,D_var,E_var]),
 
 
 %% Add Skylight Start
 
-            case proplists:get_value(sky_background_light, YafaRay,
-                                     ?DEF_SKY_BACKGROUND_LIGHT) of
-                true ->
-                    SkyBackgroundPower = proplists:get_value(sky_background_power, YafaRay,
-                                                      ?DEF_SKY_BACKGROUND_POWER),
-                    SkyBackgroundSamples = proplists:get_value(sky_background_samples, YafaRay,
-                                                      ?DEF_SKY_BACKGROUND_SAMPLES),
-                    println(F, " <background_light bval=\"~s\"/><power fval=\"~.3f\"/><light_samples ival=\"~w\"/>",
-                            [format(SkyBackgroundLight),SkyBackgroundPower,SkyBackgroundSamples]);
+        case proplists:get_value(sky_background_light, YafaRay, ?DEF_SKY_BACKGROUND_LIGHT) of
+            true ->
+                SkyBackgroundPower =
+                    proplists:get_value(sky_background_power, YafaRay, ?DEF_SKY_BACKGROUND_POWER),
+                SkyBackgroundSamples =
+                    proplists:get_value(sky_background_samples, YafaRay, ?DEF_SKY_BACKGROUND_SAMPLES),
+                println(F,
+                    "\t<background_light bval=\"~s\"/>~n"
+                    "\t<power fval=\"~.3f\"/>~n"
+                    "\t<light_samples ival=\"~w\"/>",
+                    [format(SkyBackgroundLight),SkyBackgroundPower,SkyBackgroundSamples]);
 
-                false -> ok
+            false -> ok
             end,
 %% Add Skylight End
 
@@ -5275,82 +5279,80 @@ export_background(F, Name, Ps) ->
 
 
 %% HDRI Background Export
-            'HDRI' ->
+        'HDRI' ->
             BgFname = proplists:get_value(background_filename_HDRI, YafaRay,
                                           ?DEF_BACKGROUND_FILENAME),
             BgExpAdj = proplists:get_value(background_exposure_adjust, YafaRay,
                                            ?DEF_BACKGROUND_EXPOSURE_ADJUST),
             BgMapping = proplists:get_value(background_mapping, YafaRay,
                                             ?DEF_BACKGROUND_MAPPING),
-            Samples = proplists:get_value(samples, YafaRay,
-                                          ?DEF_SAMPLES),
+            Samples = proplists:get_value(samples, YafaRay, ?DEF_SAMPLES),
 
-
-            print(F, "<texture name=\"world_texture\">~n"
-            "        <filename sval=\"~s\"/>~n"
-            "        <interpolate sval=\"bilinear\"/>~n"
-            "        <type sval=\"image\"/>~n"
-            "        </texture>",
-          [BgFname]),
-            println(F, "~n <background name=\"~s\"> <type sval=\"textureback\"/> ",
-          [Name]),
-            println(F, "<power fval=\"~w\"/>~n"
-            "<mapping sval=\"~s\"/>",
-                    [BgExpAdj,format(BgMapping)]),
-
-
+            print(F,
+                "<texture name=\"world_texture\">~n"
+                "\t<filename sval=\"~s\"/>~n"
+                "\t<interpolate sval=\"bilinear\"/>~n"
+                "\t<type sval=\"image\"/>~n"
+                "</texture>~n",
+                [BgFname]),
+            println(F,
+                "<background name=\"~s\">~n"
+                "\t<type sval=\"textureback\"/>~n",
+                [Name]),
+            println(F,
+                "\t<power fval=\"~w\"/>~n"
+                "\t<mapping sval=\"~s\"/>~n",
+                [BgExpAdj,format(BgMapping)]),
 
             case proplists:get_value(background_enlight, YafaRay,
                                      ?DEF_BACKGROUND_ENLIGHT) of
                 true ->
-                    println(F, "<ibl bval=\"true\"/>"),
-                    println(F, "<ibl_samples ival=\"~w\"/>",[Samples]);
+                    println(F, "\t<ibl bval=\"true\"/>"),
+                    println(F, "\t<ibl_samples ival=\"~w\"/>",[Samples]);
                 false ->
-                    println(F, "<ibl bval=\"false\"/>")
+                    println(F, "\t<ibl bval=\"false\"/>")
             end,
 
 
-           print(F, "<texture sval=\"world_texture\"/>");
+           print(F, "\t<texture sval=\"world_texture\"/>");
 
 %% Image Background Export
         image ->
-            BgFname = proplists:get_value(background_filename_image, YafaRay,
-                                          ?DEF_BACKGROUND_FILENAME),
-            BgPower = proplists:get_value(background_power, YafaRay,
-                                           ?DEF_BACKGROUND_POWER),
-            Samples = proplists:get_value(samples, YafaRay,
-                                          ?DEF_SAMPLES),
+            BgFname = proplists:get_value(background_filename_image, YafaRay, ?DEF_BACKGROUND_FILENAME),
 
+            BgPower = proplists:get_value(background_power, YafaRay, ?DEF_BACKGROUND_POWER),
 
-            print(F, "<texture name=\"world_texture\">~n"
-            "        <filename sval=\"~s\"/>~n"
-            "        <interpolate sval=\"bilinear\"/>~n"
-            "        <type sval=\"image\"/>~n"
-            "        </texture>",
-          [BgFname]),
-            println(F, "~n <background name=\"~s\"> <type sval=\"textureback\"/> ",
-          [Name]),
+            Samples = proplists:get_value(samples, YafaRay, ?DEF_SAMPLES),
+
+            print(F,
+            "<texture name=\"world_texture\">~n"
+            "\t<filename sval=\"~s\"/>~n"
+            "\t<interpolate sval=\"bilinear\"/>~n"
+            "\t<type sval=\"image\"/>~n"
+            "\t</texture>~n",
+            [BgFname]),
+
+            println(F,
+                "<background name=\"~s\">~n"
+                "\t<type sval=\"textureback\"/>~n",
+                [Name]),
 
             println(F, " <power fval=\"~.3f\"/>", [BgPower]),
 
 %% Add Enlight Texture Start
-            case proplists:get_value(background_enlight, YafaRay,
-                                     ?DEF_BACKGROUND_ENLIGHT) of
+            case proplists:get_value(background_enlight, YafaRay, ?DEF_BACKGROUND_ENLIGHT) of
                 true ->
-                    println(F, "<ibl bval=\"true\"/>"),
-                    println(F, "<ibl_samples ival=\"~w\"/>",[Samples]);
+                    println(F, "\t<ibl bval=\"true\"/>"),
+                    println(F, "\t<ibl_samples ival=\"~w\"/>",[Samples]);
                 false ->
-                    println(F, "<ibl bval=\"false\"/>")
+                    println(F, "\t<ibl bval=\"false\"/>")
             end,
 
 %% Add Enlight Texture End
 
-
-            println(F, "    <texture sval=\"world_texture\" />")
+            println(F, "\t<texture sval=\"world_texture\" />~n")
     end,
     println(F, "</background>").
-
-
 
 
 export_render(F, CameraName, BackgroundName, Outfile, Attr) ->
@@ -5418,140 +5420,119 @@ println(F," "),
 println(F, "<integrator name=\"default\">"),
 
 
-
-
-             case Lighting_Method of
+            case Lighting_Method of
                 directlighting ->
                     println(F," "),
-                    println(F, "<type sval=\"~s\"/>",[Lighting_Method]),
-                    println(F, "<raydepth ival=\"~w\"/>",[Raydepth]),
-                    println(F, "<transpShad bval=\"~s\"/>",[format(TransparentShadows)]),
-                    println(F, "<shadowDepth ival=\"~w\"/>",[ShadowDepth]),
+                    println(F, "\t<type sval=\"~s\"/>",[Lighting_Method]),
+                    println(F, "\t<raydepth ival=\"~w\"/>",[Raydepth]),
+                    println(F, "\t<transpShad bval=\"~s\"/>",[format(TransparentShadows)]),
+                    println(F, "\t<shadowDepth ival=\"~w\"/>",[ShadowDepth]),
                     println(F," ");
 
                 photonmapping ->
                     println(F," "),
-                    println(F, "<type sval=\"~s\"/>",[Lighting_Method]),
-                    println(F, "<raydepth ival=\"~w\"/>",[Raydepth]),
-                    println(F, "<transpShad bval=\"~s\"/>",[format(TransparentShadows)]),
-                    println(F, "<shadowDepth ival=\"~w\"/>",[ShadowDepth]),
-                    println(F, "<photons ival=\"~w\"/>",[PM_Diffuse_Photons]),
-                    println(F, "<bounces ival=\"~w\"/>",[PM_Bounces]),
-                    println(F, "<search ival=\"~w\"/>",[PM_Search]),
-                    println(F, "<diffuseRadius fval=\"~.10f\"/>",[PM_Diffuse_Radius]),
-                    println(F, "<cPhotons ival=\"~w\"/>",[PM_Caustic_Photons]),
-                    println(F, "<causticRadius fval=\"~.10f\"/>",[PM_Caustic_Radius]),
-                    println(F, "<caustic_mix ival=\"~w\"/>",[PM_Caustic_Mix]),
-                    println(F, "<finalGather bval=\"~s\"/>",[PM_Use_FG]),
-                    println(F, "<fg_bounces ival=\"~w\"/>",[PM_FG_Bounces]),
-                    println(F, "<fg_samples ival=\"~w\"/>",[PM_FG_Samples]),
-                    println(F, "<show_map bval=\"~s\"/>",[PM_FG_Show_Map]),
-                    println(F, "<use_background bval=\"~s\"/>",[PM_Use_Background]),
+                    println(F, "\t<type sval=\"~s\"/>",[Lighting_Method]),
+                    println(F, "\t<raydepth ival=\"~w\"/>",[Raydepth]),
+                    println(F, "\t<transpShad bval=\"~s\"/>",[format(TransparentShadows)]),
+                    println(F, "\t<shadowDepth ival=\"~w\"/>",[ShadowDepth]),
+                    println(F, "\t<photons ival=\"~w\"/>",[PM_Diffuse_Photons]),
+                    println(F, "\t<bounces ival=\"~w\"/>",[PM_Bounces]),
+                    println(F, "\t<search ival=\"~w\"/>",[PM_Search]),
+                    println(F, "\t<diffuseRadius fval=\"~.10f\"/>",[PM_Diffuse_Radius]),
+                    println(F, "\t<cPhotons ival=\"~w\"/>",[PM_Caustic_Photons]),
+                    println(F, "\t<causticRadius fval=\"~.10f\"/>",[PM_Caustic_Radius]),
+                    println(F, "\t<caustic_mix ival=\"~w\"/>",[PM_Caustic_Mix]),
+                    println(F, "\t<finalGather bval=\"~s\"/>",[PM_Use_FG]),
+                    println(F, "\t<fg_bounces ival=\"~w\"/>",[PM_FG_Bounces]),
+                    println(F, "\t<fg_samples ival=\"~w\"/>",[PM_FG_Samples]),
+                    println(F, "\t<show_map bval=\"~s\"/>",[PM_FG_Show_Map]),
+                    println(F, "\t<use_background bval=\"~s\"/>",[PM_Use_Background]),
                     println(F," ");
 
                 pathtracing ->
                     println(F," "),
-                    println(F, "<type sval=\"~s\"/>",[Lighting_Method]),
-                    println(F, "<raydepth ival=\"~w\"/>",[Raydepth]),
-                    println(F, "<transpShad bval=\"~s\"/>",[format(TransparentShadows)]),
-                    println(F, "<shadowDepth ival=\"~w\"/>",[ShadowDepth]),
-                    println(F, "<photons ival=\"~w\"/>",[PT_Diffuse_Photons]),
-                    println(F, "<bounces ival=\"~w\"/>",[PT_Bounces]),
-                    println(F, "<caustic_type sval=\"~s\"/>",[PT_Caustic_Type]),
-                    println(F, "<caustic_radius fval=\"~.10f\"/>",[PT_Caustic_Radius]),
-                    println(F, "<caustic_mix ival=\"~w\"/>",[PT_Caustic_Mix]),
-                    println(F, "<caustic_depth ival=\"~w\"/>",[PT_Caustic_Depth]),
-                    println(F, "<path_samples ival=\"~w\"/>",[PT_Samples]),
-                    println(F, "<use_background bval=\"~s\"/>",[PT_Use_Background]),
+                    println(F, "\t<type sval=\"~s\"/>",[Lighting_Method]),
+                    println(F, "\t<raydepth ival=\"~w\"/>",[Raydepth]),
+                    println(F, "\t<transpShad bval=\"~s\"/>",[format(TransparentShadows)]),
+                    println(F, "\t<shadowDepth ival=\"~w\"/>",[ShadowDepth]),
+                    println(F, "\t<photons ival=\"~w\"/>",[PT_Diffuse_Photons]),
+                    println(F, "\t<bounces ival=\"~w\"/>",[PT_Bounces]),
+                    println(F, "\t<caustic_type sval=\"~s\"/>",[PT_Caustic_Type]),
+                    println(F, "\t<caustic_radius fval=\"~.10f\"/>",[PT_Caustic_Radius]),
+                    println(F, "\t<caustic_mix ival=\"~w\"/>",[PT_Caustic_Mix]),
+                    println(F, "\t<caustic_depth ival=\"~w\"/>",[PT_Caustic_Depth]),
+                    println(F, "\t<path_samples ival=\"~w\"/>",[PT_Samples]),
+                    println(F, "\t<use_background bval=\"~s\"/>",[PT_Use_Background]),
                     println(F," ");
 
                 bidirectional ->
                     println(F," "),
-                    println(F, "<type sval=\"~s\"/>",[Lighting_Method]),
-                    println(F, "<raydepth ival=\"~w\"/>",[Raydepth]),
+                    println(F, "\t<type sval=\"~s\"/>",[Lighting_Method]),
+                    println(F, "\t<raydepth ival=\"~w\"/>",[Raydepth]),
                     println(F," ")
 
+                end,
 
-
-                    end,
-
-
-
-
-             case UseCaustics of
+            case UseCaustics of
                 true ->
-                    println(F, "<caustics bval=\"true\"/>"),
-                    println(F, "<photons ival=\"~w\"/>",[Caustic_Photons]),
-                    println(F, "<caustic_depth ival=\"~w\"/>",[Caustic_Depth]),
-                    println(F, "<caustic_mix ival=\"~w\"/>",[Caustic_Mix]),
-                    println(F, "<caustic_radius fval=\"~.10f\"/>",[Caustic_Radius]);
+                    println(F, "\t<caustics bval=\"true\"/>"),
+                    println(F, "\t<photons ival=\"~w\"/>",[Caustic_Photons]),
+                    println(F, "\t<caustic_depth ival=\"~w\"/>",[Caustic_Depth]),
+                    println(F, "\t<caustic_mix ival=\"~w\"/>",[Caustic_Mix]),
+                    println(F, "\t<caustic_radius fval=\"~.10f\"/>",[Caustic_Radius]);
 
                 false ->
-                    println(F, "<caustics bval=\"false\"/>")
+                    println(F, "\t<caustics bval=\"false\"/>")
 
-                    end,
+                end,
 
-             case Do_AO of
+            case Do_AO of
                 true ->
-                    println(F, "<do_AO bval=\"true\"/>"),
-                    println(F, "<AO_distance fval=\"~.10f\"/>",[AO_Distance]),
-                    println(F, "<AO_samples fval=\"~.10f\"/>",[AO_Samples]),
+                    println(F, "\t<do_AO bval=\"true\"/>"),
+                    println(F, "\t<AO_distance fval=\"~.10f\"/>",[AO_Distance]),
+                    println(F, "\t<AO_samples fval=\"~.10f\"/>",[AO_Samples]),
                     export_rgb(F, "AO_color",AO_Color);
 
 
                 false ->
-                    println(F, "<do_AO bval=\"false\"/>")
+                    println(F, "\t<do_AO bval=\"false\"/>")
 
-                    end,
+                end,
 
 
-             case UseSSS of
+            case UseSSS of
                 true ->
-                    println(F, "<useSSS bval=\"true\"/>"),
-                    println(F, "<sssPhotons ival=\"~w\"/>",[SSS_Photons]),
-                    println(F, "<sssDepth ival=\"~w\"/>",[SSS_Depth]),
-                    println(F, "<sssScale fval=\"~.10f\"/>",[SSS_Scale]),
-                    println(F, "<singleScatterSamples ival=\"~w\"/>",[SSS_SingleScatter_Samples]);
+                    println(F, "\t<useSSS bval=\"true\"/>"),
+                    println(F, "\t<sssPhotons ival=\"~w\"/>",[SSS_Photons]),
+                    println(F, "\t<sssDepth ival=\"~w\"/>",[SSS_Depth]),
+                    println(F, "\t<sssScale fval=\"~.10f\"/>",[SSS_Scale]),
+                    println(F, "\t<singleScatterSamples ival=\"~w\"/>",[SSS_SingleScatter_Samples]);
 
                 false ->
-                    println(F, "<ibl bval=\"false\"/>")
+                    println(F, "\t<ibl bval=\"false\"/>")
 
-                    end,
-
-
+                end,
 
 println(F, "</integrator>"),
 
-
-
-             case Volintegr_Type of
+            case Volintegr_Type of
                 none ->
                     println(F," "),
                     println(F, "<integrator name=\"volintegr\">"),
-                    println(F, "<type sval=\"~s\"/>",[Volintegr_Type]),
+                    println(F, "        <type sval=\"~s\"/>",[Volintegr_Type]),
                     println(F, "</integrator>"),
                     println(F," ");
 
                 singlescatterintegrator ->
                     println(F," "),
                     println(F, "<integrator name=\"volintegr\">"),
-                    println(F, "<type sval=\"SingleScatterIntegrator\"/>"),
-                    println(F, "<adaptive bval=\"~s\"/>",[format(Volintegr_Adaptive)]),
-                    println(F, "<optimize bval=\"~s\"/>",[format(Volintegr_Optimize)]),
-                    println(F, "<stepSize fval=\"~.10f\"/>",[Volintegr_Stepsize]),
+                    println(F, "        <type sval=\"SingleScatterIntegrator\"/>"),
+                    println(F, "        <adaptive bval=\"~s\"/>",[format(Volintegr_Adaptive)]),
+                    println(F, "        <optimize bval=\"~s\"/>",[format(Volintegr_Optimize)]),
+                    println(F, "        <stepSize fval=\"~.10f\"/>",[Volintegr_Stepsize]),
                     println(F, "</integrator>"),
                     println(F," ")
-                    end,
-
-
-
-
-
-
-
-
-
-
+                end,
 
     ExrFlags =
         case RenderFormat of
@@ -5561,50 +5542,49 @@ println(F, "</integrator>"),
                  format(ExrFlagCompression)];
             _ -> ""
         end,
-    println(F, "<render> <camera_name sval=\"~s\"/> "
-        "<filter_type sval=\"~s\"/>"
-            "<AA_passes ival=\"~w\"/>~n"
-            "        <AA_threshold fval=\"~.10f\"/>~n"
-            "        <AA_minsamples ival=\"~w\"/> <AA_pixelwidth fval=\"~.10f\"/>~n"++
-            case SaveAlpha of
-                premultiply ->
-                    "        <premult bval=\"true\"/>~n";
-                backgroundmask ->
-                    "        alpha_backgroundmask=\"on\"/~n";
+    println(F,
+        "<render>~n"
+        "\t<camera_name sval=\"~s\"/>~n"
+        "\t<filter_type sval=\"~s\"/>~n"
+        "\t<AA_passes ival=\"~w\"/>~n"
+        "\t<AA_threshold fval=\"~.10f\"/>~n"
+        "\t<AA_minsamples ival=\"~w\"/>~n"
+        "\t<AA_pixelwidth fval=\"~.10f\"/>~n"++
+        case SaveAlpha of
+            premultiply ->
+                "\t<premult bval=\"true\"/>~n";
+            backgroundmask ->
+                "\t<alpha_backgroundmask=\"on\"/>~n";
                 _ -> ""
             end++
-            "        <clamp_rgb bval=\"~s\"/>~n"
-            "        <bg_transp_refract bval=\"~s\"/>~n"
-            "    <background_name sval=\"~s\"/>~n"++
+
+            "\t<clamp_rgb bval=\"~s\"/>~n"
+            "\t<bg_transp_refract bval=\"~s\"/>~n"
+            "\t<background_name sval=\"~s\"/>~n"++
             case RenderFormat of
                 tga -> "";
-                _   -> "    <output_type sval=\"~s\"/>~n"
+                _   -> "\t<output_type sval=\"~s\"/>~n"
             end++
             case RenderFormat of
-                exr -> "    <exr_flags sval=\"~s\"/>~n";
+                exr -> "\t<exr_flags sval=\"~s\"/>~n";
                 _   -> ""
             end++
 
-
-
-
-
-
-            "    <width ival=\"~w\"/> <height ival=\"~w\"/>~n"
-            "    <outfile sval=\"~s\"/>~n"
-            "    <indirect_samples sval=\"0\"/>~n"
-            "    <indirect_power sval=\"1.0\"/>~n"
-            "    <exposure fval=\"~.10f\"/>~n"++
+            "\t<width ival=\"~w\"/>~n"
+            "\t<height ival=\"~w\"/>~n"
+            "\t<outfile sval=\"~s\"/>~n"
+            "\t<indirect_samples sval=\"0\"/>~n"
+            "\t<indirect_power sval=\"1.0\"/>~n"
+            "\t<exposure fval=\"~.10f\"/>~n"++
             case SaveAlpha of
                 false -> "";
                 _ ->
-                    "    <save_alpha bval=\"on\"/>~n"
+                    "\t<save_alpha bval=\"on\"/>~n"
             end++
-            "    <gamma fval=\"~.10f\"/>~n"
+            "\t<gamma fval=\"~.10f\"/>~n"
             "    ",
-            [CameraName,AA_Filter_Type,AA_passes,AA_threshold,
-             AA_minsamples,AA_pixelwidth,
-             format(ClampRGB),format(BackgroundTranspRefract),BackgroundName]++
+            [CameraName,AA_Filter_Type,AA_passes,AA_threshold, AA_minsamples,AA_pixelwidth,
+                format(ClampRGB),format(BackgroundTranspRefract),BackgroundName]++
             case RenderFormat of
                 tga -> [];
                 _   -> [format(RenderFormat)]
@@ -5616,16 +5596,18 @@ println(F, "</integrator>"),
 
             [Width,Height,Outfile,Exposure,Gamma]),
 
-    println(F, "<integrator_name sval=\"default\"/>"),
+    println(F, "\t<integrator_name sval=\"default\"/>~n"),
 
             case ThreadsAuto of
-                true -> println(F, "<threads ival=\"-1\"/>");
+                true ->
+                    println(F, "\t<threads ival=\"-1\"/>~n");
 
-                false -> println(F, "<threads ival=\"~w\"/>",[ThreadsNumber])
+                false ->
+                    println(F, "\t<threads ival=\"~w\"/>~n",[ThreadsNumber])
 
             end,
 
-    println(F, "<volintegrator_name sval=\"volintegr\"/>"),
+    println(F, "\t<volintegrator_name sval=\"volintegr\"/>~n"),
     println(F, "</render>").
 
 %%% Noisy file output functions. Fail if anything goes wrong.
@@ -5762,8 +5744,6 @@ format_decimals_4(F) when is_float(F) ->
             end
     end.
 
-
-
 %% Set and get preference variables saved in the .wings file for this module
 
 set_prefs(Attr) ->
@@ -5807,7 +5787,6 @@ erase_var(Name) ->
     erase({?MODULE,Name}).
 
 
-
 %% Split a list into a list of length Pos, and the tail
 %%
 split_list(List, Pos) when is_list(List), is_integer(Pos), Pos >= 0 ->
@@ -5845,7 +5824,6 @@ zip_lists([H1|T1], [H2|T2]) -> [{H1,H2}|zip_lists(T1, T2)].
 
 max(X, Y) when X > Y -> X;
 max(_, Y) -> Y.
-
 
 
 -ifdef(print_mesh_1).

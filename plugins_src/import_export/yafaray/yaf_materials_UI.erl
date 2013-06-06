@@ -177,15 +177,11 @@ material_dialog(_Name, Mat) ->
             {hframe,[
                 {?__(6,"Autosmooth"),Autosmooth,[key(autosmooth)]},
                 {label,?__(7,"Angle")},
-                {slider,{text,AutosmoothAngle,[
-                    range(autosmooth_angle),{width,5},
-                    key(autosmooth_angle),
-                    hook(enable, ?KEY(autosmooth))]}},
-                    help_button({material_dialog,object})
+                {slider,{text,AutosmoothAngle,
+                    [range(autosmooth_angle),{width,5},key(autosmooth_angle),hook(enable, ?KEY(autosmooth))]}
+                },help_button({material_dialog,object})
             ]},
-
-        %%% Start Object Type Menu
-
+            %%% Object Type Menu
             {hframe,[
                 {vframe,[
                     {menu,[
@@ -201,44 +197,37 @@ material_dialog(_Name, Mat) ->
                             {?__(126,"Noise"),noisevolume}
                         ], Volume_Type, [key(volume_type),layout]
                         },
-
-        %% Start Uniform Volume
-
+                        %% Uniform Volume
                         {hframe,[
                             {vframe,[
                                 {label,?__(84,"Absorption")},
                                 {label,?__(85,"Scatter")},
                                 {label,?__(86,"AttgridScale")}
-                                                        ]},
+                            ]},
                             {vframe,[
                                 {text,Volume_Sigma_a,[range(volume_sigma_a),key(volume_sigma_a)]},
                                 {text,Volume_Sigma_s,[range(volume_sigma_s),key(volume_sigma_s)]},
                                 {text,Volume_Attgridscale,[range(volume_attgridscale),key(volume_attgridscale)]}
-                                                        ]},
+                            ]},
                             {vframe,[
                                 {label,?__(133,"Min/Max X")},
                                 {label,?__(134,"Min/Max Y")},
                                 {label,?__(135,"Min/Max Z")}
-                                                        ]},
+                            ]},
                             {vframe,[
                                 {text,Volume_Minmax_X,[range(volume_minmax_x),key(volume_minmax_x)]},
                                 {text,Volume_Minmax_Y,[range(volume_minmax_y),key(volume_minmax_y)]},
                                 {text,Volume_Minmax_Z,[range(volume_minmax_z),key(volume_minmax_z)]}
-                                                        ]}
-                        ], [hook(open, [member, ?KEY(volume_type), uniformvolume])]
+                            ]}
+                        ],[hook(open, [member, ?KEY(volume_type), uniformvolume])]
                         },
-
-        %% End Uniform Volume
-
-
-        %% Start ExpDensity Volume
-
+                        %% ExpDensity Volume
                         {hframe,[
                             {vframe,[
                                 {label,?__(88,"Absorption")},
                                 {label,?__(89,"Scatter")},
                                 {label,?__(86,"AttgridScale")}
-                                                        ]},
+                            ]},
                             {vframe,[
                                 {text,Volume_Sigma_a,[range(volume_sigma_a),key(volume_sigma_a)]},
                                 {text,Volume_Sigma_s,[range(volume_sigma_s),key(volume_sigma_s)]},
@@ -264,64 +253,56 @@ material_dialog(_Name, Mat) ->
                             ]}
                         ],[hook(open, [member, ?KEY(volume_type), expdensityvolume])]
                         },
-
-        %% End ExpDensity Volume
-
-        %% Start Noise Volume
-
+                        %% Noise Volume
                         {hframe,[
                             {vframe,[
                                 {label,?__(127,"Absorption")},
                                 {label,?__(128,"Scatter")},
                                 {label,?__(129,"AttgridScale")}
-                                                        ]},
+                            ]},
                             {vframe,[
                                 {text,Volume_Sigma_a,[range(volume_sigma_a),key(volume_sigma_a)]},
                                 {text,Volume_Sigma_s,[range(volume_sigma_s),key(volume_sigma_s)]},
                                 {text,Volume_Attgridscale,[range(volume_attgridscale),key(volume_attgridscale)]}
-                                                        ]},
+                            ]},
                             {vframe,[
                                 {label,?__(130,"Sharpness")},
                                 {label,?__(131,"Cover")},
                                 {label,?__(132,"Density")}
-                                                        ]},
+                            ]},
                             {vframe,[
                                 {text,Volume_Sharpness,[range(volume_sharpness),key(volume_sharpness)]},
                                 {text,Volume_Cover,[range(volume_cover),key(volume_cover)]},
                                 {text,Volume_Density,[range(volume_density),key(volume_density)]}
-                                                        ]},
+                            ]},
                             {vframe,[
                                 {label,?__(139,"Min/Max X")},
                                 {label,?__(140,"Min/Max Y")},
                                 {label,?__(141,"Min/Max Z")}
-                                                        ]},
+                            ]},
                             {vframe,[
                                 {text,Volume_Minmax_X,[range(volume_minmax_x),key(volume_minmax_x)]},
                                 {text,Volume_Minmax_Y,[range(volume_minmax_y),key(volume_minmax_y)]},
                                 {text,Volume_Minmax_Z,[range(volume_minmax_z),key(volume_minmax_z)]}
-                                                        ]}
+                            ]}
                         ],[hook(open, [member, ?KEY(volume_type), noisevolume])]
                         }
-
-        %%% End Noise Volume
-
                     ],[hook(open, [member, ?KEY(object_type), volume])]
                     },
-
                     {hframe,[
                         {vframe,[
                             {label,?__(121,"Power")},
                             {label,?__(122,"Samples")}
-                                                ]},
+                        ]},
                         {vframe,[
                             {text,Meshlight_Power,[range(meshlight_power),{width,5},key(meshlight_power)]},
                             {text,Meshlight_Samples,[range(meshlight_samples),{width,5},key(meshlight_samples)]}
-                                                ]},
+                        ]},
                         {vframe,[
                             {label,?__(123,"Color")}]},
                         {vframe,[
                             {slider, {color, Meshlight_Color, [key(meshlight_color)]}}
-                                                ]},
+                        ]},
                         {vframe,[
                             {button,"Set Default",keep,[diffuse_hook(?KEY(meshlight_color))]},
                             {?__(124,"Double Sided"),Meshlight_Double_Sided,[key(meshlight_double_sided)]}
@@ -330,12 +311,9 @@ material_dialog(_Name, Mat) ->
                     }
                 ],[{title,?__(113,"Object Type")}]
                 }
-            ]
-            }
-
+            ]}
         %%% End Object Type Menu
-            ],
-            [{title,?__(8,"Object Parameters")},{minimized,ObjectMinimized}, key(object_minimized)]
+        ],[{title,?__(8,"Object Parameters")},{minimized,ObjectMinimized}, key(object_minimized)]
         },
 
 %%% Shader Specific Material Properties Dialog
@@ -354,10 +332,7 @@ material_dialog(_Name, Mat) ->
                 {"Blend",blend_mat}
             ], ShaderType, [key(shader_type),layout]
             },
-
-        %%% Define Dialog for Shiny Diffuse Material
-        %%%
-
+            %%% Shiny Diffuse Material
             {hframe,[
                 {vframe,[
                     {label, "Index of Refraction"},
@@ -399,10 +374,7 @@ material_dialog(_Name, Mat) ->
                 ]}
             ],[hook(open, [member, ?KEY(shader_type), shinydiffuse])]
             },
-
-%%% Define Dialog for Glass Material
-%%%
-
+            %%% Glass Material
             {hframe,[
                 {vframe,[
                     {label, "Index of Refraction"},
@@ -414,8 +386,9 @@ material_dialog(_Name, Mat) ->
                     {label, "Transmit Filter"},
                     {label, "Dispersion Power"},
                     {label, "Dispersion Samples"},
-                    {"Fake Shadows",FakeShadows,[key(fake_shadows)]},panel]
-                },
+                    {"Fake Shadows",FakeShadows,[key(fake_shadows)]},
+                    panel
+                ]},
                 {vframe,[
                     {slider, {text, IOR,[range(ior),{width,5}, key(ior)]}},
                     {slider, {text, Glass_IR_Depth,[range(glass_ir_depth),{width,5}, key(glass_ir_depth)]}},
@@ -426,16 +399,15 @@ material_dialog(_Name, Mat) ->
                     {slider, {text,TransmitFilter,[range(transmit_filter), key(transmit_filter)]}},
                     {slider, {text,DispersionPower,[range(dispersion_power), key(dispersion_power)]}},
                     {slider, {text, DispersionSamples,[range(dispersion_samples),{width,8}, key(dispersion_samples),
-                        hook(enable, ['not',[member,?KEY(dispersion_power),0.0]])]}
+                                                        hook(enable, ['not',[member,?KEY(dispersion_power),0.0]])]}
                     }]
                 },
                 {vframe,[
                     panel,panel,panel,
                         {button,"Set Default",keep,[transmitted_hook(?KEY(transmitted))]},
                         {button,"Set Default",keep,[diffuse_hook(?KEY(absorption_color))]}
-                    ]}
-            ],
-            [hook(open, [member, ?KEY(shader_type), glass])]
+                ]}
+            ],[hook(open, [member, ?KEY(shader_type), glass])]
             },
             %%% Rough Glass Material
             {hframe,[
@@ -520,31 +492,28 @@ material_dialog(_Name, Mat) ->
                     {slider, {text,Exponent,[range(exponent),{width,8}, key(exponent),
                                 hook(enable, [member,?KEY(anisotropic), ?DEF_ANISOTROPIC])]}},
 
-                        {hframe,[
-                            {label, "Exp U"},
-                            {text, Anisotropic_U,[range(anisotropic_u), key(anisotropic_u),
-                                hook(enable, ['not',[member,?KEY(anisotropic), ?DEF_ANISOTROPIC]])]},
-                            {label, "Exp V"},
-                            {text,Anisotropic_V,[range(anisotropic_v), key(anisotropic_v),
-                                hook(enable, ['not',[member,?KEY(anisotropic), ?DEF_ANISOTROPIC]])]}
-                        ]},
-                        {hframe,[
-                            {label, "Sigma"},
-                            {text,OrenNayar_Sigma,[range(oren_nayar_sigma), key(oren_nayar_sigma),
-                                hook(enable, ['not',[member,?KEY(oren_nayar), ?DEF_OREN_NAYAR]])]}
-                        ]}
+                    {hframe,[
+                        {label, "Exp U"},
+                        {text, Anisotropic_U,[range(anisotropic_u), key(anisotropic_u),
+                                            hook(enable, ['not',[member,?KEY(anisotropic), ?DEF_ANISOTROPIC]])]},
+                        {label, "Exp V"},
+                        {text,Anisotropic_V,[range(anisotropic_v), key(anisotropic_v),
+                                            hook(enable, ['not',[member,?KEY(anisotropic), ?DEF_ANISOTROPIC]])]}
+                    ]},
+                    {hframe,[
+                        {label, "Sigma"},
+                        {text,OrenNayar_Sigma,[range(oren_nayar_sigma), key(oren_nayar_sigma),
+                                                hook(enable, ['not',[member,?KEY(oren_nayar), ?DEF_OREN_NAYAR]])]}
+                    ]}
                 ]},
                 {vframe,[
-                    panel,panel,
-                        {button,"Set Default",keep, [diffuse_hook(?KEY(transmitted))]}
-                    ]
-                }
-            ],
-            [hook(open, [member, ?KEY(shader_type), coatedglossy])]},
-
-%%% Define Dialog for Translucent (SSS) Material
-%%%
-
+                    panel,
+                    panel,
+                    {button,"Set Default",keep, [diffuse_hook(?KEY(transmitted))]}
+                ]}
+            ],[hook(open, [member, ?KEY(shader_type), coatedglossy])]
+            },
+            %%% Translucent (SSS) Material
             {hframe,[
                 {vframe,[
                     {label, "Index of Refraction"},
@@ -576,20 +545,19 @@ material_dialog(_Name, Mat) ->
                     {slider, {text,Exponent,[range(exponent),{width,8}, key(exponent)]}}
                 ]},
                 {vframe,[
-                    panel,panel,{button,"Set Default", keep, [diffuse_hook(?KEY(transmitted))]}
+                    panel,
+                    panel,
+                    {button,"Set Default", keep, [diffuse_hook(?KEY(transmitted))]}
                 ]}
-            ],
-            [hook(open, [member, ?KEY(shader_type), translucent])]},
-
-%%% Define Dialog for Light Material
-%%%
-
+            ],[hook(open, [member, ?KEY(shader_type), translucent])]
+            },
+            %%% Light Material
             {hframe,[
                 {vframe,[
                     {label, "Color"},
                     {label, "Power"},
-                    panel]
-                },
+                    panel
+                ]},
                 {vframe,[
                     {slider, {color, Lightmat_Color, [key(lightmat_color)]}},
                     {slider, {text,Lightmat_Power,[range(lightmat_power), key(lightmat_power)]}}
@@ -597,12 +565,9 @@ material_dialog(_Name, Mat) ->
                 {vframe,[
                     {button,"Set Default",keep, [diffuse_hook(?KEY(lightmat_color))]}
                 ]}
-            ],
-            [hook(open, [member, ?KEY(shader_type), lightmat])]},
-
-%%% Dialog for Blend Material
-%%%
-
+            ],[hook(open, [member, ?KEY(shader_type), lightmat])]
+            },
+            %%% Blend Material
             {hframe,[
                 {vframe,[
                     {label, "Material 1"},
@@ -615,11 +580,11 @@ material_dialog(_Name, Mat) ->
                     {text,Blend_Mat2,[key(blend_mat2)]},
                     {slider, {text,Blend_Value,[range(blend_value), key(blend_value)]}}
                 ]}
-            ],
-            [hook(open, [member, ?KEY(shader_type), blend_mat])]}
+            ],[hook(open, [member, ?KEY(shader_type), blend_mat])]
+            }
         ]},
 
-%% Shader types slots
+    %% Shader types slots
     [
         {vframe,[
             ObjectFrame,

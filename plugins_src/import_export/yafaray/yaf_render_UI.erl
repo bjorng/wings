@@ -1,7 +1,7 @@
 %%
 %%  yaf_dialogs.erl
 %%
-%%  YafaRay Export Dialogs User Interface.
+%%  YafaRay Exporter User Interface.
 %%
 %%  Copyright (c) 2003-2008 Raimo Niskanen
 %%  Code Converted from Yafray to YafaRay by Bernard Oortman (Wings3d user oort)
@@ -75,10 +75,6 @@ export_dialog_qs(Op,
                 {background_color,BgColor},
                 {save_alpha,SaveAlpha},
                 {background_transp_refract,BackgroundTranspRefract},
-                % povman test ----->
-                %79{use_IBL, UseIBL},
-                {background_type, BackgroundType},
-                % end ------->
                 {lens_type,Lens_Type},
                 {lens_ortho_scale,Lens_Ortho_Scale},
                 {lens_angular_circular,Lens_Angular_Circular},
@@ -422,17 +418,6 @@ export_dialog_qs(Op,
         },
         {hframe,[
             {vframe,[
-                %{label,?__(1000,"Background Type:")},
-                {menu,[
-                    {?__(1001,"Color"),constant_color},
-                    {?__(1002,"Gradient"), gradient_color},
-                    {?__(1003,"Texture"), texture_ibl},
-                    {?__(1004,"SunSky"), sunsky},
-                    {?__(1005,"DarkTide SunSky"),darksky}
-                ],BackgroundType,[{key,background_type}]
-                }
-            ]},
-            {vframe,[
                 {label,?__(21,"Default Color")},
                 {color,BgColor,[{key,background_color}]},
                 {label,?__(22,"Alpha Channel:")},
@@ -444,7 +429,6 @@ export_dialog_qs(Op,
                 ],SaveAlpha,[{key,save_alpha}]
                 }
             ]},
-            %{?__(1001,"Use IBL"),UseIBL,[{key, use_IBL}]}, % povman IBL
             {?__(159,"Transp Refraction"),BackgroundTranspRefract,[{key,background_transp_refract}]}
         ],[{title,?__(26,"World Environment Settings")}]
         },

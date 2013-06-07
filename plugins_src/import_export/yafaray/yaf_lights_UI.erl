@@ -110,7 +110,8 @@ light_dialog(_Name, spot, Ps) ->
                 {?__(97,"Photon Only"),SpotPhotonOnly,[key(spot_photon_only)]},
                 {?__(34,"Cast Shadows"),CastShadows,[key(cast_shadows)]},
                 {?__(98,"Soft Shadows"),SpotSoftShadows,[key(spot_soft_shadows)]},
-                {label,?__(35,"Samples")},{text,SpotIESSamples,[range(spot_ies_samples),key(spot_ies_samples),
+                {label,?__(35,"Samples")},
+                {text,SpotIESSamples,[range(spot_ies_samples),key(spot_ies_samples),
                     hook(enable, ['not',[member,?KEY(spot_soft_shadows), ?DEF_SPOT_SOFT_SHADOWS]])]}
             ]}
         ],[hook(open, [member,?KEY(type), spotlight])]
@@ -124,8 +125,8 @@ light_dialog(_Name, spot, Ps) ->
                 {hframe,[
                     {?__(38,"Soft Shadows"),SpotSoftShadows,[key(spot_soft_shadows)]},
                     {label,?__(37,"Samples")},
-					{text,SpotIESSamples,[range(spot_ies_samples),key(spot_ies_samples),
-                    hook(enable, ['not',[member,?KEY(spot_soft_shadows),?DEF_SPOT_SOFT_SHADOWS]])]}
+                    {text,SpotIESSamples,[range(spot_ies_samples),key(spot_ies_samples),
+                        hook(enable, ['not',[member,?KEY(spot_soft_shadows),?DEF_SPOT_SOFT_SHADOWS]])]}
                 ]}
             ]}
         ],[hook(open, [member,?KEY(type), spot_ies])]
@@ -295,7 +296,7 @@ light_dialog(_Name, ambient, Ps) ->
                 {?__(82,"None"), undefined}
             ],Bg,[layout,key(background)]
             },
-        %% HDRI Background
+            % HDRI Background
             {hframe,[
                 {label,?__(83,"Filename")},
                 {button,{text,BgFnameHDRI,[key(background_filename_HDRI),{props,BrowsePropsHDRI}]}},
@@ -303,7 +304,7 @@ light_dialog(_Name, ambient, Ps) ->
                 {text,Samples,[range(samples),key(samples)]}
             ],[hook(open, [member,?KEY(background),'HDRI'])]
             },
-        %% Image Background
+            %% Image Background
             {hframe,[
                 {label,?__(84,"Filename")},
                 {button,{text,BgFnameImage,[key(background_filename_image), {props,BrowsePropsImage}]}},
@@ -311,10 +312,10 @@ light_dialog(_Name, ambient, Ps) ->
                 {text,Samples,[range(samples),key(samples)]}
             ],[hook(open, [member,?KEY(background),image])]
             },
-        %% HDRI Background Settings
+            %% HDRI Background Settings
             {hframe,[
                 {hframe,[
-                    {label,?__(85,"Exposure")},
+                    {label,?__(85,"Power")},
                     {text,BgExpAdj,[key(background_exposure_adjust), range(exposure_adjust)]},
                     {menu,[
                         {?__(86,"Light Probe (Angular)"),probe},
@@ -328,12 +329,12 @@ light_dialog(_Name, ambient, Ps) ->
                     {text,BgPower,[key(background_power),range(power)]}
                 ],[hook(open, [member,?KEY(background),image])]
                 },
-                {?__(89,"Enlight"),BgEnlight,[key(background_enlight)]},
+                {?__(89,"Use IBL"),BgEnlight,[key(background_enlight)]},
                 {?__(96,"Prefilter"),BgPrefilter,[key(background_prefilter)]}
             ],[hook(open, [member,?KEY(background),'HDRI',image])]
             },
 
-        %% Constant Background
+            %% Constant Background
             {hframe,[
                 {label,?__(90,"Color")},
                 {color,BgColor,[key(background_color)]},
@@ -342,7 +343,7 @@ light_dialog(_Name, ambient, Ps) ->
             ],[hook(open, [member,?KEY(background),constant])]
             },
 
-        %% Gradient Background
+            %% Gradient Background
             {hframe,[
                 {label,?__(106,"Horizon Color")},{color,HorizonColor,[key(horizon_color)]},
                 {label,?__(107,"Zenith Color")},{color,ZenithColor,[key(zenith_color)]},

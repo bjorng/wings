@@ -394,18 +394,18 @@ material_dialog(_Name, Mat) ->
                     {slider, {text, Glass_IR_Depth,[range(glass_ir_depth),{width,5}, key(glass_ir_depth)]}},
                     {slider, {color, Reflected, [key(reflected)]}},
                     {slider, {color, Transmitted, [key(transmitted)]}},
-                    {slider, {color,AbsorptionColor,[key(absorption_color)]}},
+                    {slider, {color, AbsorptionColor,[key(absorption_color)]}},
                     {slider, {text, AbsorptionDist,[range(absorption_dist),{width,8}, key(absorption_dist)]}},
-                    {slider, {text,TransmitFilter,[range(transmit_filter), key(transmit_filter)]}},
-                    {slider, {text,DispersionPower,[range(dispersion_power), key(dispersion_power)]}},
+                    {slider, {text, TransmitFilter,[range(transmit_filter), key(transmit_filter)]}},
+                    {slider, {text, DispersionPower,[range(dispersion_power), key(dispersion_power)]}},
                     {slider, {text, DispersionSamples,[range(dispersion_samples),{width,8}, key(dispersion_samples),
                                                         hook(enable, ['not',[member,?KEY(dispersion_power),0.0]])]}
                     }]
                 },
                 {vframe,[
                     panel,panel,panel,
-                        {button,"Set Default",keep,[transmitted_hook(?KEY(transmitted))]},
-                        {button,"Set Default",keep,[diffuse_hook(?KEY(absorption_color))]}
+                    {button,"Set Default",keep,[transmitted_hook(?KEY(transmitted))]},
+                    {button,"Set Default",keep,[diffuse_hook(?KEY(absorption_color))]}
                 ]}
             ],[hook(open, [member, ?KEY(shader_type), glass])]
             },
@@ -437,8 +437,7 @@ material_dialog(_Name, Mat) ->
                                 hook(enable, ['not',[member,?KEY(dispersion_power),0.0]])]}}
                 ]},
                 {vframe,[
-                    panel,
-                    panel,
+                    panel, panel,
                     {button,"Set Default",keep,[transmitted_hook(?KEY(transmitted))]}
                 ]}
             ],[hook(open, [member, ?KEY(shader_type), rough_glass])]

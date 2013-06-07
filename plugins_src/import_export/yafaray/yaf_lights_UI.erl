@@ -144,29 +144,29 @@ light_dialog(_Name, infinite, Ps) ->
 
     SunAngle = proplists:get_value(sun_angle, Ps, ?DEF_SUN_ANGLE),
 
-    %cut SkyBackgroundLight = proplists:get_value(sky_background_light, Ps, ?DEF_SKY_BACKGROUND_LIGHT),
-    %cut SkyBackgroundPower = proplists:get_value(sky_background_power, Ps, ?DEF_SKY_BACKGROUND_POWER),
-    %cut SkyBackgroundSamples = proplists:get_value(sky_background_samples, Ps, ?DEF_SKY_BACKGROUND_SAMPLES),
+    SkyBackgroundLight = proplists:get_value(sky_background_light, Ps, ?DEF_SKY_BACKGROUND_LIGHT),
+    SkyBackgroundPower = proplists:get_value(sky_background_power, Ps, ?DEF_SKY_BACKGROUND_POWER),
+    SkyBackgroundSamples = proplists:get_value(sky_background_samples, Ps, ?DEF_SKY_BACKGROUND_SAMPLES),
 
     InfiniteTrue = proplists:get_value(infinite_true, Ps, ?DEF_INFINITE_TRUE),
 
     InfiniteRadius = proplists:get_value(infinite_radius, Ps, ?DEF_INFINITE_RADIUS),
 
-    %cut Bg = proplists:get_value(background, Ps, ?DEF_BACKGROUND),
+    Bg = proplists:get_value(background, Ps, ?DEF_BACKGROUND),
     %%
-    %cut BgColor = proplists:get_value(background_color, Ps, ?DEF_BACKGROUND_COLOR),
-    %cutConstantBackPower = proplists:get_value(constant_back_power, Ps, ?DEF_CONSTANT_BACK_POWER),
+    BgColor = proplists:get_value(background_color, Ps, ?DEF_BACKGROUND_COLOR),
+    ConstantBackPower = proplists:get_value(constant_back_power, Ps, ?DEF_CONSTANT_BACK_POWER),
     %%
-    %cut HorizonColor = proplists:get_value(horizon_color, Ps, ?DEF_HORIZON_COLOR),
-    %cut ZenithColor = proplists:get_value(zenith_color, Ps, ?DEF_ZENITH_COLOR),
-    %cut GradientBackPower = proplists:get_value(gradient_back_power, Ps, ?DEF_GRADIENT_BACK_POWER),
+    HorizonColor = proplists:get_value(horizon_color, Ps, ?DEF_HORIZON_COLOR),
+    ZenithColor = proplists:get_value(zenith_color, Ps, ?DEF_ZENITH_COLOR),
+    GradientBackPower = proplists:get_value(gradient_back_power, Ps, ?DEF_GRADIENT_BACK_POWER),
     %%
-    %cut Turbidity = proplists:get_value(turbidity, Ps, ?DEF_TURBIDITY),
-    %cut A_var = proplists:get_value(a_var, Ps, ?DEF_SUNSKY_VAR),
-    %cut B_var = proplists:get_value(b_var, Ps, ?DEF_SUNSKY_VAR),
-    %cut C_var = proplists:get_value(c_var, Ps, ?DEF_SUNSKY_VAR),
-    %cut D_var = proplists:get_value(d_var, Ps, ?DEF_SUNSKY_VAR),
-    %cut E_var = proplists:get_value(e_var, Ps, ?DEF_SUNSKY_VAR),
+    Turbidity = proplists:get_value(turbidity, Ps, ?DEF_TURBIDITY),
+    A_var = proplists:get_value(a_var, Ps, ?DEF_SUNSKY_VAR),
+    B_var = proplists:get_value(b_var, Ps, ?DEF_SUNSKY_VAR),
+    C_var = proplists:get_value(c_var, Ps, ?DEF_SUNSKY_VAR),
+    D_var = proplists:get_value(d_var, Ps, ?DEF_SUNSKY_VAR),
+    E_var = proplists:get_value(e_var, Ps, ?DEF_SUNSKY_VAR),
     %%
 
     [
@@ -178,8 +178,10 @@ light_dialog(_Name, infinite, Ps) ->
             },
             %% Sunlight Settings Start
             {hframe,[
-                {label,?__(114,"Samples")}, {text,SunSamples,[key(sun_samples),range(sun_samples)]},
-                {label,?__(115,"Angle")}, {text,SunAngle,[key(sun_angle),range(sun_angle)]}
+                {label,?__(114,"Samples")},
+                {text,SunSamples,[key(sun_samples),range(sun_samples)]},
+                {label,?__(115,"Angle")},
+                {text,SunAngle,[key(sun_angle),range(sun_angle)]}
             ],[hook(open, [member,?KEY(type),sunlight])]
             },
             {?__(42,"Cast Shadows"),CastShadows,[key(cast_shadows), hook(open, [member,?KEY(type),sunlight])]},
@@ -189,14 +191,81 @@ light_dialog(_Name, infinite, Ps) ->
 
 %% Directional Semi-infinite Radius
             {hframe,[
-                {label,?__(113,"Semi-infinite Radius")},{text,InfiniteRadius,[range(infinite_radius),key(infinite_radius),
+                {label,?__(113,"Semi-infinite Radius")},
+                {text,InfiniteRadius,[range(infinite_radius),key(infinite_radius),
                 hook(enable, ['not',[member,?KEY(infinite_true),?DEF_INFINITE_TRUE]])]}
             ],[hook(open, [member,?KEY(type),directional])]
-            } % for cut error (,)
-%% End Directional Semi-infinite Radius
-            % povman: cut code for background
+            },
+            %% this part is for background environment ------------------------------->
+            {vframe,[
+                {hradio,[
+                    {?__(43,"Constant"),constant},
+                    {?__(101,"Gradient"),gradientback},
+                    {?__(44,"Sunsky"),sunsky},
+                    {?__(45,"None"), undefined}
+                ],Bg,[layout,key(background)]
+                },
+        %% Constant Background
+                {hframe,[
+                    {label,?__(46,"Color")},{color,BgColor,[key(background_color)]},
+                    {label,?__(104,"Power")},{text,ConstantBackPower,[key(constant_back_power),range(power)]}
+                ],[hook(open, [member,?KEY(background),constant])]
+                },
+        %% Gradient Background
+                {hframe,[
+                    {label,?__(102,"Horizon Color")},{color,HorizonColor,[key(horizon_color)]},
+                    {label,?__(103,"Zenith Color")},{color,ZenithColor,[key(zenith_color)]},
+                    {label,?__(104,"Power")},{text,GradientBackPower,[key(gradient_back_power),range(power)]}
+                ],[hook(open, [member,?KEY(background),gradientback])]
+                },
+        %% Sunsky Background
+                {vframe,[
+                    {hframe,[]},
+                    {hframe,[
+                        {vframe,[
+                            {label,?__(47,"Turbidity")},
+                            {label,"a: "++?__(48,"Horizon Brightness")},
+                            {label,"b: "++?__(49,"Horizon Spread")},
+                            {label,"c: "++?__(50,"Sun Brightness")},
+                            {label,"d: "++?__(51,"Sun Contraction")},
+                            {label,"e: "++?__(52,"Sun Backscatter")}
+                        ]},
+                        {vframe,[
+                            {text,Turbidity,[range(turbidity),key(turbidity)]},
+                            {text,A_var,[key(a_var)]},
+                            {text,B_var,[key(b_var)]},
+                            {text,C_var,[key(c_var)]},
+                            {text,D_var,[key(d_var)]},
+                            {text,E_var,[key(e_var)]}
+                        ]}
+                    ]},
+        %% Start Skylight Settings
+                    {?__(116,"Skylight"),SkyBackgroundLight,[key(sky_background_light),
+                        hook(open, [member,?KEY(background),sunsky])]},
+        %% Skylight Power
+                    {hframe,[
+                        {label,?__(117,"Power")},
+                        {text,SkyBackgroundPower,[range(sky_background_power),key(sky_background_power),
+                            hook(enable, ['not',[member,?KEY(sky_background_light), ?DEF_SKY_BACKGROUND_LIGHT]])]}
+        %% End Enable Disable Text field
+                    ],[hook(open, [member,?KEY(background),sunsky])]
+                    },
+        %% Skylight Samples
+                    {hframe,[
+                        {label,?__(118,"Samples")},
+                        {text,SkyBackgroundSamples,[range(sky_background_samples),key(sky_background_samples),
+                            hook(enable, ['not',[member,?KEY(sky_background_light), ?DEF_SKY_BACKGROUND_LIGHT]])]}
+        %% End Enable Disable Text field
+                    ],[hook(open, [member,?KEY(background),sunsky])]
+                    }
+        %% End Skylight Samples
 
-            % end cut code
+        %% End Skylight Settings
+                ],[hook(open, [member,?KEY(background),sunsky])]
+                }
+            ],[{title,?__(53,"Background")}]
+            }
+            %% ----------------------------------------------------------->
         ]}
     ];
 

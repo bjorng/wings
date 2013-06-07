@@ -31,15 +31,18 @@ export_light(F, Name, point, OpenGL, YafaRay) ->
     Type = proplists:get_value(type, YafaRay, ?DEF_POINT_TYPE),
 
     println(F,
-        "<light name=\"~s\">~n"
-        "\t<type sval=\"~w\"/>~n"
+        "<light name=\"~s\">\n"
+        "\t<type sval=\"~w\"/>\n"
         "\t<power fval=\"~.3f\"/>",
         [Name,Type,Power]),
+
     case Type of
         pointlight ->
             CastShadows = proplists:get_value(cast_shadows, YafaRay, ?DEF_CAST_SHADOWS),
 
-            println(F,"\t<cast_shadows bval=\"~s\"/>", [format(CastShadows)]);
+            println(F,
+                "\t<cast_shadows bval=\"~s\"/>",
+                [format(CastShadows)]);
 
         spherelight ->
             ArealightRadius = proplists:get_value(arealight_radius, YafaRay, ?DEF_AREALIGHT_RADIUS),
@@ -49,7 +52,7 @@ export_light(F, Name, point, OpenGL, YafaRay) ->
             println(F,
                 "\t<radius fval=\"~.10f\"/>~n"
                 "\t<samples ival=\"~w\"/>",
-                [ArealightRadius,ArealightSamples])
+                [ArealightRadius, ArealightSamples])
     end,
 
     export_pos(F, from, Position),
@@ -61,45 +64,50 @@ export_light(F, Name, point, OpenGL, YafaRay) ->
 %% Export Infinite Light Sun and Directional
 
 export_light(F, Name, infinite, OpenGL, YafaRay) ->
+
     Bg = proplists:get_value(background, YafaRay, ?DEF_BACKGROUND),
+
     Type = proplists:get_value(type, YafaRay, ?DEF_INFINITE_TYPE),
-     InfiniteTrue = proplists:get_value(infinite_true, YafaRay, ?DEF_INFINITE_TRUE),
+
+    InfiniteTrue = proplists:get_value(infinite_true, YafaRay, ?DEF_INFINITE_TRUE),
+
     Power = proplists:get_value(power, YafaRay, ?DEF_POWER),
+
     Position = proplists:get_value(position, OpenGL, {0.0,0.0,0.0}),
+
     Diffuse = proplists:get_value(diffuse, OpenGL, {1.0,1.0,1.0,1.0}),
+
     SunSamples = proplists:get_value(sun_samples, YafaRay, ?DEF_SUN_SAMPLES),
+
     SunAngle = proplists:get_value(sun_angle, YafaRay, ?DEF_SUN_ANGLE),
 
 %% Directional Infinite Light Start
     case Type of
         directional when Power > 0.0 ->
             println(F,
-                "<light name=\"~s\">~n"
-                "\t<type sval=\"~w\"/>~n"
+                "<light name=\"~s\">\n"
+                "\t<type sval=\"~w\"/>\n"
                 "\t<power fval=\"~.3f\"/>",
                 [Name, Type, Power]),
 
-%% Add Semi-infinite Start
+            %% Add Semi-infinite
+            case proplists:get_value(infinite_true, YafaRay, ?DEF_INFINITE_TRUE) of
 
-            case proplists:get_value(infinite_true, YafaRay,
-                                     ?DEF_INFINITE_TRUE) of
                 false ->
-                    InfiniteRadius = proplists:get_value(infinite_radius, YafaRay,
-                                                      ?DEF_INFINITE_RADIUS),
+                    InfiniteRadius = proplists:get_value(infinite_radius, YafaRay, ?DEF_INFINITE_RADIUS),
                     println(F,
-                        "\t<infinite bval=\"~s\"/>~n"
+                        "\t<infinite bval=\"~s\"/>\n"
                         "\t<radius fval=\"~.10f\"/>",
                         [format(InfiniteTrue),InfiniteRadius]),
                         export_pos(F, from, Position);
                 true -> ok
             end,
-%% Add Semi-infinite End
 
-                    export_pos(F, direction, Position),
-                    export_rgb(F, color, Diffuse),
-                    println(F, "</light>"),
+            export_pos(F, direction, Position),
+            export_rgb(F, color, Diffuse),
+            println(F, "</light>"),
 
-                Bg;
+            Bg;
 
         directional -> Bg;
 
@@ -112,18 +120,19 @@ export_light(F, Name, infinite, OpenGL, YafaRay) ->
                 "\t<samples ival=\"~w\"/>~n"
                 "\t<angle fval=\"~.3f\"/>",
                 [Name, Type, Power, SunSamples, SunAngle]),
+
             export_pos(F, direction, Position),
+
             export_rgb(F, color, Diffuse),
+
             println(F, "</light>"),
 
         Bg;
         sunlight -> Bg
-
-%% Sunlight Infinite Light End
     end;
 
-%% Export Spot Light
-
+%%% Export Spot Light
+%%
 export_light(F, Name, spot, OpenGL, YafaRay) ->
     Power = proplists:get_value(power, YafaRay, ?DEF_ATTN_POWER),
     Position = proplists:get_value(position, OpenGL, {0.0,0.0,0.0}),
@@ -149,6 +158,7 @@ export_light(F, Name, spot, OpenGL, YafaRay) ->
             SpotExponent = proplists:get_value(spot_exponent, OpenGL, ?DEF_SPOT_EXPONENT),
 
             Blend = proplists:get_value(blend, YafaRay, ?DEF_BLEND),
+
             print(F,
                 "\t<type sval=\"spotlight\"/>~n"
                 "\t<cast_shadows bval=\"~s\"/>~n"
@@ -174,7 +184,7 @@ export_light(F, Name, spot, OpenGL, YafaRay) ->
                 "\t<soft_shadows bval=\"~s\"/>~n"
                 "\t<samples ival=\"~w\"/>~n"
                 "\t<file sval=\"~s\"/>",
-                [ConeAngle,SpotSoftShadows,SpotIESSamples,SpotIESFilename])
+                [ConeAngle, SpotSoftShadows, SpotIESSamples, SpotIESFilename])
     end,
     export_pos(F, from, Position),
     export_pos(F, to, AimPoint),
@@ -205,7 +215,9 @@ export_light(F, Name, ambient, _OpenGL, YafaRay) ->
 
             println(F, ""),
             Bg;
+
         hemilight -> Bg;
+
         pathlight when Power > 0.0 ->
             println(F,
                 "<light type sval=\"~w\" name sval=\"~s\" power fval=\"~.3f\"",
@@ -274,7 +286,9 @@ export_light(F, Name, ambient, _OpenGL, YafaRay) ->
             end,
             println(F, "</light>"),
             Bg;
+
         pathlight -> Bg;
+
         globalphotonlight ->
             println(F,
                 "\t<light type sval=\"~w\" name sval=\"~s\"",
@@ -298,21 +312,31 @@ export_light(F, Name, ambient, _OpenGL, YafaRay) ->
 %% Export Area Light
 
 export_light(F, Name, area, OpenGL, YafaRay) ->
+
     Color = proplists:get_value(diffuse, OpenGL, {1.0,1.0,1.0,1.0}),
+
     #e3d_mesh{vs=Vs,fs=Fs0} = proplists:get_value(mesh, OpenGL, #e3d_mesh{}),
+
     VsT = list_to_tuple(Vs),
+
     Power = proplists:get_value(power, YafaRay, ?DEF_ATTN_POWER),
-    Samples = proplists:get_value(arealight_samples, YafaRay,
-                                           ?DEF_AREALIGHT_SAMPLES),
+
+    Samples = proplists:get_value(arealight_samples, YafaRay, ?DEF_AREALIGHT_SAMPLES),
+
     Dummy = proplists:get_value(dummy, YafaRay, ?DEF_DUMMY),
+
     Fs = foldr(fun (Face, Acc) ->
-                        e3d_mesh:quadrangulate_face(Face, Vs)++Acc
+                    e3d_mesh:quadrangulate_face(Face, Vs)++Acc
                 end, [], Fs0),
+
     As = e3d_mesh:face_areas(Fs, Vs),
+
     Area = foldl(fun (A, Acc) -> A+Acc end, 0.0, As),
+
     AFs = zip_lists(As, Fs),
+
     foldl(
-      fun ({Af,#e3d_face{vs=VsF}}, I) ->
+        fun ({Af,#e3d_face{vs=VsF}}, I) ->
             case catch Power*Af/Area of
                 {'EXIT',{badarith,_}} -> I;
                 Pwr ->
@@ -339,8 +363,9 @@ export_light(F, Name, area, OpenGL, YafaRay) ->
                     println(F, "</light>"),
                     I+1
             end
-      end, 1, AFs),
+        end, 1, AFs),
     undefined;
+
 export_light(_F, Name, Type, _OpenGL, _YafaRay) ->
     io:format(?__(1,"WARNING: Ignoring unknown light \"~s\" type: ~p")++"~n",
               [Name, format(Type)]),

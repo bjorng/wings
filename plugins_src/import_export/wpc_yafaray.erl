@@ -566,7 +566,9 @@ export_prefs() ->
      {aperture,?DEF_APERTURE},
      {bokeh_bias,?DEF_BOKEH_BIAS},
      {bokeh_rotation,?DEF_BOKEH_ROTATION},
-     {dof_distance,?DEF_DOF_DISTANCE}].
+     {dof_distance,?DEF_DOF_DISTANCE},
+     {background, ?DEF_BACKGROUND} %% add element for finded : 79
+     ].
 
 %
 def_modulators([]) ->
@@ -627,7 +629,7 @@ modulator_dialogs([], _Maps, M) ->
 %%%
 
 export_dialog_loop({Op,Fun}=Keep, Attr) ->
-    {Prefs,Buttons} = split_list(Attr, 78), %% povman: add index?? old value 78
+    {Prefs,Buttons} = split_list(Attr, 79), %% povman: add index?? old value 78
     case Buttons of
         [true,false,false] -> % Save
             set_user_prefs(Prefs),
@@ -1613,31 +1615,36 @@ export_render(F, CameraName, BackgroundName, Outfile, Attr) ->
                  format(ExrFlagCompression)];
             _ -> ""
         end,
+
     println(F,
-        "\n<render>~n"
-        "\t<camera_name sval=\"~s\"/>\n"
-        "\t<filter_type sval=\"~s\"/>\n"
+        "\n<render>\n"
         "\t<AA_passes ival=\"~w\"/>\n"
         "\t<AA_threshold fval=\"~.10f\"/>\n"
         "\t<AA_minsamples ival=\"~w\"/>\n"
-        "\t<AA_pixelwidth fval=\"~.10f\"/>\n",
-        [CameraName, AA_Filter_Type, AA_passes, AA_threshold, AA_minsamples, AA_pixelwidth]),
+        "\t<AA_pixelwidth fval=\"~.10f\"/>\n"
+        "\t<filter_type sval=\"~s\"/>\n"
+        "\t<camera_name sval=\"~s\"/>",
+        [AA_passes, AA_threshold, AA_minsamples, AA_pixelwidth, AA_Filter_Type, CameraName]),
 
     case SaveAlpha of
 
+        true ->
+            println(F, "\t<save_alpha bval=\"true\"/>");
+
         premultiply ->
-            println(F, "\t<premult bval=\"true\"/>~n");
+            println(F, "\t<premult bval=\"true\"/>");
 
         backgroundmask ->
-            println(F, "\t<alpha_backgroundmask=\"on\"/>~n"); %% really work??
+            println(F, "\t<alpha_backgroundmask bval=\"true\"/>");
 
-        _ -> println(F, "")
+        _ ->
+            println(F, "\t<save_alpha bval=\"false\"/>")
     end,
 
     println(F,
         "\t<clamp_rgb bval=\"~s\"/>~n"
         "\t<bg_transp_refract bval=\"~s\"/>~n"
-        "\t<background_name sval=\"~s\"/>~n",
+        "\t<background_name sval=\"~s\"/>",
         [format(ClampRGB), format(BackgroundTranspRefract), BackgroundName]),
 
     case RenderFormat of
@@ -1657,16 +1664,10 @@ export_render(F, CameraName, BackgroundName, Outfile, Attr) ->
         "\t<width ival=\"~w\"/>\n"
         "\t<height ival=\"~w\"/>\n"
         "\t<outfile sval=\"~s\"/>\n"
-        "\t<indirect_samples sval=\"0\"/>\n" %% unused in 0.1.2 ??
-        "\t<indirect_power sval=\"1.0\"/>\n" %% unused in 0.1.2 ??
-        "\t<exposure fval=\"~.10f\"/>~n",    %% unused in 0.1.2 ??
+        "\t<indirect_samples sval=\"0\"/>\n"    %% unused in 0.1.2 ??
+        "\t<indirect_power sval=\"1.0\"/>\n"    %% unused in 0.1.2 ??
+        "\t<exposure fval=\"~.10f\"/>",         %% unused in 0.1.2 ??
         [Width, Height, Outfile, Exposure]),
-
-    case SaveAlpha of
-        false -> println(F,"");
-        _ ->
-            println(F, "\t<save_alpha bval=\"on\"/>")
-    end,
 
     println(F,"\t<gamma fval=\"~.10f\"/>", [Gamma]),
 

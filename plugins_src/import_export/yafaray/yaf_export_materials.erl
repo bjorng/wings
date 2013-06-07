@@ -47,10 +47,8 @@ export_shader(F, Name, Mat, ExportDir) ->
 
         end.
 
-
-%%% Export Shiny Diffuse Material
-%%%
-
+%%% Shiny Diffuse Material
+%%
 export_shinydiffuse_shader(F, Name, Mat, ExportDir, YafaRay) ->
 
     OpenGL = proplists:get_value(opengl, Mat),
@@ -60,36 +58,42 @@ export_shinydiffuse_shader(F, Name, Mat, ExportDir, YafaRay) ->
     Modulators = proplists:get_value(modulators, YafaRay, def_modulators(Maps)),
 
     foldl(fun ({modulator,Ps}=M, N) when is_list(Ps) ->
-                  case export_texture(F, [Name,$_,format(N)],
-                                      Maps, ExportDir, M) of
-                      off -> N+1;
-                      ok ->
-                          println(F),
-                          N+1
-                  end;
-              (_, N) ->
-                  N % Ignore old modulators
-          end, 1, Modulators),
+            case export_texture(F, [Name,$_,format(N)], Maps, ExportDir, M) of
+                    off -> N+1;
+                    ok ->
+                        println(F),
+                        N+1
+                end;
+            (_, N) ->
+                N % Ignore old modulators
+        end, 1, Modulators),
+
     println(F,
-        "<material name=\"~s\">~n" %%++
+        "<material name=\"~s\">~n"
         "\t<type sval=\"shinydiffusemat\"/>\n", [Name]),
+
     DiffuseA = {_,_,_,Opacity} = proplists:get_value(diffuse, OpenGL),
 
     Specular = alpha(proplists:get_value(specular, OpenGL)),
+
     DefReflected = Specular,
+
     DefTransmitted = def_transmitted(DiffuseA),
 
     %% XXX Wings scaling of shininess is weird. Commonly this value
     %% is the cosine power and as such in the range 0..infinity.
     %% OpenGL limits this to 0..128 which mostly is sufficient.
-    println(F, "\t<hard fval=\"~.10f\"/>",
-                   [proplists:get_value(shininess, OpenGL)*128.0]),
-    export_rgb(F, mirror_color,
-               proplists:get_value(reflected, YafaRay, DefReflected)),
-    export_rgb(F, color,
-               proplists:get_value(transmitted, YafaRay, DefTransmitted)),
+
+    println(F,
+        "\t<hard fval=\"~.10f\"/>",
+        [proplists:get_value(shininess, OpenGL)*128.0]),
+
+    export_rgb(F, mirror_color, proplists:get_value(reflected, YafaRay, DefReflected)),
+
+    export_rgb(F, color, proplists:get_value(transmitted, YafaRay, DefTransmitted)),
 
     IOR = proplists:get_value(ior, YafaRay, ?DEF_IOR),
+
     TIR = proplists:get_value(tir, YafaRay, ?DEF_TIR),
 
     Transparency = proplists:get_value(transparency, YafaRay, ?DEF_TRANSPARENCY),
@@ -129,8 +133,7 @@ export_shinydiffuse_shader(F, Name, Mat, ExportDir, YafaRay) ->
             DispersionJitter =
                 proplists:get_value(dispersion_jitter, YafaRay, ?DEF_DISPERSION_JITTER),
             println(F,
-                "       "
-                "\t<dispersion_samples ival=\"~w\"/>~n"
+                "\t<dispersion_samples ival=\"~w\"/>\n"
                 "\t<dispersion_jitter bval=\"~s\"/>",
                 [DispersionSamples, format(DispersionJitter)])
     end,
@@ -145,7 +148,6 @@ export_shinydiffuse_shader(F, Name, Mat, ExportDir, YafaRay) ->
                 "\t<sigma fval=\"~.10f\"/>",
                 [OrenNayarSigma])
     end,
-
 
     println(F,
         "\t<IOR fval=\"~.10f\"/>~n"
@@ -171,7 +173,8 @@ export_shinydiffuse_shader(F, Name, Mat, ExportDir, YafaRay) ->
 
     println(F, "</material>").
 
-
+%%% Glossy material
+%%
 export_glossy_shader(F, Name, Mat, ExportDir, YafaRay) ->
     OpenGL = proplists:get_value(opengl, Mat),
     Maps = proplists:get_value(maps, Mat, []),
@@ -185,7 +188,7 @@ export_glossy_shader(F, Name, Mat, ExportDir, YafaRay) ->
                     N+1
                 end;
             (_, N) ->
-                  N % Ignore old modulators
+                N % Ignore old modulators
         end, 1, Modulators),
     %
     println(F,
@@ -195,7 +198,9 @@ export_glossy_shader(F, Name, Mat, ExportDir, YafaRay) ->
     DiffuseA = {_,_,_,Opacity} = proplists:get_value(diffuse, OpenGL),
 
     Specular = alpha(proplists:get_value(specular, OpenGL)),
+
     DefReflected = Specular,
+
     DefTransmitted = def_transmitted(DiffuseA),
 
     %% XXX Wings scaling of shininess is weird. Commonly this value
@@ -239,8 +244,7 @@ export_glossy_shader(F, Name, Mat, ExportDir, YafaRay) ->
             DispersionJitter =
                 proplists:get_value(dispersion_jitter, YafaRay, ?DEF_DISPERSION_JITTER),
             println(F,
-                "\t"
-                "\t<dispersion_samples ival=\"~w\"/>~n"
+                "\t<dispersion_samples ival=\"~w\"/>\n"
                 "\t<dispersion_jitter bval=\"~s\"/>",
                 [DispersionSamples, format(DispersionJitter)])
     end,
@@ -259,7 +263,7 @@ export_glossy_shader(F, Name, Mat, ExportDir, YafaRay) ->
     println(F,
         "\t<diffuse_reflect fval=\"~.10f\"/>~n"
         "\t<glossy_reflect fval=\"~.10f\"/>~n"
-        "\t<exponent fval=\"~.10f\"/>~n",
+        "\t<exponent fval=\"~.10f\"/>",
         [DiffuseReflect,GlossyReflect,Exponent]),
     %
     foldl(fun ({modulator,Ps}=M, N) when is_list(Ps) ->
@@ -272,6 +276,7 @@ export_glossy_shader(F, Name, Mat, ExportDir, YafaRay) ->
             (_, N) ->
                 N % Ignore old modulators
         end, 1, Modulators),
+
     println(F, "</material>").
 
 %% coated glossy
@@ -291,6 +296,7 @@ export_coatedglossy_shader(F, Name, Mat, ExportDir, YafaRay) ->
             (_, N) ->
                 N % Ignore old modulators
         end, 1, Modulators),
+
     println(F,
         "<material name=\"~s\">~n"
         "\t<type sval=\"coated_glossy\"/>", [Name]),
@@ -306,6 +312,7 @@ export_coatedglossy_shader(F, Name, Mat, ExportDir, YafaRay) ->
     %% XXX Wings scaling of shininess is weird. Commonly this value
     %% is the cosine power and as such in the range 0..infinity.
     %% OpenGL limits this to 0..128 which mostly is sufficient.
+
     println(F,
         "\t<hard fval=\"~.10f\"/>", [proplists:get_value(shininess, OpenGL)*128.0]),
 
@@ -381,15 +388,16 @@ export_coatedglossy_shader(F, Name, Mat, ExportDir, YafaRay) ->
         [IOR, DiffuseReflect, GlossyReflect, Anisotropic, Anisotropic_U, Anisotropic_V, Exponent]),
     %
     foldl(fun ({modulator,Ps}=M, N) when is_list(Ps) ->
-        case export_modulator(F, [Name,$_,format(N)], Maps, M, Opacity) of
-            off -> N+1;
-            ok ->
-                println(F),
-                N+1
-            end;
-        (_, N) ->
-            N % Ignore old modulators
+            case export_modulator(F, [Name,$_,format(N)], Maps, M, Opacity) of
+                off -> N+1;
+                ok ->
+                    println(F),
+                    N+1
+                end;
+            (_, N) ->
+                N % Ignore old modulators
         end, 1, Modulators),
+
     println(F, "</material>").
 
 %% Translucent shader
@@ -403,12 +411,12 @@ export_translucent_shader(F, Name, Mat, ExportDir, YafaRay) ->
     Modulators = proplists:get_value(modulators, YafaRay, def_modulators(Maps)),
 
     foldl(fun ({modulator,Ps}=M, N) when is_list(Ps) ->
-        case export_texture(F, [Name,$_,format(N)], Maps, ExportDir, M) of
-            off -> N+1;
-            ok ->
-                println(F),
-                N+1
-            end;
+            case export_texture(F, [Name,$_,format(N)], Maps, ExportDir, M) of
+                off -> N+1;
+                ok ->
+                    println(F),
+                    N+1
+                end;
             (_, N) ->
                 N % Ignore old modulators
         end, 1, Modulators),
@@ -477,10 +485,10 @@ export_translucent_shader(F, Name, Mat, ExportDir, YafaRay) ->
 
             DispersionJitter = proplists:get_value(dispersion_jitter, YafaRay, ?DEF_DISPERSION_JITTER),
 
-            println(F, "       "
-                    "\t<dispersion_samples ival=\"~w\"/>~n"
-                    "\t<dispersion_jitter bval=\"~s\"/>",
-                    [DispersionSamples, format(DispersionJitter)])
+            println(F,
+                "\t<dispersion_samples ival=\"~w\"/>~n"
+                "\t<dispersion_jitter bval=\"~s\"/>",
+                [DispersionSamples, format(DispersionJitter)])
     end,
     println(F,
         "\t<IOR fval=\"~.10f\"/>~n"
@@ -492,19 +500,19 @@ export_translucent_shader(F, Name, Mat, ExportDir, YafaRay) ->
         [IOR, SigmaSfactor, DiffuseReflect, GlossyReflect, SSS_Translucency, Exponent]),
     %
     foldl(fun ({modulator,Ps}=M, N) when is_list(Ps) ->
-        case export_modulator(F, [Name,$_,format(N)], Maps, M, Opacity) of
+            case export_modulator(F, [Name,$_,format(N)], Maps, M, Opacity) of
                 off -> N+1;
                 ok ->
                     println(F),
                     N+1
-            end;
+                end;
             (_, N) ->
                 N % Ignore old modulators
         end, 1, Modulators),
 
     println(F, "</material>").
 
-%% ----
+%% Glass Material
 %%
 export_glass_shader(F, Name, Mat, ExportDir, YafaRay) ->
     OpenGL = proplists:get_value(opengl, Mat),
@@ -522,9 +530,10 @@ export_glass_shader(F, Name, Mat, ExportDir, YafaRay) ->
         (_, N) ->
             N % Ignore old modulators
     end, 1, Modulators),
+
     println(F,
         "<material name=\"~s\">~n"
-        "       <type sval=\"glass\"/>",
+        "\t<type sval=\"glass\"/>",
         [Name]),
 
     DiffuseA = {_,_,_,Opacity} = proplists:get_value(diffuse, OpenGL),
@@ -567,8 +576,8 @@ export_glass_shader(F, Name, Mat, ExportDir, YafaRay) ->
                proplists:get_value(absorption_color, YafaRay, AbsorptionColor)),
 
             println(F,
-                "\t<absorption_dist fval=\"~.10f\"/>~n"
-                "\t<transmit_filter fval=\"~.10f\"/>~n",
+                "\t<absorption_dist fval=\"~.10f\"/>\n"
+                "\t<transmit_filter fval=\"~.10f\"/>",
                 [AbsD,TransmitFilter])
     end,
     DispersionPower = proplists:get_value(dispersion_power, YafaRay, ?DEF_DISPERSION_POWER),
@@ -579,28 +588,25 @@ export_glass_shader(F, Name, Mat, ExportDir, YafaRay) ->
             DispersionSamples = proplists:get_value(dispersion_samples, YafaRay, ?DEF_DISPERSION_SAMPLES),
 
             println(F,
-                "\t<dispersion_power fval=\"~.10f\"/>~n"
-                "\t<dispersion_samples ival=\"~w\"/>~n",
+                "\t<dispersion_power fval=\"~.10f\"/>\n"
+                "\t<dispersion_samples ival=\"~w\"/>",
                 [DispersionPower,DispersionSamples])
     end,
 
-    FakeShadows =
-        proplists:get_value(fake_shadows, YafaRay, ?DEF_FAKE_SHADOWS),
+    FakeShadows = proplists:get_value(fake_shadows, YafaRay, ?DEF_FAKE_SHADOWS),
 
     println(F,
-        "\t<IOR fval=\"~.10f\"/>~n"
-        "\t<glass_internal_reflect_depth ival=\"~w\"/>~n"
-        "\t<fake_shadows bval=\"~s\"/>~n"
-        "",
+        "\t<IOR fval=\"~.10f\"/>\n"
+        "\t<glass_internal_reflect_depth ival=\"~w\"/>\n"
+        "\t<fake_shadows bval=\"~s\"/>",
         [IOR,Glass_IR_Depth,format(FakeShadows)]),
 
     foldl(fun ({modulator,Ps}=M, N) when is_list(Ps) ->
-                case export_modulator(F, [Name,$_,format(N)],Maps, M, Opacity) of
-
-                    off -> N+1;
-                    ok ->
-                        println(F),
-                        N+1
+            case export_modulator(F, [Name,$_,format(N)],Maps, M, Opacity) of
+                off -> N+1;
+                ok ->
+                    println(F),
+                    N+1
                 end;
             (_, N) ->
                 N % Ignore old modulators
@@ -612,23 +618,28 @@ export_glass_shader(F, Name, Mat, ExportDir, YafaRay) ->
 %%%
 
 export_rough_glass_shader(F, Name, Mat, ExportDir, YafaRay) ->
+
     OpenGL = proplists:get_value(opengl, Mat),
+
     Maps = proplists:get_value(maps, Mat, []),
+
     Modulators = proplists:get_value(modulators, YafaRay, def_modulators(Maps)),
 
     foldl(fun ({modulator,Ps}=M, N) when is_list(Ps) ->
-                case export_texture(F, [Name,$_,format(N)], Maps, ExportDir, M) of
-                        off -> N+1;
-                        ok ->
-                            println(F),
-                            N+1
-                    end;
-                (_, N) ->
-                    N % Ignore old modulators
-            end, 1, Modulators),
+            case export_texture(F, [Name,$_,format(N)], Maps, ExportDir, M) of
+                    off -> N+1;
+                    ok ->
+                        println(F),
+                        N+1
+                end;
+            (_, N) ->
+                N % Ignore old modulators
+        end, 1, Modulators),
+
     println(F,
-        "<material name=\"~s\">~n"++
-        "\t<type sval=\"rough_glass\"/>", [Name]),
+        "<material name=\"~s\">\n"
+        "\t<type sval=\"rough_glass\"/>",
+        [Name]),
 
     DiffuseA = {_,_,_,Opacity} = proplists:get_value(diffuse, OpenGL),
 
@@ -642,7 +653,8 @@ export_rough_glass_shader(F, Name, Mat, ExportDir, YafaRay) ->
     %% is the cosine power and as such in the range 0..infinity.
     %% OpenGL limits this to 0..128 which mostly is sufficient.
     println(F,
-        "\t<hard fval=\"~.10f\"/>", [proplists:get_value(shininess, OpenGL)*128.0]),
+        "\t<hard fval=\"~.10f\"/>",
+        [proplists:get_value(shininess, OpenGL)*128.0]),
 
     export_rgb(F, mirror_color, proplists:get_value(reflected, YafaRay, DefReflected)),
 
@@ -666,9 +678,10 @@ export_rough_glass_shader(F, Name, Mat, ExportDir, YafaRay) ->
             export_rgb(F, absorption, proplists:get_value(absorption_color, YafaRay, AbsorptionColor)),
 
             println(F,
-                "<absorption_dist fval=\"~.10f\"/>~n"
-                "\t<transmit_filter fval=\"~.10f\"/>~n"
-                "\t<roughness fval=\"~.10f\"/>~n",[AbsD,TransmitFilter,Roughness])
+                "<absorption_dist fval=\"~.10f\"/>\n"
+                "\t<transmit_filter fval=\"~.10f\"/>\n"
+                "\t<roughness fval=\"~.10f\"/>",
+                [AbsD,TransmitFilter,Roughness])
     end,
 
     DispersionPower = proplists:get_value(dispersion_power, YafaRay, ?DEF_DISPERSION_POWER),
@@ -679,17 +692,16 @@ export_rough_glass_shader(F, Name, Mat, ExportDir, YafaRay) ->
                 proplists:get_value(dispersion_samples, YafaRay, ?DEF_DISPERSION_SAMPLES),
 
             println(F,
-                "\t<dispersion_power fval=\"~.10f\"/>~n"
-                "\t<dispersion_samples ival=\"~w\"/>~n",
+                "\t<dispersion_power fval=\"~.10f\"/>\n"
+                "\t<dispersion_samples ival=\"~w\"/>",
                 [DispersionPower,DispersionSamples])
     end,
 
     FakeShadows = proplists:get_value(fake_shadows, YafaRay, ?DEF_FAKE_SHADOWS),
 
     println(F,
-        "\t<IOR fval=\"~.10f\"/>~n"
-        "\t<fake_shadows bval=\"~s\"/>~n"
-        "",
+        "\t<IOR fval=\"~.10f\"/>\n"
+        "\t<fake_shadows bval=\"~s\"/>",
         [IOR,format(FakeShadows)]),
     %
     foldl(fun ({modulator,Ps}=M, N) when is_list(Ps) ->
@@ -700,10 +712,9 @@ export_rough_glass_shader(F, Name, Mat, ExportDir, YafaRay) ->
                         N+1
                 end;
             (_, N) ->
-                  N % Ignore old modulators
+                N % Ignore old modulators
         end, 1, Modulators),
     println(F, "</material>").
-
 
 %%% Export Light Material
 %%%
@@ -724,14 +735,15 @@ export_lightmat_shader(F, Name, Mat, ExportDir, YafaRay) ->
                 N % Ignore old modulators
         end, 1, Modulators),
     println(F,
-        "<material name=\"~s\">~n"
-        "\t<type sval=\"light_mat\"/>", [Name]),
+        "<material name=\"~s\">\n"
+        "\t<type sval=\"light_mat\"/>",
+        [Name]),
+
     _DiffuseA = {_,_,_,Opacity} = proplists:get_value(diffuse, OpenGL),
 
     DefLightmatColor = def_lightmat_color(proplists:get_value(diffuse, OpenGL)),
 
     Lightmat_Color = proplists:get_value(lightmat_color, YafaRay, DefLightmatColor),
-
 
     %% XXX Wings scaling of shininess is weird. Commonly this value
     %% is the cosine power and as such in the range 0..infinity.
@@ -759,6 +771,7 @@ export_lightmat_shader(F, Name, Mat, ExportDir, YafaRay) ->
 %%% Start Blend Materials Export
 
 export_shaderblend(F, Name, Mat, ExportDir) ->
+
     YafaRay = proplists:get_value(?TAG, Mat, []),
 
     DefShaderType = get_pref(shader_type, YafaRay),
@@ -794,19 +807,21 @@ export_blend_mat_shader(F, Name, Mat, ExportDir, YafaRay) ->
     Modulators = proplists:get_value(modulators, YafaRay, def_modulators(Maps)),
     %%
     foldl(fun ({modulator,Ps}=M, N) when is_list(Ps) ->
-        case export_texture(F, [Name,$_,format(N)], Maps, ExportDir, M) of
-            off -> N+1;
-            ok ->
-                println(F),
-                N+1
-            end;
-        (_, N) ->
-            N % Ignore old modulators
+            case export_texture(F, [Name,$_,format(N)], Maps, ExportDir, M) of
+                off -> N+1;
+                ok ->
+                    println(F),
+                    N+1
+                end;
+            (_, N) ->
+                N % Ignore old modulators
         end, 1, Modulators),
 
     println(F,
-        "<material name=\"~s\">~n"
-        "\t<type sval=\"blend_mat\"/>", [Name]),
+        "<material name=\"~s\">\n"
+        "\t<type sval=\"blend_mat\"/>",
+        [Name]),
+
     DiffuseA = {_,_,_,Opacity} = proplists:get_value(diffuse, OpenGL),
 
     Specular = alpha(proplists:get_value(specular, OpenGL)),
@@ -818,6 +833,7 @@ export_blend_mat_shader(F, Name, Mat, ExportDir, YafaRay) ->
     %% XXX Wings scaling of shininess is weird. Commonly this value
     %% is the cosine power and as such in the range 0..infinity.
     %% OpenGL limits this to 0..128 which mostly is sufficient.
+
     println(F,
         "\t<hard fval=\"~.10f\"/>",
         [proplists:get_value(shininess, OpenGL)*128.0]),
@@ -833,21 +849,21 @@ export_blend_mat_shader(F, Name, Mat, ExportDir, YafaRay) ->
     Blend_Value = proplists:get_value(blend_value, YafaRay, ?DEF_BLEND_VALUE),
 
     println(F,
-        "<material1 sval=\"""w_""\~s\"/>~n"
-        "\t<material2 sval=\"""w_""\~s\"/>~n"
-        "\t<blend_value fval=\"~.10f\"/>~n",
-        [Blend_Mat1,Blend_Mat2,Blend_Value]),
+        "<material1 sval=\"""w_""\~s\"/>\n"
+        "\t<material2 sval=\"""w_""\~s\"/>\n"
+        "\t<blend_value fval=\"~.10f\"/>",
+        [Blend_Mat1, Blend_Mat2, Blend_Value]),
     %
     foldl(fun ({modulator,Ps}=M, N) when is_list(Ps) ->
-        case export_modulator(F, [Name,$_,format(N)], Maps, M, Opacity) of
-            off -> N+1;
-            ok ->
-                println(F),
-                N+1
-        end;
-        (_, N) ->
-            N % Ignore old modulators
-    end, 1, Modulators),
+            case export_modulator(F, [Name,$_,format(N)], Maps, M, Opacity) of
+                off -> N+1;
+                ok ->
+                    println(F),
+                    N+1
+                end;
+            (_, N) ->
+                N % Ignore old modulators
+        end, 1, Modulators),
 
     println(F, "</material>").
 

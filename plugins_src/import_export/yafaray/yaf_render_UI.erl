@@ -10,7 +10,9 @@
 %%  of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 %%
 %%
-
+%% pov test
+%%Bg = proplists:get_value(background, Ps, ?DEF_BACKGROUND),
+%% end
 export_dialog_qs(Op,
                 [{subdivisions,SubDiv},
                 {keep_xml,KeepXML},
@@ -90,7 +92,9 @@ export_dialog_qs(Op,
                 {bokeh_bias,BokehBias},
                 {bokeh_rotation,BokehRotation},
                 {dof_distance,Dof_Distance},
+                {background, Bg}, % 79
                 _Save,_Load,_Reset]) ->
+    %% povman : if add elements, revise list for split buttons in yafaray.erl 630
 
     BiasFlags = [range(bias),{key,bias}],
     [
@@ -418,6 +422,14 @@ export_dialog_qs(Op,
         },
         {hframe,[
             {vframe,[
+                %%------------------> ad '10' to key
+                {menu,[
+                    {?__(1043,"Constant"),constant},
+                    {?__(10101,"Gradient"),gradientback},
+                    {?__(1044,"Sunsky"),sunsky},
+                    {?__(1045,"None"), undefined}
+                ],Bg,[layout,key(background)]
+                }, %%----------------->
                 {label,?__(21,"Default Color")},
                 {color,BgColor,[{key,background_color}]},
                 {label,?__(22,"Alpha Channel:")},

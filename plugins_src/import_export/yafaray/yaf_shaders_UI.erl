@@ -1,5 +1,5 @@
 %%
-%%  yaf_defines.erl
+%%  yaf_shaders_UI.erl
 %%
 %%  YafaRay Shader Modulators User Interface.
 %%
@@ -108,13 +108,13 @@ modulator_dialog({modulator,Ps}, Maps, M) when is_list(Ps) ->
                 {menu,[
                     {?__(6,"Mix"),mix},
                     {?__(7,"Add"),add},
-                    {?__(8,"Mul"),mul},
-                    {?__(109,"Sub"),sub},
-                    {?__(110,"Scr"),scr},
+                    {?__(8,"Multiply"),mul},
+                    {?__(109,"Subtract"),sub},
+                    {?__(110,"Screen"),scr},
                     {?__(111,"Div"),divide},
-                    {?__(112,"Dif"),dif},
-                    {?__(113,"Dar"),dar},
-                    {?__(114,"Lig"),lig}
+                    {?__(112,"Difference"),dif},
+                    {?__(113,"Dark"),dar},
+                    {?__(114,"Light"),lig}
                 ],Mode, [hook(enable, {?TAG,enabled,M})]
                 },panel,{button,?__(9,"Delete"),done}
             ]},
@@ -139,6 +139,8 @@ modulator_dialog({modulator,Ps}, Maps, M) when is_list(Ps) ->
                     {vframe,[
                         {label,?__(13,"Diffuse")++" "},
                         {label,?__(14,"Specular")},
+                        %{label,?__(15,"Translucency")},
+                        %{label,?__(15,"Transparency")},
                         {label,?__(16,"Shininess")},
                         {label,?__(17,"Normal")}
                     ]},

@@ -1,5 +1,5 @@
 %%
-%%  yaf_lights.erl
+%%  yaf_lights_UI.erl
 %%
 %%  YafaRay Lights User Interface.
 %%
@@ -10,6 +10,14 @@
 %%  of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 %%
 %%
+
+%% povman test: add relational numeric control
+%% General prefix for Lights UI = 5
+% add prefix for light types:
+%       Point: 1 (51..)
+%           for Point elements: 01(5101), 02(5102), 03(5103), etc..
+%       Spot: 2 (52..)
+%           for Spot elements: 01(5201)... etc
 
 light_dialog(Name, Ps) ->
     OpenGL = proplists:get_value(opengl, Ps, []),
@@ -30,6 +38,7 @@ light_dialog(Name, Ps) ->
 
     Power = proplists:get_value(power, YafaRay, DefPower),
     [
+        %% povman TODO: add 'case' for 'ambient' light type
         {vframe,[
             {hframe,[
                 {vframe,[
@@ -41,12 +50,14 @@ light_dialog(Name, Ps) ->
                 panel,
                 help_button(light_dialog)
             ]}| light_dialog(Name, Type, YafaRay)
-            ],[{title,?__(2,"YafaRay Options")},key(minimized),{minimized,Minimized}]
-        }].
+        ],[{title,?__(2,"YafaRay Options")},key(minimized),{minimized,Minimized}]
+        }
+    ].
 
-%% Point Light Dialog
+%% Point Light Dialog (51)
 
 light_dialog(_Name, point, Ps) ->
+
     Type = proplists:get_value(type, Ps, ?DEF_POINT_TYPE),
 
     CastShadows = proplists:get_value(cast_shadows, Ps, ?DEF_CAST_SHADOWS), %% unused in YafaRay 0.1.2
@@ -58,18 +69,18 @@ light_dialog(_Name, point, Ps) ->
     [
         {vframe,[
             {hradio,[
-                {?__(3,"Pointlight"),pointlight},
-                {?__(5,"Spherelight"),spherelight}
+                {?__(5101,"Pointlight"),pointlight},
+                {?__(5102,"Spherelight"),spherelight}
             ],Type,[key(type),layout]
             },
-            {?__(11,"Cast Shadows"),CastShadows,[key(cast_shadows),hook(open,[member,?KEY(type),pointlight])]},
+            {?__(5103,"Cast Shadows"),CastShadows,[key(cast_shadows),hook(open,[member,?KEY(type),pointlight])]},
             {vframe,[
                 {hframe,[
-                    {label,?__(15,"Radius")},
+                    {label,?__(5104,"Radius")},
                     {text,ArealightRadius,[range(arealight_radius), key(arealight_radius)]}
                 ]},
                 {hframe,[
-                    {label,?__(17,"Samples")},
+                    {label,?__(5105,"Samples")},
                     {text,ArealightSamples,[range(samples),key(arealight_samples)]}
                 ]}
             ],[hook(open, [member,?KEY(type),spherelight])]
@@ -77,7 +88,7 @@ light_dialog(_Name, point, Ps) ->
         ]}
     ];
 
-%% Spot Light Dialog
+%% Spot Light Dialog (52)
 light_dialog(_Name, spot, Ps) ->
     Type = proplists:get_value(type, Ps, ?DEF_SPOT_TYPE),
 
@@ -133,7 +144,7 @@ light_dialog(_Name, spot, Ps) ->
         }
     ];
 
-%% Infinite Light Dialog
+%% Infinite Light Dialog (53)
 light_dialog(_Name, infinite, Ps) ->
 
     Type = proplists:get_value(type, Ps, ?DEF_INFINITE_TYPE),
@@ -269,64 +280,76 @@ light_dialog(_Name, infinite, Ps) ->
         ]}
     ];
 
-%% Ambient Light Dialog
+%% Ambient Light Dialog (54..)
 light_dialog(_Name, ambient, Ps) ->
     Bg = proplists:get_value(background, Ps, ?DEF_BACKGROUND),
+
     BgColor = proplists:get_value(background_color, Ps, ?DEF_BACKGROUND_COLOR),
+
     ConstantBackPower = proplists:get_value(constant_back_power, Ps, ?DEF_CONSTANT_BACK_POWER),
 %%
     HorizonColor = proplists:get_value(horizon_color, Ps, ?DEF_HORIZON_COLOR),
+
     ZenithColor = proplists:get_value(zenith_color, Ps, ?DEF_ZENITH_COLOR),
+
     GradientBackPower = proplists:get_value(gradient_back_power, Ps, ?DEF_GRADIENT_BACK_POWER),
 %%
-    BgFnameImage = proplists:get_value(background_filename_image, Ps,
-                                       ?DEF_BACKGROUND_FILENAME),
-    BrowsePropsImage = [{dialog_type,open_dialog},
-                        {extensions,[{".jpg",?__(54,"JPEG compressed image")},
-                                     {".tga",?__(55,"Targa bitmap")}]}],
-    BgFnameHDRI = proplists:get_value(background_filename_HDRI, Ps,
-                                      ?DEF_BACKGROUND_FILENAME),
-    BrowsePropsHDRI = [{dialog_type,open_dialog},
-                       {extensions,[{".hdr",?__(56,"High Dynamic Range image")},
-                                    {".exr",?__(95,"OpenEXR image")}]}],
-    BgExpAdj = proplists:get_value(background_exposure_adjust, Ps,
-                                   ?DEF_BACKGROUND_EXPOSURE_ADJUST),
-    BgMapping = proplists:get_value(background_mapping, Ps,
-                                    ?DEF_BACKGROUND_MAPPING),
-    BgPower = proplists:get_value(background_power, Ps,
-                                  ?DEF_BACKGROUND_POWER),
-    BgPrefilter = proplists:get_value(background_prefilter, Ps,
-                                  ?DEF_BACKGROUND_PREFILTER),
-    BgEnlight = proplists:get_value(background_enlight, Ps,
-                                  ?DEF_BACKGROUND_ENLIGHT),
+    % Delete 'image' type.. is the same of HDRI, without use IBL checked
+    %
+    BgFnameHDRI = proplists:get_value(background_filename_HDRI, Ps, ?DEF_BACKGROUND_FILENAME),
+
+    BrowsePropsHDRI = [
+        {dialog_type,open_dialog},
+        {extensions,[
+            {".hdr",?__(56,"High Dynamic Range image")},
+            {".exr",?__(95,"OpenEXR image")}
+        ]}
+    ],
+    BgRotation = proplists:get_value(textureback_rotate, Ps, ?DEF_TEXTUREBACK_ROTATION),
+
+    BgMapping = proplists:get_value(background_mapping, Ps, ?DEF_BACKGROUND_MAPPING),
+
+    BgPower = proplists:get_value(background_power, Ps, ?DEF_BACKGROUND_POWER),
+
+    BgTexInterpolate = proplists:get_value(textureback_interpolate, Ps, ?DEF_TEXTUREBACK_INTERPOLATE),
+
+    BgEnlight = proplists:get_value(background_enlight, Ps, ?DEF_BACKGROUND_IBL),
+
+    BgWithDiffuse = proplists:get_value(with_diffuse, Ps, false),
+
+    BgWithCaustics = proplists:get_value(with_caustics, Ps, false),
     %%
     Type = proplists:get_value(type, Ps, ?DEF_AMBIENT_TYPE),
-    Samples = proplists:get_value(samples, Ps, ?DEF_SAMPLES),
 
-    %%
+    Samples = proplists:get_value(samples, Ps, ?DEF_SAMPLES),
     %%
     CacheMinimized = proplists:get_value(cache_minimized, Ps, true),
+
     Cache = proplists:get_value(cache, Ps, ?DEF_CACHE),
+
     CacheSize = proplists:get_value(cache_size, Ps, ?DEF_CACHE_SIZE),
-    AngleThreshold = proplists:get_value(angle_threshold, Ps,
-                                         ?DEF_ANGLE_THRESHOLD),
+
+    AngleThreshold = proplists:get_value(angle_threshold, Ps, ?DEF_ANGLE_THRESHOLD),
+
     AngleKey = ?KEY(angle_threshold),
+
     AngleRange = range(angle_threshold),
-    ShadowThreshold = proplists:get_value(shadow_threshold, Ps,
-                                          ?DEF_SHADOW_THRESHOLD),
+
+    ShadowThreshold = proplists:get_value(shadow_threshold, Ps, ?DEF_SHADOW_THRESHOLD),
+
     Gradient = proplists:get_value(gradient, Ps, ?DEF_GRADIENT),
+
     ShowSamples = proplists:get_value(show_samples, Ps, ?DEF_SHOW_SAMPLES),
+
     Search = proplists:get_value(search, Ps, ?DEF_SEARCH),
     %%
-
-    [{hradio,[
-        {?__(57,"Hemilight"), hemilight}
-        ],
-        Type,[layout,key(type)]},
-    %% Hemilight and Pathlight
-
-
-    %% Pathlight
+    [
+        {hradio,[
+            {?__(57,"Hemilight"), hemilight}
+        ],Type,[layout,key(type)]
+        },
+        %% Hemilight and Pathlight
+        %% Pathlight
         {vframe,[
             {hframe,[
                 {"",Cache,[key(cache)]},
@@ -358,49 +381,45 @@ light_dialog(_Name, ambient, Ps) ->
     %% Backgrounds
         {vframe,[
             {hradio,[
-                {?__(79,"HDRI"),'HDRI'},
-                {?__(80,"Image"),image},
+                {?__(79,"HDRI"),hdri},
                 {?__(81,"Constant"),constant},
                 {?__(105,"Gradient"),gradientback},
                 {?__(82,"None"), undefined}
             ],Bg,[layout,key(background)]
             },
-            % HDRI Background
-            {hframe,[
-                {label,?__(83,"Filename")},
-                {button,{text,BgFnameHDRI,[key(background_filename_HDRI),{props,BrowsePropsHDRI}]}},
-                {label,?__(61,"Samples")},
-                {text,Samples,[range(samples),key(samples)]}
-            ],[hook(open, [member,?KEY(background),'HDRI'])]
-            },
-            %% Image Background
-            {hframe,[
-                {label,?__(84,"Filename")},
-                {button,{text,BgFnameImage,[key(background_filename_image), {props,BrowsePropsImage}]}},
-                {label,?__(60,"Samples")},
-                {text,Samples,[range(samples),key(samples)]}
-            ],[hook(open, [member,?KEY(background),image])]
-            },
-            %% HDRI Background Settings
-            {hframe,[
+            {vframe,[
                 {hframe,[
-                    {label,?__(85,"Power")},
-                    {text,BgExpAdj,[key(background_exposure_adjust), range(exposure_adjust)]},
+                    {label,?__(83,"Filename")},
+                    {button,{text,BgFnameHDRI,[key(background_filename_HDRI),{props,BrowsePropsHDRI}]}}
+                ]},
+                {hframe,[
+                    {label,?__(85,"Mapping:")},
                     {menu,[
-                        {?__(86,"Light Probe (Angular)"),probe},
-                        {?__(87,"Spherical (Lat-Long)"),spherical}
+                        {?__(86,"Angular  "),probe},
+                        {?__(87,"Spherical"),spherical}
                     ],BgMapping,[key(background_mapping)]
-                    }
-                ],[hook(open, [member,?KEY(background),'HDRI'])]
-                },
+                    },
+                    {label,?__(1085,"Rotate")},
+                    {text,BgRotation,[key(textureback_rotate), range(textureback_rotate)]}
+                ]},
                 {hframe,[
-                    {label,?__(88,"Power")},
-                    {text,BgPower,[key(background_power),range(power)]}
-                ],[hook(open, [member,?KEY(background),image])]
-                },
-                {?__(89,"Use IBL"),BgEnlight,[key(background_enlight)]},
-                {?__(96,"Prefilter"),BgPrefilter,[key(background_prefilter)]}
-            ],[hook(open, [member,?KEY(background),'HDRI',image])]
+                    {?__(96,"Bilinear Interpolation"),BgTexInterpolate,[key(textureback_interpolate)]},
+                    {?__(89,"Use Background Light"),BgEnlight,[key(background_enlight)]}
+                ]},
+                {vframe,[ %new test
+                {hframe,[
+                    {label,?__(88,"IBL Power")},
+                    {text,BgPower,[key(background_power),range(power)]},
+                    {label,?__(61,"Samples")},
+                    {text,Samples,[range(samples),key(samples)]}
+                    ,help_button(ibl_dialog)
+                ]},
+                {hframe,[
+                    {?__(1096,"Diffuse Photons"),BgWithDiffuse,[key(with_diffuse)]},
+                    {?__(1089,"Caustics Photons"),BgWithCaustics,[key(with_caustics)]}
+                ]}
+                ],[{title,?__(2001,"Background Light Settings")}]}
+            ],[hook(open, [member,?KEY(background),hdri])]
             },
 
             %% Constant Background

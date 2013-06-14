@@ -37,143 +37,38 @@ key(Key) -> {key,?KEY(Key)}.
 %% defines here
 %%
 -include("yafaray/yaf_defines.erl").
+%%  reune all includes
+-include("yafaray/yaf_materials_UI.erl").
+
+%% Modulators: A shader material slots..
+
+-include("yafaray/yaf_shaders_UI.erl").
+
 %%
+%% YafaRay Lights dialogs
 
-range(T) -> {range,range_1(T)}.
+-include("yafaray/yaf_lights_UI.erl").
 
-%% Material ranges
-range_1(volume_sigma_a)         -> {0.0,1.0};
-range_1(volume_sigma_s)         -> {0.0,1.0};
-range_1(volume_height)          -> {0.0,1000.0};
-range_1(volume_steepness)       -> {0.0,10.0};
-range_1(volume_attgridscale)    -> {1,5};
-range_1(volume_sharpness)       -> {1.0,100.0};
-range_1(volume_cover)           -> {0.0,1.0};
-range_1(volume_density)         -> {0.0,1.0};
-range_1(volume_minmax_x)        -> {1.0,1000.0};
-range_1(volume_minmax_y)        -> {1.0,1000.0};
-range_1(volume_minmax_z)        -> {1.0,1000.0};
-range_1(meshlight_power)        -> {0.0,10000.0};
-range_1(meshlight_samples)      -> {0,512};
-range_1(autosmooth_angle)       -> {0.0,180.0};
-range_1(ior)                    -> {0.0,3.0};
-range_1(glass_ir_depth)         -> {0,32};
-range_1(min_refle)              -> {0.0,1.0};
-range_1(size)                   -> {0.0,infinity};
-range_1(modulation)             -> {-5.0,5.0};
-range_1(turbulence)             -> {?NONZERO,infinity};
-range_1(scale)                  -> {?NONZERO,infinity};
-range_1(cell_size)              -> {0.0,infinity};
-range_1(intensity)              -> {0.010,infinity};
-range_1(cell_weight1)           -> {-2.0,2.0};
-range_1(cell_weight2)           -> {-2.0,2.0};
-range_1(cell_weight3)           -> {-2.0,2.0};
-range_1(cell_weight4)           -> {-2.0,2.0};
-range_1(musgrave_noisesize)     -> {0.0,infinity};
-range_1(musgrave_intensity)     -> {0.0,10.0};
-range_1(musgrave_contrast)      -> {0.0,10.0};
-range_1(musgrave_lacunarity)    -> {0.0,10.0};
-range_1(musgrave_octaves)       -> {0.0,8.0};
-range_1(distortion_intensity)   -> {0.0,10.0};
-range_1(distortion_noisesize)   -> {0.0,infinity};
-range_1(sharpness)              -> {1.0,infinity};
-range_1(noise_depth)            -> {0,infinity};
-range_1(noise_size)             -> {0.0,infinity};
-range_1(absorption_dist)        -> {0.1,100.0};
-range_1(dispersion_power)       -> {0.0,1.0};
-range_1(dispersion_samples)     -> {1,512};
-range_1(transparency)           -> {0.0,1.0};
-range_1(transmit_filter)        -> {0.0,1.0};
-range_1(translucency)           -> {0.0,1.0};
-range_1(sss_translucency)       -> {0.0,1.0};
-range_1(sigmas_factor)          -> {1.0,10.0};
-range_1(diffuse_reflect)        -> {0.0,1.0};
-range_1(specular_reflect)       -> {0.0,1.0};
-range_1(glossy_reflect)         -> {0.0,1.0};
-range_1(emit)                   -> {0.0,25.0};
-range_1(exponent)               -> {1.0,2000.0};
-range_1(anisotropic_u)          -> {1.0,2000.0};
-range_1(anisotropic_v)          -> {1.0,2000.0};
-range_1(roughness)              -> {0.0,1.0};
-range_1(lightmat_power)         -> {0.0,10.0};
-range_1(blend_value)            -> {0.0,1.0};
-range_1(oren_nayar_sigma)       -> {0.0,1.0};
 
-%% Light ranges
-range_1(power)                  -> {0.0,infinity};
-range_1(bias)                   -> {0.0,1.0};
-range_1(res)                    -> {0,infinity};
-range_1(radius)                 -> {0,infinity};
-range_1(blur)                   -> {0.0,1.0};
-range_1(samples)                -> {1,infinity};
-range_1(spot_ies_samples)       -> {1,512};
-range_1(glow_intensity)         -> {0.0,1.0};
-range_1(glow_offset)            -> {0.0,infinity};
-range_1(blend)                  -> {0.0,1.0};
-range_1(photons)                -> {0,infinity};
-range_1(depth)                  -> {0,infinity};
-range_1(fixedradius)            -> {0.0,infinity};
-range_1(search)                 -> {0,infinity};
-range_1(cluster)                -> {0.0,infinity};
-range_1(turbidity)              -> {0.0,infinity};
-range_1(angle_threshold)        -> {0.0,1.0};
-range_1(raydepth)               -> {1,infinity};
-range_1(shadow_depth)           -> {1,64};
-range_1(cache_size)             -> {0.0,infinity};
-range_1(shadow_threshold)       -> {0.0,infinity};
-range_1(cache_search)           -> {3,infinity};
-range_1(exposure_adjust)        -> {0.0,50.0};
-range_1(psamples)               -> {0,infinity};
-range_1(arealight_radius)       -> {0.0,infinity};
-range_1(maxdistance)            -> {0.0,infinity};
-range_1(infinite_radius)        -> {0.0,infinity};
-range_1(sun_samples)            -> {0,infinity};
-range_1(sun_angle)              -> {0.0,80.0};
-range_1(sky_background_power)   -> {0.0,infinity};
-range_1(sky_background_samples) -> {0,infinity};
 
-%% Render ranges
-range_1(pm_diffuse_photons)     -> {1,100000000};
-range_1(pm_bounces)             -> {0,50};
-range_1(pm_search)              -> {1,10000};
-range_1(pm_diffuse_radius)      -> {0.0,100.0};
-range_1(pm_caustic_photons)     -> {1,100000000};
-range_1(pm_caustic_radius)      -> {0.0,100.0};
-range_1(pm_caustic_mix)         -> {1,10000};
-range_1(pm_fg_bounces)          -> {1,20};
-range_1(pm_fg_samples)          -> {1,4096};
-range_1(pt_diffuse_photons)     -> {1,100000000};
-range_1(pt_bounces)             -> {0,50};
-range_1(pt_caustic_radius)      -> {0.0,100.0};
-range_1(pt_caustic_mix)         -> {1,10000};
-range_1(pt_caustic_depth)       -> {0,infinity};
-range_1(pt_samples)             -> {1,4096};
-range_1(sss_photons)            -> {0,infinity};
-range_1(sss_depth)              -> {1.0,50.0};
-range_1(sss_scale)              -> {0.0,100.0};
-range_1(sss_singlescatter_samples)      -> {0.0,50.0};
-range_1(caustic_photons)        -> {0,infinity};
-range_1(caustic_depth)          -> {0,infinity};
-range_1(caustic_mix)            -> {0,infinity};
-range_1(caustic_radius)         -> {0.0,1.0};
-range_1(ao_distance)            -> {1.0,100.0};
-range_1(ao_samples)             -> {1.0,128.0};
-range_1(volintegr_stepsize)     -> {0.0,100.0};
-range_1(subdivisions)           -> {0,infinity};
-range_1(threads_number)         -> {1,100};
-range_1(aa_pixelwidth)          -> {1.0,2.0};
-range_1(aa_passes)              -> {0,infinity};
-range_1(aa_threshold)           -> {0.0,1.0};
-range_1(aa_minsamples)          -> {1,infinity};
-range_1(gamma)                  -> {0.0,infinity};
-range_1(exposure)               -> {0.0,infinity};
-range_1(pixels)                 -> {1,infinity};
-range_1(lens_ortho_scale)       -> {0.0,100.0};
-range_1(lens_angular_max_angle) -> {0.0,360.0};
-range_1(lens_angular_angle)     -> {0.0,360.0};
-range_1(aperture)               -> {0.0,infinity};
-range_1(bokeh_rotation)         -> {-180.0,180.0};
-range_1(dof_distance)           -> {0.0,250.0}.
+-include("yafaray/yaf_render_UI.erl").
+%% export dialogs
+
+%%% Export Material Properties
+%%%%%% Export Shiny Diffuse Material
+%%
+-include("yafaray/yaf_export_materials.erl").
+
+%%% Start Texture Export
+%%%
+-include("yafaray/yaf_export_texture.erl").
+
+%% to export objects..
+-include("yafaray/yaf_export_objects.erl").
+
+
+%% lights
+-include("yafaray/yaf_export_lights.erl").
 
 
 %% Exported plugin callback functions
@@ -371,7 +266,7 @@ props(export_selected, _Attr) ->
 
 %%% Dialogues and results
 %%%
--include("yafaray/yaf_materials_UI.erl").
+%-include("yafaray/yaf_materials_UI.erl").
 %% povman : material dialogs..---------->
 %%------------------------------------>
 
@@ -421,12 +316,12 @@ diffuse_hook(Tag) ->
 
 %% Modulators: A shader material slots..
 
--include("yafaray/yaf_shaders_UI.erl").
+%-include("yafaray/yaf_shaders_UI.erl").
 
 %%
 %% YafaRay Lights dialogs
 
--include("yafaray/yaf_lights_UI.erl").
+%-include("yafaray/yaf_lights_UI.erl").
 
 %%------------------------
 
@@ -548,8 +443,8 @@ export_prefs() ->
      {aa_threshold,?DEF_AA_THRESHOLD},
      {aa_pixelwidth,?DEF_AA_PIXELWIDTH},
      {clamp_rgb,?DEF_CLAMP_RGB},
-     {aa_filter_type,?DEF_AA_FILTER_TYPE},              %%--> 60
-     {background_color,?DEF_BACKGROUND_COLOR}, %---------------->
+     {aa_filter_type,?DEF_AA_FILTER_TYPE},
+     {background_color,?DEF_BACKGROUND_COLOR}, %----------------> 60
      {save_alpha,?DEF_SAVE_ALPHA},
      {background_transp_refract,?DEF_BACKGROUND_TRANSP_REFRACT},
      {lens_type,?DEF_LENS_TYPE},
@@ -567,7 +462,7 @@ export_prefs() ->
      {bokeh_bias,?DEF_BOKEH_BIAS},
      {bokeh_rotation,?DEF_BOKEH_ROTATION},
      {dof_distance,?DEF_DOF_DISTANCE},
-     {background, ?DEF_BACKGROUND} %% add element for finded : 79
+     {background, ?DEF_BACKGROUND} %% add element for finded
      ].
 
 %
@@ -596,7 +491,7 @@ def_modulators([_|Maps]) ->
 %%%
 
 material_result(_Name, Mat0, [{?KEY(minimized),_}|_]=Res0) ->
-    {Ps1,Res1} = split_list(Res0, 101),
+    {Ps1,Res1} = split_list(Res0, 101), % povman : value for list elements in texture modulatos?? old: 101
     Ps2 = [{Key,Val} || {?KEY(Key),Val} <- Ps1],
     {Ps,Res} = modulator_result(Ps2, Res1),
     Mat = [?KEY(Ps)|keydelete(?TAG, 1, Mat0)],
@@ -605,24 +500,9 @@ material_result(_Name, Mat0, [{?KEY(minimized),_}|_]=Res0) ->
 material_result(Name, Mat, Res) ->
     exit({invalid_tag,{?MODULE,?LINE,[Name,Mat,Res]}}).
 
-modulator_dialogs(Modulators, Maps) ->
-    modulator_dialogs(Modulators, Maps, 1).
 
-modulator_dialogs([], _Maps, M) ->
-    [
-        {hframe,[
-            {button,?__(1,"New Modulator(shader)"),done,[key(new_modulator)]},
-            panel|
-            if M =:= 1 -> [{button,?__(2,"Default Modulators"),done}];
-            true -> []
-            end
-        ]}
-    ];
-    modulator_dialogs([Modulator|Modulators], Maps, M) ->
-        modulator_dialog(Modulator, Maps, M)++
-        modulator_dialogs(Modulators, Maps, M+1).
 
--include("yafaray/yaf_render_UI.erl").
+%-include("yafaray/yaf_render_UI.erl").
 %% export dialogs
 
 %%% Increase split_list # +1 per line if add Render Settings to Dialog
@@ -875,11 +755,11 @@ section(F, Name) ->
 %%% Export Material Properties
 %%%%%% Export Shiny Diffuse Material
 %%
--include("yafaray/yaf_export_materials.erl").
+%-include("yafaray/yaf_export_materials.erl").
 
 %%% Start Texture Export
 %%%
--include("yafaray/yaf_export_texture.erl").
+%-include("yafaray/yaf_export_texture.erl").
 
 
 export_rgb(F, Type, {R,G,B,_}) ->
@@ -915,11 +795,11 @@ count_equal([H|T], C, K, R) ->
     count_equal(T, 1, H, [{C,K}|R]).
 
 %% to export objects..
--include("yafaray/yaf_export_objects.erl").
+%-include("yafaray/yaf_export_objects.erl").
 
 
 %% lights
--include("yafaray/yaf_export_lights.erl").
+%-include("yafaray/yaf_export_lights.erl").
 
 %% Cut the longest edge of a triangle in half to make it a quad.
 %% Lookup vertex positions.
@@ -1116,21 +996,26 @@ export_background(F, Name, Ps) ->
 
             export_pos(F, from, Position);
 
-
         %% HDRI Background Export
-        'HDRI' ->
+        hdri ->
             BgFname = proplists:get_value(background_filename_HDRI, YafaRay, ?DEF_BACKGROUND_FILENAME),
 
-            BgExpAdj = proplists:get_value(background_exposure_adjust, YafaRay, ?DEF_BACKGROUND_EXPOSURE_ADJUST),
+            BgPower = proplists:get_value(background_power, YafaRay, ?DEF_BACKGROUND_POWER),
+
+            BgRotation = proplists:get_value(textureback_rotate, YafaRay, ?DEF_TEXTUREBACK_ROTATION), % povman
 
             BgMapping = proplists:get_value(background_mapping, YafaRay, ?DEF_BACKGROUND_MAPPING),
 
             Samples = proplists:get_value(samples, YafaRay, ?DEF_SAMPLES),
 
+            WithDiffuse = proplists:get_value(with_diffuse, YafaRay, false),
+
+            WithCaustics = proplists:get_value(with_caustics, YafaRay, false),
+
             println(F,
                 "\n<texture name=\"world_texture\">\n"
                 "\t<filename sval=\"~s\"/>\n"
-                "\t<interpolate sval=\"bilinear\"/>\n"
+                "\t<interpolate sval=\"none\"/>\n"
                 "\t<type sval=\"image\"/>\n"
                 "</texture>",
                 [BgFname]),
@@ -1141,57 +1026,24 @@ export_background(F, Name, Ps) ->
                 [Name]),
 
             println(F,
-                "\t<power fval=\"~w\"/>\n"
+                "\t<rotation fval=\"~w\"/>\n"
                 "\t<mapping sval=\"~s\"/>",
-                [BgExpAdj, format(BgMapping)]),
+                [BgRotation, format(BgMapping)]),
 
-            case proplists:get_value(background_enlight, YafaRay,?DEF_BACKGROUND_ENLIGHT) of
+            case proplists:get_value(background_enlight, YafaRay,?DEF_BACKGROUND_IBL) of
                 true ->
                     println(F,
                         "\t<ibl bval=\"true\"/>\n"
-                        "\t<ibl_samples ival=\"~w\"/>",
-                        [Samples]);
+                        "\t<power fval=\"~w\"/>\n"
+                        "\t<ibl_samples ival=\"~w\"/>\n"
+                        "\t<with_caustic bval=\"~s\"/>\n"
+                        "\t<with_diffuse bval=\"~s\"/>",
+                        [BgPower, Samples, format(WithCaustics), format(WithDiffuse)]);
                 false ->
                     println(F, "\t<ibl bval=\"false\"/>")
             end,
 
-           print(F, "\t<texture sval=\"world_texture\"/>\n");
-
-        %% Image Background Export
-        image ->
-            BgFname = proplists:get_value(background_filename_image, YafaRay, ?DEF_BACKGROUND_FILENAME),
-
-            BgPower = proplists:get_value(background_power, YafaRay, ?DEF_BACKGROUND_POWER),
-
-            Samples = proplists:get_value(samples, YafaRay, ?DEF_SAMPLES),
-
-            print(F,
-                "<\ntexture name=\"world_texture\">\n"
-                "\t<filename sval=\"~s\"/>\n"
-                "\t<interpolate sval=\"bilinear\"/>\n"
-                "\t<type sval=\"image\"/>\n"
-                "</texture>",
-                [BgFname]),
-
-            println(F,
-                "<\nbackground name=\"~s\">\n"
-                "\t<type sval=\"textureback\"/>",
-                [Name]),
-
-            println(F, "\t<power fval=\"~.3f\"/>", [BgPower]),
-
-        %% Add Enlight Texture Start
-            case proplists:get_value(background_enlight, YafaRay, ?DEF_BACKGROUND_ENLIGHT) of
-                true ->
-                    println(F,
-                        "\t<ibl bval=\"true\"/>\n"
-                        "\t<ibl_samples ival=\"~w\"/>",
-                        [Samples]);
-                false ->
-                    println(F, "\t<ibl bval=\"false\"/>")
-            end,
-
-            println(F, "\t<texture sval=\"world_texture\"/>")
+           print(F, "\t<texture sval=\"world_texture\"/>\n")
     end,
     println(F, "</background>").
 
@@ -1209,7 +1061,7 @@ export_render(F, CameraName, BackgroundName, Outfile, Attr) ->
     TransparentShadows = proplists:get_value(transparent_shadows, Attr),
     ShadowDepth = proplists:get_value(shadow_depth, Attr),
     Gamma = proplists:get_value(gamma, Attr),
-    Exposure = proplists:get_value(exposure, Attr),
+    %Exposure = proplists:get_value(exposure, Attr),
     RenderFormat = proplists:get_value(render_format, Attr),
     ExrFlagFloat = proplists:get_value(exr_flag_float, Attr),
     ExrFlagZbuf = proplists:get_value(exr_flag_zbuf, Attr),
@@ -1443,11 +1295,11 @@ export_render(F, CameraName, BackgroundName, Outfile, Attr) ->
     println(F,
         "\t<width ival=\"~w\"/>\n"
         "\t<height ival=\"~w\"/>\n"
-        "\t<outfile sval=\"~s\"/>\n"
-        "\t<indirect_samples sval=\"0\"/>\n"    %% unused in 0.1.2 ??
-        "\t<indirect_power sval=\"1.0\"/>\n"    %% unused in 0.1.2 ??
-        "\t<exposure fval=\"~.10f\"/>",         %% unused in 0.1.2 ??
-        [Width, Height, Outfile, Exposure]),
+        "\t<outfile sval=\"~s\"/>",
+        %"\t<indirect_samples sval=\"0\"/>\n"    %% unused in 0.1.2 ??
+        %"\t<indirect_power sval=\"1.0\"/>",    %% unused in 0.1.2 ??
+        %"\t<exposure fval=\"~.10f\"/>",         %% unused in 0.1.2 ??
+        [Width, Height, Outfile]), % Exposure]),
 
     println(F,"\t<gamma fval=\"~.10f\"/>", [Gamma]),
 

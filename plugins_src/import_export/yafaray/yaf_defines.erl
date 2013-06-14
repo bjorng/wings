@@ -32,7 +32,7 @@
 -define(DEF_SHADER_TYPE, shinydiffuse).
 -define(DEF_TIR, false).
 -define(DEF_GLASS_IR_DEPTH, 3).
--define(DEF_IOR, 1.4).
+-define(DEF_IOR, 1.0).
 -define(DEF_MIN_REFLE, 0.0).
 -define(DEF_OBJECT_TYPE, mesh).
 -define(DEF_VOLUME_TYPE, uniformvolume).
@@ -49,7 +49,7 @@
 -define(DEF_VOLUME_MINMAX_Z, 2.0).
 -define(DEF_MESHLIGHT_POWER, 5.0).
 -define(DEF_MESHLIGHT_SAMPLES, 16).
--define(DEF_MESHLIGHT_COLOR, {1.0,1.0,1.0}).
+-define(DEF_MESHLIGHT_COLOR, {0.9,0.9,0.9}).
 -define(DEF_MESHLIGHT_DOUBLE_SIDED, false).
 -define(DEF_USE_HARDNESS, false).
 -define(DEF_AUTOSMOOTH, true).
@@ -63,7 +63,7 @@
 -define(DEF_DISPERSION_JITTER, false).
 -define(DEF_FAKE_SHADOWS, false).
 -define(DEF_TRANSPARENCY, 0.0).
--define(DEF_TRANSMIT_FILTER, 0.5).
+-define(DEF_TRANSMIT_FILTER, 1.0).
 -define(DEF_TRANSLUCENCY, 0.0).
 -define(DEF_SSS_TRANSLUCENCY, 1.0).
 -define(DEF_SIGMAS_FACTOR, 1.0).
@@ -82,6 +82,7 @@
 -define(DEF_BLEND_VALUE, 0.5).
 -define(DEF_OREN_NAYAR, false).
 -define(DEF_OREN_NAYAR_SIGMA, 0.25).
+
 
 %% Arealight
 -define(DEF_AREALIGHT, false).
@@ -223,12 +224,12 @@
 -define(DEF_USE_MAXDISTANCE, false).
 -define(DEF_MAXDISTANCE, 1.0).
 -define(DEF_BACKGROUND_FILENAME, "").
--define(DEF_BACKGROUND_EXPOSURE_ADJUST, 1.0).
+-define(DEF_TEXTUREBACK_ROTATION, 0.0).
 -define(DEF_BACKGROUND_MAPPING, probe).
--define(DEF_BACKGROUND_POWER, 5.0).
--define(DEF_BACKGROUND_PREFILTER, true).
--define(DEF_BACKGROUND_ENLIGHT, true).
--define(DEF_SAMPLES, 128).
+-define(DEF_BACKGROUND_POWER, 1.0).
+-define(DEF_TEXTUREBACK_INTERPOLATE, true).
+-define(DEF_BACKGROUND_IBL, true).
+-define(DEF_SAMPLES, 32).
 
 %% Pathlight
 -define(DEF_PATHLIGHT_MODE, undefined).
@@ -247,14 +248,28 @@
 
 %% Modulator
 -define(DEF_MOD_ENABLED, true).
--define(DEF_MOD_MODE, mix).
+-define(DEF_BLENDING_MODE, mix).
 -define(DEF_MOD_SIZE, 1.0).
 -define(DEF_MOD_SIZE_X, 1.0).
 -define(DEF_MOD_SIZE_Y, 1.0).
 -define(DEF_MOD_SIZE_Z, 1.0).
+-define(DEF_MOD_OFFSET_X, 0.0).
+-define(DEF_MOD_OFFSET_Y, 0.0).
+-define(DEF_MOD_OFFSET_Z, 0.0).
 -define(DEF_MOD_OPACITY, 1.0).
--define(DEF_MOD_DIFFUSE, 0.0).
+% povman add ---------------------->
+-define(DEF_MOD_FACTOR, 0.5).
 -define(DEF_MOD_SPECULAR, 0.0).
+-define(DEF_NORGB, false).
+-define(DEF_MOD_STENCIL, false).
+-define(DEF_NEGATIVE, false).
+-define(DEF_COLOR, {1.0,0.0,1.0}).
+-define(DEF_PROJECTION, plain).
+-define(DEF_COORDINATES, global).
+-define(DEF_MOD_SHADER_TYPE, diff).
+-define(DEF_MOD_TRANSPARENCY, 0.0).
+-define(DEF_MOD_TRANSLUCENCY, 0.0).
+% end
 -define(DEF_MOD_AMBIENT, 0.0).
 -define(DEF_MOD_SHININESS, 0.0).
 -define(DEF_MOD_NORMAL, 0.0).
@@ -270,6 +285,7 @@
 -define(DEF_MOD_SHARPNESS, 15.0).
 -define(DEF_MOD_WOODTYPE, rings).
 -define(DEF_MOD_SHAPE, "sin").
+
 -define(DEF_MOD_CELLTYPE, intensity).
 -define(DEF_MOD_CELLSHAPE, actual).
 -define(DEF_MOD_CELLSIZE, 4.0).
@@ -278,15 +294,152 @@
 -define(DEF_MOD_CELL_WEIGHT2, 0.0).
 -define(DEF_MOD_CELL_WEIGHT3, 0.0).
 -define(DEF_MOD_CELL_WEIGHT4, 0.0).
--define(DEF_MOD_MUSGRAVE_TYPE, multifractal).
 
+-define(DEF_MOD_MUSGRAVE_TYPE, multifractal).
 -define(DEF_MOD_MUSGRAVE_NOISESIZE, 0.5).
 -define(DEF_MOD_MUSGRAVE_INTENSITY, 2.0).
 -define(DEF_MOD_MUSGRAVE_CONTRAST, 0.1).
 -define(DEF_MOD_MUSGRAVE_LACUNARITY, 2.0).
 -define(DEF_MOD_MUSGRAVE_OCTAVES, 8.0).
--define(DEF_MOD_DISTORTION_TYPE, blender).
 
+-define(DEF_MOD_DISTORTION_TYPE, blender).
 -define(DEF_MOD_DISTORTION_INTENSITY, 10.0).
 -define(DEF_MOD_DISTORTION_NOISESIZE, 1.0).
--define(DEF_MOD_ALPHA_INTENSITY, off).
+
+
+%% ranges..
+range(T) -> {range,range_1(T)}.
+
+%% Material ranges
+range_1(volume_sigma_a)         -> {0.0,1.0};
+range_1(volume_sigma_s)         -> {0.0,1.0};
+range_1(volume_height)          -> {0.0,1000.0};
+range_1(volume_steepness)       -> {0.0,10.0};
+range_1(volume_attgridscale)    -> {1,5};
+range_1(volume_sharpness)       -> {1.0,100.0};
+range_1(volume_cover)           -> {0.0,1.0};
+range_1(volume_density)         -> {0.0,1.0};
+range_1(volume_minmax_x)        -> {1.0,1000.0};
+range_1(volume_minmax_y)        -> {1.0,1000.0};
+range_1(volume_minmax_z)        -> {1.0,1000.0};
+range_1(meshlight_power)        -> {0.0,10000.0};
+range_1(meshlight_samples)      -> {0,512};
+range_1(autosmooth_angle)       -> {0.0,180.0};
+range_1(ior)                    -> {0.0,3.0};
+range_1(glass_ir_depth)         -> {0,32};
+range_1(min_refle)              -> {0.0,1.0};
+range_1(size)                   -> {0.0,infinity};
+range_1(modulation)             -> {-1.0,1.0}; % povman mod -5.0 / 5.0
+range_1(turbulence)             -> {?NONZERO,infinity};
+range_1(scale)                  -> {?NONZERO,infinity};
+range_1(cell_size)              -> {0.0,infinity};
+range_1(intensity)              -> {0.010,infinity};
+range_1(cell_weight1)           -> {-2.0,2.0};
+range_1(cell_weight2)           -> {-2.0,2.0};
+range_1(cell_weight3)           -> {-2.0,2.0};
+range_1(cell_weight4)           -> {-2.0,2.0};
+range_1(musgrave_noisesize)     -> {0.0,infinity};
+range_1(musgrave_intensity)     -> {0.0,10.0};
+range_1(musgrave_contrast)      -> {0.0,10.0};
+range_1(musgrave_lacunarity)    -> {0.0,10.0};
+range_1(musgrave_octaves)       -> {0.0,8.0};
+range_1(distortion_intensity)   -> {0.0,10.0};
+range_1(distortion_noisesize)   -> {0.0,infinity};
+range_1(sharpness)              -> {1.0,infinity};
+range_1(noise_depth)            -> {0,infinity};
+range_1(noise_size)             -> {0.0,infinity};
+range_1(absorption_dist)        -> {0.1,100.0};
+range_1(dispersion_power)       -> {0.0,1.0};
+range_1(dispersion_samples)     -> {1,512};
+range_1(transparency)           -> {0.0,1.0};
+range_1(transmit_filter)        -> {0.0,1.0};
+range_1(translucency)           -> {0.0,1.0};
+range_1(sss_translucency)       -> {0.0,1.0};
+range_1(sigmas_factor)          -> {1.0,10.0};
+range_1(diffuse_reflect)        -> {0.0,1.0};
+range_1(specular_reflect)       -> {0.0,1.0};
+range_1(glossy_reflect)         -> {0.0,1.0};
+range_1(emit)                   -> {0.0,25.0};
+range_1(exponent)               -> {1.0,2000.0};
+range_1(anisotropic_u)          -> {1.0,2000.0};
+range_1(anisotropic_v)          -> {1.0,2000.0};
+range_1(roughness)              -> {0.0,1.0};
+range_1(lightmat_power)         -> {0.0,10.0};
+range_1(blend_value)            -> {0.0,1.0};
+range_1(oren_nayar_sigma)       -> {0.0,1.0};
+
+%% Light ranges
+range_1(power)                  -> {0.0,infinity};
+range_1(bias)                   -> {0.0,1.0};
+range_1(res)                    -> {0,infinity};
+range_1(radius)                 -> {0,infinity};
+range_1(blur)                   -> {0.0,1.0};
+range_1(samples)                -> {1,infinity};
+range_1(spot_ies_samples)       -> {1,512};
+range_1(glow_intensity)         -> {0.0,1.0};
+range_1(glow_offset)            -> {0.0,infinity};
+range_1(blend)                  -> {0.0,1.0};
+range_1(photons)                -> {0,infinity};
+range_1(depth)                  -> {0,infinity};
+range_1(fixedradius)            -> {0.0,infinity};
+range_1(search)                 -> {0,infinity};
+range_1(cluster)                -> {0.0,infinity};
+range_1(turbidity)              -> {0.0,infinity};
+range_1(angle_threshold)        -> {0.0,1.0};
+range_1(raydepth)               -> {1,infinity};
+range_1(shadow_depth)           -> {1,64};
+range_1(cache_size)             -> {0.0,infinity};
+range_1(shadow_threshold)       -> {0.0,infinity};
+range_1(cache_search)           -> {3,infinity};
+range_1(textureback_rotate)     -> {0.0,179.0}; % povman : olded exposure_adjust
+range_1(psamples)               -> {0,infinity};
+range_1(arealight_radius)       -> {0.0,infinity};
+range_1(maxdistance)            -> {0.0,infinity};
+range_1(infinite_radius)        -> {0.0,infinity};
+range_1(sun_samples)            -> {0,infinity};
+range_1(sun_angle)              -> {0.0,80.0};
+range_1(sky_background_power)   -> {0.0,infinity};
+range_1(sky_background_samples) -> {0,infinity};
+
+%% Render ranges
+range_1(pm_diffuse_photons)     -> {1,100000000};
+range_1(pm_bounces)             -> {0,50};
+range_1(pm_search)              -> {1,10000};
+range_1(pm_diffuse_radius)      -> {0.0,100.0};
+range_1(pm_caustic_photons)     -> {1,100000000};
+range_1(pm_caustic_radius)      -> {0.0,100.0};
+range_1(pm_caustic_mix)         -> {1,10000};
+range_1(pm_fg_bounces)          -> {1,20};
+range_1(pm_fg_samples)          -> {1,4096};
+range_1(pt_diffuse_photons)     -> {1,100000000};
+range_1(pt_bounces)             -> {0,50};
+range_1(pt_caustic_radius)      -> {0.0,100.0};
+range_1(pt_caustic_mix)         -> {1,10000};
+range_1(pt_caustic_depth)       -> {0,infinity};
+range_1(pt_samples)             -> {1,4096};
+range_1(sss_photons)            -> {0,infinity};
+range_1(sss_depth)              -> {1.0,50.0};
+range_1(sss_scale)              -> {0.0,100.0};
+range_1(sss_singlescatter_samples)      -> {0.0,50.0};
+range_1(caustic_photons)        -> {0,infinity};
+range_1(caustic_depth)          -> {0,infinity};
+range_1(caustic_mix)            -> {0,infinity};
+range_1(caustic_radius)         -> {0.0,1.0};
+range_1(ao_distance)            -> {1.0,100.0};
+range_1(ao_samples)             -> {1.0,128.0};
+range_1(volintegr_stepsize)     -> {0.0,100.0};
+range_1(subdivisions)           -> {0,infinity};
+range_1(threads_number)         -> {1,100};
+range_1(aa_pixelwidth)          -> {1.0,2.0};
+range_1(aa_passes)              -> {0,infinity};
+range_1(aa_threshold)           -> {0.0,1.0};
+range_1(aa_minsamples)          -> {1,infinity};
+range_1(gamma)                  -> {0.0,infinity};
+range_1(exposure)               -> {0.0,infinity};
+range_1(pixels)                 -> {1,infinity};
+range_1(lens_ortho_scale)       -> {0.0,100.0};
+range_1(lens_angular_max_angle) -> {0.0,360.0};
+range_1(lens_angular_angle)     -> {0.0,360.0};
+range_1(aperture)               -> {0.0,infinity};
+range_1(bokeh_rotation)         -> {-180.0,180.0};
+range_1(dof_distance)           -> {0.0,250.0}.

@@ -334,6 +334,7 @@ material_dialog(_Name, Mat) ->
             },
             %%% Shiny Diffuse Material
             {hframe,[
+                {hframe,[help_button(shiny_help_dialog)]},
                 {vframe,[
                     {label, "Index of Refraction"},
                     {label, "Reflected Color"},
@@ -345,7 +346,7 @@ material_dialog(_Name, Mat) ->
                     {label, "Mirror Reflection"},
                     {label, "Emit Light"},
                     {"Oren-Nayar",OrenNayar,[key(oren_nayar)]},
-                    {"Fresnel Effect",TIR,[key(tir)]},
+                    %{"Fresnel Effect",TIR,[key(tir)]}, %% povman . test move
                     panel
                 ]},
                 {vframe,[
@@ -365,7 +366,8 @@ material_dialog(_Name, Mat) ->
                             range(oren_nayar_sigma),
                             key(oren_nayar_sigma),
                             hook(enable, ['not',[member,?KEY(oren_nayar), ?DEF_OREN_NAYAR]])
-                        ]}
+                        ]},
+                        {"Fresnel Effect",TIR,[key(tir)]}
                     ]}
                 ]},
                 {vframe,[
@@ -444,6 +446,7 @@ material_dialog(_Name, Mat) ->
             },
             %%% Glossy Material
             {hframe,[
+                {hframe,[help_button(glossy_help_dialog)]},
                 {vframe,[
                     {label, "Glossy Color"}, {label, "Diffuse Color"},
                     {label, "Diffuse Reflection"},{label, "Glossy Reflection"},{label, "Exponent"},

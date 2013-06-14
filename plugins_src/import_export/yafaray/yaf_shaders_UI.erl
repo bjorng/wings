@@ -17,32 +17,35 @@ modulator_dialogs(Modulators, Maps) ->
 
 modulator_dialogs([], _Maps, M) ->
     [{hframe,
-      [{button,?__(1,"New Modulator"),done,[key(new_modulator)]},
+      [{button,?__(801,"New Modulator"),done,[key(new_modulator)]},
        panel|
-       if M =:= 1 -> [{button,?__(2,"Default Modulators"),done}];
+       if M =:= 1 -> [{button,?__(802,"Default Modulators"),done}];
       true -> [] end]}];
     modulator_dialogs([Modulator|Modulators], Maps, M) ->
     modulator_dialog(Modulator, Maps, M)++
     modulator_dialogs(Modulators, Maps, M+1).
 
 modulator_dialog({modulator,Ps}, Maps, M) when is_list(Ps) ->
-%    erlang:display({?MODULE,?LINE,[Ps,M,Maps]}),
-    {Enabled,Mode,Type} = mod_enabled_mode_type(Ps, Maps),
-    AlphaIntensity = proplists:get_value(alpha_intensity, Ps, ?DEF_MOD_ALPHA_INTENSITY),
+    %erlang:display({?MODULE,?LINE,[Ps,M,Maps]}),
+    {Enabled, Mode, TexType} = mod_enabled_mode_type(Ps, Maps),
+
     Minimized = proplists:get_value(minimized, Ps, true),
+
     SizeX = proplists:get_value(size_x, Ps, ?DEF_MOD_SIZE_X),
     SizeY = proplists:get_value(size_y, Ps, ?DEF_MOD_SIZE_Y),
     SizeZ = proplists:get_value(size_z, Ps, ?DEF_MOD_SIZE_Z),
-    Diffuse = proplists:get_value(diffuse, Ps, ?DEF_MOD_DIFFUSE),
-    Specular = proplists:get_value(specular, Ps, ?DEF_MOD_SPECULAR),
-%%    Ambient = proplists:get_value(ambient, Ps, ?DEF_MOD_AMBIENT),
-    Shininess = proplists:get_value(shininess, Ps, ?DEF_MOD_SHININESS),
-    Normal = proplists:get_value(normal, Ps, ?DEF_MOD_NORMAL),
+
+    ModFactor = proplists:get_value(mod_factor, Ps, ?DEF_MOD_FACTOR),
+
+    %Specular = proplists:get_value(specular, Ps, ?DEF_MOD_SPECULAR),
+    %Ambient = proplists:get_value(ambient, Ps, ?DEF_MOD_AMBIENT),
+    %Shininess = proplists:get_value(shininess, Ps, ?DEF_MOD_SHININESS),
+    %Normal = proplists:get_value(normal, Ps, ?DEF_MOD_NORMAL),
     Filename = proplists:get_value(filename, Ps, ?DEF_MOD_FILENAME),
     BrowseProps = [{dialog_type,open_dialog},
-                   {extensions,[{".jpg",?__(3,"JPEG compressed image")},
-                                {".tga",?__(4,"Targa bitmap")}]}],
-%    erlang:display({?MODULE,?LINE,[Filename,AbsnameX,BrowseProps]}),
+                   {extensions,[{".jpg",?__(803,"JPEG compressed image")},
+                                {".tga",?__(804,"Targa bitmap")}]}],
+    %    erlang:display({?MODULE,?LINE,[Filename,AbsnameX,BrowseProps]}),
     Color1 = proplists:get_value(color1, Ps, ?DEF_MOD_COLOR1),
     Color2 = proplists:get_value(color2, Ps, ?DEF_MOD_COLOR2),
     Depth = proplists:get_value(depth, Ps, ?DEF_MOD_DEPTH),
@@ -84,82 +87,87 @@ modulator_dialog({modulator,Ps}, Maps, M) when is_list(Ps) ->
     Coordinates = proplists:get_value(coordinates, Ps, ?DEF_COORDINATES),
 
     Projection = proplists:get_value(projection, Ps, ?DEF_PROJECTION),
-    %% end--->
 
-    MapsFrame = [{hradio,[{atom_to_list(Map),{map,Map}} || {Map,_} <- Maps], Type,[{key,TypeTag},layout]}],
+    BlendMode = proplists:get_value(blend_mode, Ps, ?DEF_BLENDING_MODE),
+
+    ModShaderType = proplists:get_value(mod_shader_type, Ps, ?DEF_MOD_SHADER_TYPE),
+
+    StencilMode = proplists:get_value(stencil_mode, Ps, ?DEF_MOD_STENCIL),
+    %
+
+    MapsFrame = [{hradio,[{atom_to_list(Map),{map,Map}} || {Map,_} <- Maps], TexType,[{key,TypeTag},layout]}],
 
     [
         {vframe,[
             {hframe,[
-                {?__(5,"Enabled"),Enabled,[{key,{?TAG,enabled,M}}]},
-                {menu,[
-                    {?__(6,"Mix"),mix},
-                    {?__(7,"Add"),add},
-                    {?__(8,"Multiply"),mul},
-                    {?__(109,"Subtrac"),sub},
-                    {?__(110,"Screen"),scr},
-                    {?__(111,"Div"),divide},
-                    {?__(112,"Difference"),dif},
-                    {?__(113,"Darking"),dar},
-                    {?__(114,"Lighting"),lig}
-                ],Mode,[hook(enable, {?TAG,enabled,M})]
-                },
+                {?__(805,"Enabled"),Enabled,[{key,{?TAG,enabled,M}}]},
                 panel,
-                {button,?__(9,"Delete"),done}
+                {menu,[
+                    {?__(806,"Mix"),mix},
+                    {?__(807,"Add"),add},
+                    {?__(808,"Multiply"),mul},
+                    {?__(809,"Subtrac"),sub},
+                    {?__(810,"Screen"),scr},
+                    {?__(811,"Divide"),divide},
+                    {?__(812,"Difference"),dif},
+                    {?__(813,"Darking"),dar},
+                    {?__(814,"Lighting"),lig}
+                ],BlendMode,[hook(enable,{?TAG,enabled,M})]
+                },
+                {label,?__(815,"<- Blend Mode")},
+                panel,{button,?__(816,"Delete"),done},
+                panel,help_button(shader_dialog)
             ]},
-            {vframe,[ % hook(enable, {?TAG,enabled,M})
+            {vframe,[
                 {hframe,[
+                    {label,?__(817,"Shader Type")},
                     {menu,[
-                        {?__(115,"Alpha Off"),off},
-                        {?__(116,"Alpha Transparency"),transparency},
-                        {?__(117,"Diffuse+Alpha Transparency"),diffusealphatransparency},
-                        {?__(118,"Alpha Translucency"),translucency},
-                        {?__(119,"Specularity"),specularity},
-                        {?__(120,"Stencil"),stencil}
-                    ],AlphaIntensity
+                        {?__(818,"Diffuse Shader"),diff},
+                        {?__(819,"Mirror shader"),spec},
+                        {?__(820,"Transparency shader"),transp},
+                        {?__(821,"Translucency shader"),translu},
+                        {?__(822,"Mirror color shader"),colorspec},
+                        {?__(823,"Bumpmap shader"),bump}
+                    ],ModShaderType
                     }
                 ]},
-                %% add
-                {hframe,[
-                    {label,?__(818,"Coordinates:")},
-                    {menu,[
-                        {?__(819,"UV"),uv},
-                        {?__(820,"Global"),global}
-                    ], Coordinates},
-                    {label,?__(821,"Projection:")},
-                    {menu,[
-                        {?__(822,"Plain"),flat},
-                        {?__(823,"Cube"),cube},
-                        {?__(824,"Tube"),tube},
-                        {?__(825,"Sphere"),sphere}
-                    ],Projection}
-                ]},
-                %% end ----
-                {hframe,[
-                    {label,?__(10,"SizeX")},{text,SizeX,[range(size)]},
-                    {label,?__(11,"SizeY")}, {text,SizeY,[range(size)]},
-                    {label,?__(12,"SizeZ")}, {text,SizeZ,[range(size)]}
-                ]},
-                %% add
-                {hframe,[
-                    {label,?__(810,"Offset: X:")},{text,OffX,[range(size),{width,5}]},
-                    {label,?__(811,"Y:")},{text,OffY,[range(size),{width,5}]},
-                    {label,?__(812,"Z:")},{text,OffZ,[range(size),{width,5}]}
-                ]},
-                %% end add ------>
                 {hframe,[
                     {vframe,[
-                        {label,?__(13,"Diffuse")++" "},
-                        {label,?__(14,"Specular")},
-                        {label,?__(16,"Shininess")},
-                        {label,?__(17,"Normal")}
+                        {label,?__(824,"Coordinates:")},
+                        {label,?__(825,"Projection:")}
                     ]},
                     {vframe,[
-                        {slider,{text,Diffuse,[range(modulation)]}},
-                        {slider,{text,Specular,[range(modulation)]}},
-                        {slider,{text,Shininess,[range(modulation)]}},
-                        {slider,{text,Normal,[range(modulation)]}}
-                    ]}
+                        {menu,[
+                            {?__(826,"UV"),uv},
+                            {?__(827,"Global"),global}
+                        ],Coordinates
+                        },
+                        {menu,[
+                            {?__(828,"Flat"),plain},
+                            {?__(829,"Cube"),cube},
+                            {?__(830,"Tube"),tube},
+                            {?__(831,"Sphere"),sphere}
+                        ],Projection}
+                    ]},
+                    {vframe,[
+                        {hframe,[
+                            {label,?__(832,"Size   X:")},{text,SizeX,[range(size),{width,6}]},
+                            {label,?__(833," Y:")}, {text,SizeY,[range(size),{width,5}]},
+                            {label,?__(834," Z:")}, {text,SizeZ,[range(size),{width,5}]}
+                        ]},
+                        {hframe,[
+                            {label,?__(835,"Offset X:")},{text,OffX,[range(size),{width,5}]},
+                            {label,?__(836," Y:")},{text,OffY,[range(size),{width,5}]},
+                            {label,?__(837," Z:")},{text,OffZ,[range(size),{width,5}]}
+                        ]}
+
+                    ]},
+                    {hframe,[{label,?__(1025,"Stencil"),StencilMode}]}
+                ],[{title,?__(838,"Texture settings")}]}, % aqui acaba la horizontal
+                {hframe,[
+                    {label,?__(839,"Shader factor:")},
+                    {slider,{text,ModFactor,[range(modulation)]}}
+
                 ]}
             ]
             ++MapsFrame++
@@ -172,7 +180,7 @@ modulator_dialog({modulator,Ps}, Maps, M) when is_list(Ps) ->
                     {?__(46,"Voronoi"),voronoi},
                     {?__(62,"Musgrave"),musgrave},
                     {?__(82,"Distorted Noise"),distorted_noise}
-                ], Type,[{key,TypeTag},layout]
+                ], TexType,[{key,TypeTag},layout]
                 },
                 {vframe,[
                     {hframe,[
@@ -182,14 +190,14 @@ modulator_dialog({modulator,Ps}, Maps, M) when is_list(Ps) ->
                         ],[hook(open, [member,{?TAG,type,M},image])]
                         },
 
-%% Clouds,Marble,Wood Specific Procedurals
+                        %% Clouds,Marble,Wood Specific Procedurals
 
                         {hframe,[
                             {label,?__(23,"Texture")},{color,Color1},
                             {label,?__(24,"Base")},{color,Color2},
                             {?__(25,"Hard Noise"),Hard},
 
-%%% Start Noise Basis Select
+                        %%% Start Noise Basis Select
 
                             {menu,[
                                 {?__(36,"Blender-Basis"),blender},
@@ -341,7 +349,8 @@ modulator_dialog({modulator,Ps}, Maps, M) when is_list(Ps) ->
                     ]}
                 ]}
             ],[hook(enable, {?TAG,enabled,M})]
-            }],[{title,?__(35,"Modulator")++" "++integer_to_list(M)++mod_legend(Enabled, Mode, Type)},{minimized,Minimized}]}
+            }],[{title,?__(35,"Shader slot")++" "++integer_to_list(M)++mod_legend(Enabled, Mode, TexType)},{minimized,Minimized}]
+        }
     ];
 
 modulator_dialog(_Modulator, _Maps, _) ->
@@ -349,34 +358,42 @@ modulator_dialog(_Modulator, _Maps, _) ->
 
 mod_enabled_mode_type(Ps, Maps) ->
     {Enabled,Mode} =
-        case proplists:get_value(mode, Ps, ?DEF_MOD_MODE) of
-            off -> {false,?DEF_MOD_MODE};
-            Mode1 -> {proplists:get_value(enabled, Ps, ?DEF_MOD_ENABLED),Mode1}
+        case proplists:get_value(mode, Ps, ?DEF_BLENDING_MODE) of
+            off -> {false,?DEF_BLENDING_MODE};
+            Mode1 -> {proplists:get_value(enabled, Ps, ?DEF_MOD_ENABLED),Mode1} % not work
         end,
-    Type = proplists:get_value(type, Ps, ?DEF_MOD_TYPE),
-    case Type of
+    TexType = proplists:get_value(textype, Ps, ?DEF_MOD_TYPE),
+
+    %erlang:display(TexType),
+    %%--------------------->
+    case TexType of
         {map,Map} ->
             case lists:keymember(Map, 1, Maps) of
-                true -> {Enabled,Mode,Type};
-                false -> {false,Mode,?DEF_MOD_TYPE}
+                true -> {Enabled, Mode, TexType};
+                false -> {false, Mode, ?DEF_MOD_TYPE}
             end;
-        _ -> {Enabled,Mode,Type}
+        _ -> {Enabled, Mode, TexType}
     end.
-%% funciones para cargar los 'modulators' o shaders en el menu de cda material
+
+%%-------->
 mod_legend(Enabled, Mode, {map,Map}) ->
     mod_legend(Enabled, Mode, atom_to_list(Map));
 
-mod_legend(Enabled, Mode, Type) when is_atom(Mode) ->
-    mod_legend(Enabled, wings_util:cap(Mode), Type);
+%------->
+mod_legend(Enabled, Mode, TexType) when is_atom(Mode) -> % povman last test
+    mod_legend(Enabled, wings_util:cap(Mode), TexType);
 
-mod_legend(Enabled, Mode, Type) when is_atom(Type) ->
-    mod_legend(Enabled, Mode, wings_util:cap(Type));
 
-mod_legend(Enabled, Mode, Type) when is_list(Mode), is_list(Type) ->
+%---------->
+mod_legend(Enabled, Mode, TexType) when is_atom(TexType) ->
+    mod_legend(Enabled, Mode, wings_util:cap(TexType));
+
+%---->
+mod_legend(Enabled, Mode, TexType) when is_list(Mode), is_list(TexType) ->
     case Enabled of
         true -> " ("++?__(1,"enabled")++", ";
         false -> " ("++?__(2,"disabled")++", "
-    end++Mode++", "++Type++")".
+    end++Mode++", "++TexType++")".
 
 
 modulator_result(Ps, Res) ->
@@ -385,64 +402,79 @@ modulator_result(Ps, Res) ->
 modulator_result(Ps, [], _, Modulators) ->
     %% Should not happen
     {[{modulators,reverse(Modulators)}|Ps], []};
+
 modulator_result(Ps, [{?KEY(new_modulator),false},false|Res], 1, []) ->
     {[{modulators,[]}|Ps],Res};
+
 modulator_result(Ps, [{?KEY(new_modulator),false},true|Res], 1, []) ->
     %% Default Modulators
     {Ps,Res};
+
 modulator_result(Ps, [{?KEY(new_modulator),true},_|Res], 1, []) ->
     {[{modulators,[{modulator,[]}]}|Ps],Res};
+
 modulator_result(Ps, [{?KEY(new_modulator),false}|Res], _, Modulators) ->
     {[{modulators,reverse(Modulators)}|Ps],Res};
+
 modulator_result(Ps, [{?KEY(new_modulator),true}|Res], _, Modulators) ->
     {[{modulators,reverse(Modulators, [{modulator,[]}])}|Ps],Res};
-modulator_result(Ps, [_Minimized,{{?TAG,enabled,M},_},_Mode,true|Res0],
-                 M, Modulators) ->
+
+modulator_result(Ps, [_Minimized,{{?TAG,enabled,M},_},_Mode,true|Res0], M, Modulators) ->
     %% Delete - Split list # +1 will match the modulator one below.
-    {_,Res} = split_list(Res0, 42), % org: 37
+    {_,Res} = split_list(Res0, 40), % org: 37
     modulator_result(Ps, Res, M+1, Modulators);
-modulator_result(Ps, [Minimized,{{?TAG,enabled,M},Enabled},Mode,false|Res0],
+
+modulator_result(Ps, [Minimized,{{?TAG,enabled,M},Enabled},BlendMode,false|Res0],
                  M, Modulators) ->
-    {Modulator,Res} = modulator(Minimized, Enabled, Mode, Res0, M),
+    {Modulator,Res} = modulator(Minimized, Enabled, BlendMode, Res0, M),
     modulator_result(Ps, Res, M+1, [Modulator|Modulators]).
+
 
 %%% Increase split_list # +1 per line if add Modulator to Dialog
 
 modulator(Minimized, Enabled, Mode, Res0, M) ->
-    {Res1,Res} = split_list(Res0, 42), % org : 37
+    {Res1,Res} = split_list(Res0, 40), % org : 37
     TypeTag = {?TAG,type,M},
-    {value,{TypeTag,Type}} = lists:keysearch(TypeTag, 1, Res1),
-    [AlphaIntensity,
-    Coordinates, Projection,
-    SizeX,SizeY,SizeZ,
-    OffX,OffY,OffZ,
-    Diffuse,Specular,Shininess,Normal,
-    Filename,
+    {value,{TypeTag,TexType}} = lists:keysearch(TypeTag, 1, Res1),
+
+    [
+    ModShaderType,
+    Coordinates,
+    Projection,
+    StencilMode,
+    SizeX, SizeY, SizeZ, OffX, OffY, OffZ,
+    ModFactor,
+    Filename, %28
     Color1,Color2,Hard,NoiseBasis,NoiseSize,Depth,
-    Sharpness,Turbulence,Shape,
-    WoodType,CellType,CellShape,CellSize,Intensity,CellWeight1,CellWeight2,CellWeight3,CellWeight4,
-    MusgraveType,MusgraveNoiseSize,MusgraveIntensity,MusgraveContrast,
-    MusgraveLacunarity,MusgraveOctaves,DistortionType,
-    DistortionNoiseSize,DistortionIntensity] %% 17 values = 18-1
-        = lists:keydelete(TypeTag, 1, Res1),
-    Ps = [{minimized,Minimized},{enabled,Enabled},{mode,Mode},{alpha_intensity,AlphaIntensity},
-          {coordinates,Coordinates},{projection,Projection}, %
-          {size_x,SizeX},{size_y,SizeY},{size_z,SizeZ},
-          {offsetx,OffX},{offsety,OffY},{offsetz,OffZ}, %
-          {diffuse,Diffuse},{specular,Specular},
-          {shininess,Shininess},{normal,Normal},
-          {type,Type},
-          {filename,Filename},{color1,Color1},{color2,Color2},{hard,Hard},
-          {noise_basis,NoiseBasis},{noise_size,NoiseSize},{depth,Depth},
-          {sharpness,Sharpness},{turbulence,Turbulence},{shape,Shape},
-          {wood_type,WoodType},{cell_type,CellType},{cell_shape,CellShape},
-          {cell_size,CellSize},{intensity,Intensity},{cell_weight1,CellWeight1},
-          {cell_weight2,CellWeight2},{cell_weight3,CellWeight3},{cell_weight4,CellWeight4},
-          {musgrave_type,MusgraveType},
-          {musgrave_noisesize,MusgraveNoiseSize},{musgrave_intensity,MusgraveIntensity},
-          {musgrave_contrast,MusgraveContrast},{musgrave_lacunarity,MusgraveLacunarity},
-          {musgrave_octaves,MusgraveOctaves},{distortion_type,DistortionType},
-          {distortion_noisesize,DistortionNoiseSize},
-          {distortion_intensity,DistortionIntensity}
-          ],
-    {{modulator,Ps},Res}.
+    Sharpness, Turbulence, Shape,
+    WoodType, CellType, CellShape, CellSize, Intensity,
+    CellWeight1, CellWeight2, CellWeight3, CellWeight4,
+    MusgraveType, MusgraveNoiseSize, MusgraveIntensity,
+    MusgraveContrast, MusgraveLacunarity, MusgraveOctaves, DistortionType,
+    DistortionNoiseSize,DistortionIntensity] = lists:keydelete(TypeTag, 1, Res1),
+    %
+    Ps = [
+        {minimized,Minimized},
+        {enabled,Enabled},
+        {mode,Mode},
+        {mod_shader_type,ModShaderType},
+        {coordinates,Coordinates},
+        {projection,Projection},
+        {stencil_mode,StencilMode},
+        {size_x,SizeX},{size_y,SizeY},{size_z,SizeZ},
+        {offsetx,OffX},{offsety,OffY},{offsetz,OffZ},
+        {mod_factor,ModFactor},
+        {textype,TexType},
+        {filename,Filename},{color1,Color1},{color2,Color2},{hard,Hard},
+        {noise_basis,NoiseBasis},{noise_size,NoiseSize},{depth,Depth},
+        {sharpness,Sharpness},{turbulence,Turbulence},{shape,Shape},
+        {wood_type,WoodType},{cell_type,CellType},{cell_shape,CellShape},
+        {cell_size,CellSize},{intensity,Intensity},{cell_weight1,CellWeight1},
+        {cell_weight2,CellWeight2},{cell_weight3,CellWeight3},{cell_weight4,CellWeight4},
+        {musgrave_type,MusgraveType},
+        {musgrave_noisesize,MusgraveNoiseSize},{musgrave_intensity,MusgraveIntensity},
+        {musgrave_contrast,MusgraveContrast},{musgrave_lacunarity,MusgraveLacunarity},
+        {musgrave_octaves,MusgraveOctaves},{distortion_type,DistortionType},
+        {distortion_noisesize,DistortionNoiseSize},
+        {distortion_intensity,DistortionIntensity}
+        ],{{modulator,Ps},Res}.

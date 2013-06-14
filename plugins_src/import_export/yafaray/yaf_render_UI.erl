@@ -10,9 +10,7 @@
 %%  of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 %%
 %%
-%% pov test
-%%Bg = proplists:get_value(background, Ps, ?DEF_BACKGROUND),
-%% end
+
 export_dialog_qs(Op,
                 [{subdivisions,SubDiv},
                 {keep_xml,KeepXML},
@@ -422,7 +420,7 @@ export_dialog_qs(Op,
         },
         {hframe,[
             {vframe,[
-                %%------------------> ad '10' to key
+                %%------------------> add '10' to key
                 {menu,[
                     {?__(1043,"Constant"),constant},
                     {?__(10101,"Gradient"),gradientback},

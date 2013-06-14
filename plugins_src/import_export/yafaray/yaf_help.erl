@@ -41,9 +41,76 @@ help(text, {material_dialog,fresnel}) ->
       "Grazing Angle Transmitted to green."),
      ?__(25,"Absorption -> Sets the desired color for white light travelling "
       "the given distance through the material.")];
+
+% povman test: for new help
+% The chars limits before truncate line is 65
+% TODO: sync the numbers with the UI
+
+help(title, glossy_help_dialog) ->
+    ?__(1022,"Glossy Help");
+help(text, glossy_help_dialog)->
+    [?__(1122,"Glossy Material\n
+    A glossy reflection means that tiny random bumps on the
+    surface of the material cause the reflection to be blurry.
+    In fact there is a wide range of materials with such a reflection.
+    YafaRay glossy material can be useful for all kinds of finished
+    surfaces such as plastics, polished metal, car paint, finished
+    wood, lacquered surfaces, painted surfaces, varnished wood,
+    glaze, organic materials, etc. The glossy effect can be
+    reinforced by using a fine bump map, or by mapping glossy
+    reflection with a fine texture.
+    For more info visit:
+    http://www.yafaray.org/documentation/userguide/material#glossy")];
+
+help(title, shiny_help_dialog) ->
+    ?__(1023,"Shiny Diffuse Help");
+
+help(text, shiny_help_dialog) ->
+    [?__(1123, "New Help for shinydiffuse material
+    Shinydiffuse is a shader with many applications.
+    It can be useful to get:
+    * Diffuse materials without any specular component.
+    * Perfect mirror reflection with or without Fresnel effect.
+    * Alpha mapping with shadows calculation derived from the
+    * map, for translucency and transparency effects.
+    * Translucency with color filtering.
+    * Transparency with color filtering.
+    * Emit surfaces.
+    For instance, this material can be used for rough stone,
+    rusted metal, concrete, fabric, clay, asphalt, paper, rough
+    wood, chrome balls, shiny plastics, basic car paint,
+    curtains, leaves, billboards, etc.
+    For more info visit:
+    http://www.yafaray.org/documentation/userguide/material#shinydiffuse")];
+
+help(title, shader_dialog) ->
+    ?__(10024,"Shader Modulator Settings");
+
+help(text, shader_dialog) ->
+    [?__(10025,"Shader Parameters:\n"
+    "Next shader help")];
+
+help(title, ibl_dialog) ->
+    ?__(10026,"Background Light Settings");
+
+help(text, ibl_dialog) ->
+    [?__(10027,"Parameters:\n"
+        "\nUse Background Light -> Enable this option to use the background\n"
+        "as a light source. A HDR or EXR image is needed.\n"
+        "\nPower -> A multiplier for background colors.\n"
+        "\nSamples -> Defines the amount of samples taken to calculate the\n"
+        "soft shadows. The more samples, the less noisy the shadows but\n"
+        "the longer it will take to render."
+        "\nThe total amount of light sampling depends as well on the\n"
+        "anti-aliasing settings. See AA Help area, for more info.\n"
+        "\nDiffuse Photons -> Use the light info for diffuse photons.\n"
+        "\nCaustics Photons -> Use the light info for caustics photons.")
+    ];
+
 %%
 help(title, light_dialog) ->
     ?__(26,"YafaRay Light Properties");
+
 help(text, light_dialog) ->
     [?__(27,"OpenGL properties that map to YafaRay light parameters are:"),
      ?__(28,"Diffuse -> 'color'"),

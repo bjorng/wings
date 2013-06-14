@@ -70,7 +70,7 @@ export_shinydiffuse_shader(F, Name, Mat, ExportDir, YafaRay) ->
 
     println(F,
         "<material name=\"~s\">~n"
-        "\t<type sval=\"shinydiffusemat\"/>\n", [Name]),
+        "\t<type sval=\"shinydiffusemat\"/>", [Name]),
 
     DiffuseA = {_,_,_,Opacity} = proplists:get_value(diffuse, OpenGL),
 
@@ -172,6 +172,7 @@ export_shinydiffuse_shader(F, Name, Mat, ExportDir, YafaRay) ->
         end, 1, Modulators),
 
     println(F, "</material>").
+
 
 %%% Glossy material
 %%

@@ -92,7 +92,7 @@ modulator_dialog({modulator,Ps}, Maps, M) when is_list(Ps) ->
 
     ModShaderType = proplists:get_value(mod_shader_type, Ps, ?DEF_MOD_SHADER_TYPE),
 
-    StencilMode = proplists:get_value(stencil_mode, Ps, ?DEF_MOD_STENCIL),
+    _StencilMode = proplists:get_value(stencil_mode, Ps, ?DEF_MOD_STENCIL),
     %
 
     MapsFrame = [{hradio,[{atom_to_list(Map),{map,Map}} || {Map,_} <- Maps], TexType,[{key,TypeTag},layout]}],
@@ -161,8 +161,8 @@ modulator_dialog({modulator,Ps}, Maps, M) when is_list(Ps) ->
                             {label,?__(837," Z:")},{text,OffZ,[range(size),{width,5}]}
                         ]}
 
-                    ]},
-                    {hframe,[{label,?__(1025,"Stencil"),StencilMode}]}
+                    ]}
+                    %{hframe,[{label,?__(1025,"Stencil"),StencilMode}]}
                 ],[{title,?__(838,"Texture settings")}]}, % aqui acaba la horizontal
                 {hframe,[
                     {label,?__(839,"Shader factor:")},
@@ -421,7 +421,7 @@ modulator_result(Ps, [{?KEY(new_modulator),true}|Res], _, Modulators) ->
 
 modulator_result(Ps, [_Minimized,{{?TAG,enabled,M},_},_Mode,true|Res0], M, Modulators) ->
     %% Delete - Split list # +1 will match the modulator one below.
-    {_,Res} = split_list(Res0, 40), % org: 37
+    {_,Res} = split_list(Res0, 39), % org: 37
     modulator_result(Ps, Res, M+1, Modulators);
 
 modulator_result(Ps, [Minimized,{{?TAG,enabled,M},Enabled},BlendMode,false|Res0],
@@ -433,7 +433,7 @@ modulator_result(Ps, [Minimized,{{?TAG,enabled,M},Enabled},BlendMode,false|Res0]
 %%% Increase split_list # +1 per line if add Modulator to Dialog
 
 modulator(Minimized, Enabled, Mode, Res0, M) ->
-    {Res1,Res} = split_list(Res0, 40), % org : 37
+    {Res1,Res} = split_list(Res0, 39), % org : 37
     TypeTag = {?TAG,type,M},
     {value,{TypeTag,TexType}} = lists:keysearch(TypeTag, 1, Res1),
 
@@ -441,7 +441,7 @@ modulator(Minimized, Enabled, Mode, Res0, M) ->
     ModShaderType,
     Coordinates,
     Projection,
-    StencilMode,
+    %StencilMode,
     SizeX, SizeY, SizeZ, OffX, OffY, OffZ,
     ModFactor,
     Filename, %28
@@ -460,7 +460,7 @@ modulator(Minimized, Enabled, Mode, Res0, M) ->
         {mod_shader_type,ModShaderType},
         {coordinates,Coordinates},
         {projection,Projection},
-        {stencil_mode,StencilMode},
+        %{stencil_mode,StencilMode},
         {size_x,SizeX},{size_y,SizeY},{size_z,SizeZ},
         {offsetx,OffX},{offsety,OffY},{offsetz,OffZ},
         {mod_factor,ModFactor},

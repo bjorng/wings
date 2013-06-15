@@ -105,6 +105,7 @@ export_modulator(F, Texname, Maps, {modulator,Ps}, Opacity) when is_list(Ps) ->
 
             IsColor = case TexType of
                     image -> true;
+                    {map,_} -> true;
                     voronoi -> case CellType of
                                     intensity -> true;
                                     _ -> false

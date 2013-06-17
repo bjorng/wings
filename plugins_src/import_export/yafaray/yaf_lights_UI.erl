@@ -404,21 +404,24 @@ light_dialog(_Name, ambient, Ps) ->
                 ]},
                 {hframe,[
                     {?__(96,"Bilinear Interpolation"),BgTexInterpolate,[key(textureback_interpolate)]},
+                    panel,
                     {?__(89,"Use Background Light"),BgEnlight,[key(background_enlight)]}
                 ]},
                 {vframe,[ %new test
-                {hframe,[
-                    {label,?__(88,"IBL Power")},
-                    {text,BgPower,[key(background_power),range(power)]},
-                    {label,?__(61,"Samples")},
-                    {text,Samples,[range(samples),key(samples)]}
-                    ,help_button(ibl_dialog)
-                ]},
-                {hframe,[
-                    {?__(1096,"Diffuse Photons"),BgWithDiffuse,[key(with_diffuse)]},
-                    {?__(1089,"Caustics Photons"),BgWithCaustics,[key(with_caustics)]}
-                ]}
-                ],[{title,?__(2001,"Background Light Settings")}]}
+                    {hframe,[
+                        {label,?__(88,"IBL Power")},
+                        {text,BgPower,[key(background_power),range(power)]},
+                        {label,?__(61,"Samples")},
+                        {text,Samples,[range(samples),key(samples)]}
+                        ,help_button(ibl_dialog)
+                    ]},
+                    {hframe,[
+                        {?__(1096,"Diffuse Photons"),BgWithDiffuse,[key(with_diffuse)]},
+                        panel,
+                        {?__(1089,"Caustics Photons"),BgWithCaustics,[key(with_caustics)]}
+                    ]}
+                ],[{title,?__(2001,"Background Light Settings")}]
+                }
             ],[hook(open, [member,?KEY(background),hdri])]
             },
 

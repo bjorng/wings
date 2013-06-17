@@ -41,12 +41,10 @@ key(Key) -> {key,?KEY(Key)}.
 -include("yafaray/yaf_materials_UI.erl").
 
 %% Modulators: A shader material slots..
-
 -include("yafaray/yaf_shaders_UI.erl").
 
 %%
 %% YafaRay Lights dialogs
-
 -include("yafaray/yaf_lights_UI.erl").
 
 
@@ -405,7 +403,6 @@ export_prefs() ->
      {pm_caustic_photons,?DEF_PM_CAUSTIC_PHOTONS},
      {pm_caustic_radius,?DEF_PM_CAUSTIC_RADIUS},        %%--> 20
      {pm_caustic_mix,?DEF_PM_CAUSTIC_MIX},
-     {pm_use_background,?DEF_PM_USE_BACKGROUND},
      {pm_use_fg,?DEF_PM_USE_FG},
      {pm_fg_bounces,?DEF_PM_FG_BOUNCES},
      {pm_fg_samples,?DEF_PM_FG_SAMPLES},
@@ -423,8 +420,8 @@ export_prefs() ->
      {volintegr_optimize,?DEF_VOLINTEGR_OPTIMIZE},
      {volintegr_stepsize,?DEF_VOLINTEGR_STEPSIZE},
      {use_sss,?DEF_USE_SSS},
-     {sss_photons,?DEF_SSS_PHOTONS},                    %%--> 40
-     {sss_depth,?DEF_SSS_DEPTH},
+     {sss_photons,?DEF_SSS_PHOTONS},
+     {sss_depth,?DEF_SSS_DEPTH},                        %%--> 40
      {sss_scale,?DEF_SSS_SCALE},
      {sss_singlescatter_samples,?DEF_SSS_SINGLESCATTER_SAMPLES},
      {raydepth,?DEF_RAYDEPTH},
@@ -439,9 +436,9 @@ export_prefs() ->
      {exr_flag_compression,?DEF_EXR_FLAG_COMPRESSION},
      {aa_passes,?DEF_AA_PASSES},
      {aa_minsamples,?DEF_AA_MINSAMPLES},
-     {aa_jitterfirst,?DEF_AA_JITTERFIRST},
      {aa_threshold,?DEF_AA_THRESHOLD},
      {aa_pixelwidth,?DEF_AA_PIXELWIDTH},
+     {aa_adsamples,?DEF_AA_MINSAMPLES},
      {clamp_rgb,?DEF_CLAMP_RGB},
      {aa_filter_type,?DEF_AA_FILTER_TYPE},
      {background_color,?DEF_BACKGROUND_COLOR}, %----------------> 60
@@ -453,7 +450,6 @@ export_prefs() ->
      {lens_angular_mirrored,?DEF_LENS_ANGULAR_MIRRORED},
      {lens_angular_max_angle,?DEF_LENS_ANGULAR_MAX_ANGLE},
      {lens_angular_angle,?DEF_LENS_ANGULAR_ANGLE},
-     {bokeh_use_QMC,?DEF_USE_QMC},
      {width,?DEF_WIDTH},
      {aperture,?DEF_APERTURE},
      {bokeh_type,?DEF_BOKEH_TYPE},
@@ -462,7 +458,9 @@ export_prefs() ->
      {bokeh_bias,?DEF_BOKEH_BIAS},
      {bokeh_rotation,?DEF_BOKEH_ROTATION},
      {dof_distance,?DEF_DOF_DISTANCE},
-     {background, ?DEF_BACKGROUND} %% add element for finded
+     {background, ?DEF_BACKGROUND}, %% povman add element for finded
+     {sppm_photons, ?DEF_SPPM_PHOTONS},
+     {sppm_passes, ?DEF_SPPM_PASSES}
      ].
 
 %
@@ -491,7 +489,7 @@ def_modulators([_|Maps]) ->
 %%%
 
 material_result(_Name, Mat0, [{?KEY(minimized),_}|_]=Res0) ->
-    {Ps1,Res1} = split_list(Res0, 101), % povman : value for list elements in texture modulatos?? old: 101
+    {Ps1,Res1} = split_list(Res0, 101), % povman : 101 value for list elements in texture modulatos?? old: 101
     Ps2 = [{Key,Val} || {?KEY(Key),Val} <- Ps1],
     {Ps,Res} = modulator_result(Ps2, Res1),
     Mat = [?KEY(Ps)|keydelete(?TAG, 1, Mat0)],
@@ -499,7 +497,6 @@ material_result(_Name, Mat0, [{?KEY(minimized),_}|_]=Res0) ->
 
 material_result(Name, Mat, Res) ->
     exit({invalid_tag,{?MODULE,?LINE,[Name,Mat,Res]}}).
-
 
 
 %-include("yafaray/yaf_render_UI.erl").
@@ -762,12 +759,15 @@ section(F, Name) ->
 %-include("yafaray/yaf_export_texture.erl").
 
 
+
+
 export_rgb(F, Type, {R,G,B,_}) ->
     export_rgb(F, Type, {R,G,B});
 
+% povman : add alpha to 'export_rgb' by default
 export_rgb(F, Type, {R,G,B}) ->
     println(F, ["\t<",format(Type)," r=\"",format(R),
-                "\" g=\"",format(G),"\" b=\"",format(B),"\"/>"]).
+                "\" g=\"",format(G),"\" b=\"",format(B),"\" a=\"1\"/>"]).
 
 
 %% Return object with arealight faces only
@@ -847,7 +847,7 @@ export_camera(F, Name, Attr) ->
         if Aperture > 0.0 ->
             "\t<dof_distance fval=\"~.10f\"/>\n"
             "\t<aperture fval=\"~.10f\"/>\n"
-            "\t<use_qmc bval=\"~s\"/>\n"
+            %"\t<use_qmc bval=\"~s\"/>\n"
             "\t<bokeh_type sval=\"~s\"/>\n"
             "\t<bokeh_bias sval=\"~s\"/>\n"
             "\t<bokeh_rotation fval=\"~.10f\"/>\n"
@@ -875,7 +875,7 @@ export_camera(F, Name, Attr) ->
             if Aperture > 0.0 ->
                 [e3d_vec:len(Dir),
                 Aperture,
-                format(proplists:get_value(bokeh_use_QMC, Attr)),
+                %format(proplists:get_value(bokeh_use_QMC, Attr)), % povman
                 format(proplists:get_value(bokeh_type, Attr)),
                 format(proplists:get_value(bokeh_bias, Attr)),
                 proplists:get_value(bokeh_rotation, Attr),

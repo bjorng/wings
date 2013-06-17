@@ -114,6 +114,9 @@
 -define(DEF_PT_CAUSTIC_DEPTH, 10).
 -define(DEF_PT_USE_BACKGROUND, true).
 -define(DEF_PT_SAMPLES, 32).
+% sppm
+-define(DEF_SPPM_PHOTONS, 1000000).
+-define(DEF_SPPM_PASSES, 10).
 -define(DEF_VOLINTEGR_TYPE, none).
 -define(DEF_VOLINTEGR_ADAPTIVE, true).
 -define(DEF_VOLINTEGR_OPTIMIZE, true).
@@ -128,7 +131,7 @@
 -define(DEF_CAUSTIC_DEPTH, 10).
 -define(DEF_CAUSTIC_MIX, 200).
 -define(DEF_CAUSTIC_RADIUS, 0.5).
--define(DEF_DO_AO, false).
+-define(DEF_DO_AO, false). % povman
 -define(DEF_AO_DISTANCE, 5.0).
 -define(DEF_AO_SAMPLES, 32.0).
 -define(DEF_AO_COLOR, {1.0,1.0,1.0}).
@@ -200,7 +203,7 @@
 
 %% Sunlight
 -define(DEF_POWER, 5.0).
--define(DEF_BACKGROUND, undefined).
+-define(DEF_BACKGROUND, constant).
 -define(DEF_BACKGROUND_COLOR, {0.0,0.0,0.0}).
 -define(DEF_CONSTANT_BACK_POWER, 1.0).
 -define(DEF_HORIZON_COLOR, {1.0,1.0,1.0}).
@@ -431,7 +434,7 @@ range_1(volintegr_stepsize)     -> {0.0,100.0};
 range_1(subdivisions)           -> {0,infinity};
 range_1(threads_number)         -> {1,100};
 range_1(aa_pixelwidth)          -> {1.0,2.0};
-range_1(aa_passes)              -> {0,infinity};
+range_1(aa_passes)              -> {1,infinity};
 range_1(aa_threshold)           -> {0.0,1.0};
 range_1(aa_minsamples)          -> {1,infinity};
 range_1(gamma)                  -> {0.0,infinity};

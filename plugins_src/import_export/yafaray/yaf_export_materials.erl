@@ -157,7 +157,7 @@ export_shinydiffuse_shader(F, Name, Mat, ExportDir, YafaRay) ->
         "\t<transparency fval=\"~.10f\"/>~n"
         "\t<diffuse_reflect fval=\"~.10f\"/>~n"
         "\t<specular_reflect fval=\"~.10f\"/>~n"
-        "\t<emit fval=\"~.10f\"/>~n",
+        "\t<emit fval=\"~.10f\"/>",
         [IOR,format(TIR),TransmitFilter,Translucency,Transparency,DiffuseReflect,SpecularReflect,Emit]),
     %
     foldl(fun ({modulator,Ps}=M, N) when is_list(Ps) ->

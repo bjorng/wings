@@ -17,12 +17,12 @@ export_dialog_qs(Op,
                 {threads_number,ThreadsNumber},
                 {threads_auto,ThreadsAuto},
                 {lighting_method,Lighting_Method},
-                {use_caustics,UseCaustics},
+                {use_caustics,UseCaustics}, % povman
                 {caustic_photons,Caustic_Photons},
                 {caustic_depth,Caustic_Depth},
                 {caustic_mix,Caustic_Mix},
                 {caustic_radius,Caustic_Radius},
-                {do_ao,Do_AO},
+                {do_ao,Do_AO}, % povman
                 {ao_distance,AO_Distance},
                 {ao_samples,AO_Samples},
                 {ao_color,AO_Color},
@@ -33,7 +33,7 @@ export_dialog_qs(Op,
                 {pm_caustic_photons,PM_Caustic_Photons},
                 {pm_caustic_radius,PM_Caustic_Radius},
                 {pm_caustic_mix,PM_Caustic_Mix},
-                {pm_use_background,PM_Use_Background},
+                %{pm_use_background,PM_Use_Background},
                 {pm_use_fg,PM_Use_FG},
                 {pm_fg_bounces,PM_FG_Bounces},
                 {pm_fg_samples,PM_FG_Samples},
@@ -41,7 +41,7 @@ export_dialog_qs(Op,
                 {pt_diffuse_photons,PT_Diffuse_Photons},
                 {pt_bounces,PT_Bounces},
                 {pt_caustic_type,PT_Caustic_Type},
-                {pt_caustic_radius,PT_Caustic_Radius},
+                {pt_caustic_radius,PT_Caustic_Radius}, % 30
                 {pt_caustic_mix,PT_Caustic_Mix},
                 {pt_caustic_depth,PT_Caustic_Depth},
                 {pt_use_background,PT_Use_Background},
@@ -67,9 +67,9 @@ export_dialog_qs(Op,
                 {exr_flag_compression,ExrFlagCompression},
                 {aa_passes,AA_passes},
                 {aa_minsamples,AA_minsamples},
-                {aa_jitterfirst,AA_jitterfirst},
                 {aa_threshold,AA_threshold},
                 {aa_pixelwidth,AA_pixelwidth},
+                {aa_adsamples,AA_adsamples}, % povman 80
                 {clamp_rgb,ClampRGB},
                 {aa_filter_type,AA_Filter_Type},
                 {background_color,BgColor},
@@ -81,7 +81,6 @@ export_dialog_qs(Op,
                 {lens_angular_mirrored,Lens_Angular_Mirrored},
                 {lens_angular_max_angle,Lens_Angular_Max_Angle},
                 {lens_angular_angle,Lens_Angular_Angle},
-                {bokeh_use_QMC,BokehUseQMC},
                 {width,Width},
                 {aperture,Aperture},
                 {bokeh_type,BokehType},
@@ -90,9 +89,11 @@ export_dialog_qs(Op,
                 {bokeh_bias,BokehBias},
                 {bokeh_rotation,BokehRotation},
                 {dof_distance,Dof_Distance},
-                {background, Bg}, % 79
+                {background, Bg},
+                {sppm_photons,SPPM_Photons}, % sppm
+                {sppm_passes,SPPM_Passes}, % end
                 _Save,_Load,_Reset]) ->
-    %% povman : if add elements, revise list for split buttons in yafaray.erl 630
+    %% povman : if add elements, revise list for split buttons in yafaray.erl 512
 
     BiasFlags = [range(bias),{key,bias}],
     [
@@ -121,19 +122,17 @@ export_dialog_qs(Op,
             {vframe,[
                 {menu,[
                     {?__(114,"Direct Light"),directlighting},
-                    {?__(115,"Photon Mapping - Global Illumination"),photonmapping},
-                    {?__(140,"Path Tracing - Global Illumination"),pathtracing},
-                    {?__(116,"Bidirectional Path Tracing - Global Illumination"),bidirectional}
+                    {?__(115,"Photon Mapping (GI)"),photonmapping},
+                    {?__(140,"Path Tracing (GI)"),pathtracing},
+                    {?__(116,"Bidirectional Path Tracing (GI)"),bidirectional},
+                    {?__(117,"S. Progressive Photon Mapping"),sppm}
                 ], Lighting_Method, [{key,lighting_method},layout]
                 },
                 % Start Direct Lighting Menu Section
                 {hframe,[
                     {vframe,[
-                        {menu,[
-                            {?__(82,"Caustics Off"),false},
-                            {?__(83,"Caustics On"),true}
-                        ],UseCaustics, [{key,use_caustics},layout]
-                        },
+                        % povman , test for change Caustic button
+                        {?__(16,"Calculate Caustic"),UseCaustics, [{key,use_caustics},layout]}, % test
                         {hframe,[
                             {vframe,[
                                 {label,?__(84,"Photons")},
@@ -151,15 +150,12 @@ export_dialog_qs(Op,
                                 {text,Caustic_Mix,[range(caustic_mix),{key,caustic_mix}]},
                                 {text,Caustic_Radius,[range(caustic_radius),{key,caustic_radius}]}
                             ]}
-                        ],[hook(open, [member,use_caustics,true])]
+                        ],[hook(enable, [member,use_caustics,true])] % old: open
                         }
                     ]},
+                    separator,
                     {vframe,[
-                        {menu,[
-                            {?__(95,"Ambient Occlusion Off"),false},
-                            {?__(96,"Ambient Occlusion On"),true}
-                        ], Do_AO, [{key,do_ao},layout]
-                        },
+                        {?__(32,"Use Ambient Occlusion"),Do_AO, [{key,do_ao},layout]},
                         {hframe,[
                             {vframe,[
                                 {label,?__(97,"AO Distance")},
@@ -175,7 +171,7 @@ export_dialog_qs(Op,
                             {vframe,[
                                 {color,AO_Color,[{key,ao_color}]}
                             ]}
-                        ],[hook(open, [member,do_ao,true])]
+                        ],[hook(enable, [member,do_ao,true])]
                         }
                 ]}
                 ],[hook(open, [member,lighting_method,directlighting])]
@@ -202,8 +198,7 @@ export_dialog_qs(Op,
                     {vframe,[
                         {text,PM_Caustic_Photons,[range(pm_caustic_photons),{key,pm_caustic_photons}]},
                         {text,PM_Caustic_Radius,[range(pm_caustic_radius),{key,pm_caustic_radius}]},
-                        {text,PM_Caustic_Mix,[range(pm_caustic_mix),{key,pm_caustic_mix}]},
-                        {?__(157,"Use Bkgnd"),PM_Use_Background,[{key,pm_use_background}]}
+                        {text,PM_Caustic_Mix,[range(pm_caustic_mix),{key,pm_caustic_mix}]}
                     ]},
                     {vframe,[
                         {menu,[
@@ -266,10 +261,27 @@ export_dialog_qs(Op,
                         ]}
                     ]}
                 ],[hook(open, [member,lighting_method,pathtracing])]
+                },
+                {hframe,[
+                    {vframe,[
+                        {label,?__(1153,"Photons")},
+                        {label,?__(1154,"Passes")},
+                        {label,?__(1155,"Bounces")},%spbounces},
+                        {label,?__(1156,"Radius factor")},%spradiusfac},
+                        {label,?__(1157,"Search Radius")},%spsearchrad},
+                        {label,?__(1158,"Search Count")},%spcountsearch},
+                        {label,?__(1159,"Init Radius Estimate")}%spire}
+                    ]},
+                    {vframe,[
+                        {text,SPPM_Photons,[range(pm_diffuse_photons),{key,sppm_photons}]},
+                        {text,SPPM_Passes,[range(pt_samples),{key,sppm_passes}]}
+                    ]}
+                ],[hook(open, [member,lighting_method,sppm])]
                 }
             ],[{title,?__(113,"Lighting")}]
             }
         ]},
+        %% Volumetrics interface
         {hframe,[
             {menu,[
                 {?__(89,"None"),none},
@@ -319,7 +331,8 @@ export_dialog_qs(Op,
             }
         ],[{title,?__(74,"SubSurface Scattering - YafaRay 0.1.3 - Photon Mapping, Path Tracing")}]
         },
-        {hframe,[
+        {vframe,[
+            {hframe,[
             {vframe,[
                 {label,?__(4,"Raydepth")},
                 {label,?__(5,"Gamma")}
@@ -338,88 +351,102 @@ export_dialog_qs(Op,
             ]},
             {vframe,[
                 {vframe,[
-                    {menu,[
-                        {?__(133,"Transp Shadows Off"),false},
-                        {?__(134,"Transp Shadows On"),true}
-                    ],TransparentShadows,[{key,transparent_shadows},layout]
-                    },
+                    {?__(133,"Transp Shadows"),TransparentShadows,[{key,transparent_shadows}]},
                     {hframe,[
                         {vframe,[
-                            {label,?__(135,"Depth")}
+                            {label,?__(135,"Shadows Depth")}
                         ]},
                         {vframe,[
                             {text,ShadowDepth,[range(shadow_depth),{key,shadow_depth}]}
                         ]}
-                    ],[hook(open, [member,transparent_shadows,true])]
+                    ],[hook(enable, [member,transparent_shadows,true])]
                     }
                 ]}
             ]}
-        ],[{title,?__(8,"Render")}]
-        },
-        {hframe,[
-            {menu,[
-                {Ext++" ("++Desc++")",Format}||
-                {Format,Ext,Desc} <- wings_job:render_formats(),
-                (Format == tga) or (Format == tif) or (Format == png) or
-                   (Format == hdr) or (Format == exr)
-            ],RenderFormat,[{key,render_format},layout]
-            },
-            {hframe,[
-                {?__(9,"Float"),ExrFlagFloat,[{key,exr_flag_float}]},
-                {?__(10,"Zbuf"),ExrFlagZbuf,[{key,exr_flag_zbuf}]},
-                {label," "++?__(11,"Compression:")},
-                {menu,[
-                    {?__(12,"none"),compression_none},
-                    {"piz",compression_piz},
-                    {"rle",compression_rle},
-                    {"pxr24",compression_pxr24},
-                    {"zip",compression_zip}
-                ],ExrFlagCompression,[{key,exr_flag_compression}]
-                }
-            ],[hook(open, [member,render_format,exr])]
+            ]} %% horiz. frame, retirar si no funciona
+            ,{vframe,[
+                {hframe,[ % alert!!
+                    {hframe,[
+                        {menu,[
+                            {Ext++" ("++Desc++")",Format}||
+                            {Format,Ext,Desc} <- wings_job:render_formats(),
+                            (Format == tga) or (Format == tif) or (Format == png) or
+                                (Format == hdr) or (Format == exr)
+                        ],RenderFormat,[{key,render_format},layout]
+                        }
+                    ]},
+                    {hframe,[
+                        {?__(9,"Float"),ExrFlagFloat,[{key,exr_flag_float}]},
+                        {?__(10,"Zbuf"),ExrFlagZbuf,[{key,exr_flag_zbuf}]},
+                        {label," "++?__(11,"Compression:")},
+                        {menu,[
+                            {?__(12,"none"),compression_none},
+                            {"piz",compression_piz},
+                            {"rle",compression_rle},
+                            {"pxr24",compression_pxr24},
+                            {"zip",compression_zip}
+                        ],ExrFlagCompression,[{key,exr_flag_compression}]
+                        }
+                    ],[hook(enable, [member,render_format,exr])] % old value = open
+                    }
+                ]
+                },separator,
+                {hframe,[
+                    {label,?__(33,"Width")},
+                    {text,Width,[range(pixels),{key,width},{width,8}]},
+                    {label,?__(44,"Height")},
+                    {text,Height,[range(pixels),{key,height},{width,8}]},
+                    {?__(19,"Clamp RGB"),ClampRGB,[{key,clamp_rgb}]}
+                ]}
+            ],[{title,?__(13,"Image Output")}]
             }
-        ],[{title,?__(13,"Image Output")}]
-        },
+        ],[{title,?__(8,"General Settings")}]
+        },%%---->
         {hframe,[
             {vframe,[
                 {hframe,[
                     {vframe,[
-                        {label,?__(14,"AA. Passes")},
-                        {label,?__(15,"Min. Samples")}
+                        {label,?__(14,"Passes")},
+                        {label,?__(15,"Samples")}
                     ]},
                     {vframe,[
                         {text,AA_passes,[range(aa_passes),{key,aa_passes}]},
                         {text,AA_minsamples,[range(aa_minsamples),{key,aa_minsamples}]}
                     ]}
-                ]},
-                {?__(16,"AA_jitterfirst"),AA_jitterfirst,[{key,aa_jitterfirst}]}
+                ]}
             ]},
             {vframe,[
                 {hframe,[
                     {vframe,[
-                        {label,?__(17,"Threshold")},
-                        {label,?__(18,"Pixelwidth")}
+                        {label,?__(17,"Pixel Width")},
+                        {label,?__(1710,"AA. Filter")}
                     ]},
                     {vframe,[
-                        {text,AA_threshold,[range(aa_threshold),{key,aa_threshold}]},
-                        {text,AA_pixelwidth,[range(aa_pixelwidth),{key,aa_pixelwidth}]}
+                        {text,AA_pixelwidth,[range(aa_pixelwidth),{key,aa_pixelwidth},{width,6}]},
+                        {menu,[
+                            {?__(136,"Box"),box},
+                            {?__(137,"Gaussian"),gauss},
+                            {?__(138,"Mitchell"),mitchell},
+                            {?__(139,"Lanczos"),lanczos}
+                        ],AA_Filter_Type,[{key,aa_filter_type},layout]
+                        }
                     ]}
-                ]},
-                {?__(19,"Clamp RGB"),ClampRGB,[{key,clamp_rgb}]}
+                ]}
             ]},
             {vframe,[
-                {menu,[
-                    {?__(136,"Box Filter"),box},
-                    {?__(137,"Gaussian Filter"),gauss},
-                    {?__(138,"Mitchell-Netravali Filter"),mitchell},
-                    {?__(139,"Lanczos Filter"),lanczos}
-                ],AA_Filter_Type,[{key,aa_filter_type},layout]
-                }
-            ]}
+                {label,?__(1017,"Additional Samples")},
+                {label,?__(18,"AA. Threshold")}
+                ],[hook(enable,['not',[member,aa_passes,1]])]
+            },
+            {vframe,[
+                {text,AA_adsamples,[range(aa_minsamples),{key,aa_adsamples}]},
+                {text,AA_threshold,[range(aa_threshold),{key,aa_threshold}]}
+            ],[hook(enable,['not',[member,aa_passes,1]])]
+            }
         ],[{title,?__(20,"Anti-Aliasing")}]
         },
         {hframe,[
-            {vframe,[
+            {hframe,[
                 %%------------------> add '10' to key
                 {menu,[
                     {?__(1043,"Constant"),constant},
@@ -477,12 +504,10 @@ export_dialog_qs(Op,
                 ],[hook(open, [member,lens_type,angular])]
                 },
                 {hframe,[
-                    panel,
-                    {?__(32,"Use QMC"),BokehUseQMC, [{key,bokeh_use_QMC},hook(enable,['not',[member,aperture,0.0]])]}
+                    panel
                 ]},panel
             ]},
             {vframe,[
-                {label,?__(33,"Width")},
                 {label,?__(34,"Aperture")},
                 {label,?__(35,"DOF Type")},
                 {label,?__(36,"DOF Rotation")},
@@ -491,7 +516,6 @@ export_dialog_qs(Op,
             {vframe,[
                 {hframe,[
                     {vframe,[
-                        {text,Width,[range(pixels),{key,width},{width,6}]},
                         {text,Aperture,[range(aperture),{key,aperture},{width,6}]},
                         {menu,[
                             {?__(37,"Disk1"),disk1},
@@ -505,13 +529,11 @@ export_dialog_qs(Op,
                         }
                     ]},
                     {vframe,[
-                        {label,?__(44,"Height")},
                         {label,?__(45,"f-stop")},
                         {label,?__(46,"Bias")}
                     ]},
                     %%
                     {vframe,[
-                        {text,Height,[range(pixels),{key,height},{width,6}]},
                         {menu,[
                             {F,math:sqrt(A)}
                             || {F,A} <- [{"1.0",1/1},{"1.4",1/2},{"2",1/4},

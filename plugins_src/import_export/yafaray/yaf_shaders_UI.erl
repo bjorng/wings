@@ -94,6 +94,8 @@ modulator_dialog({modulator,Ps}, Maps, M) when is_list(Ps) ->
 
     _StencilMode = proplists:get_value(stencil_mode, Ps, ?DEF_MOD_STENCIL),
     %
+    _ShaderType = proplists:get_value(shader_type, Ps, ?DEF_SHADER_TYPE),
+    %
 
     MapsFrame = [{hradio,[{atom_to_list(Map),{map,Map}} || {Map,_} <- Maps], TexType,[{key,TypeTag},layout]}],
 
@@ -110,8 +112,8 @@ modulator_dialog({modulator,Ps}, Maps, M) when is_list(Ps) ->
                     {?__(810,"Screen"),scr},
                     {?__(811,"Divide"),divide},
                     {?__(812,"Difference"),dif},
-                    {?__(813,"Darking"),dar},
-                    {?__(814,"Lighting"),lig}
+                    {?__(813,"Darken"),dar},
+                    {?__(814,"Lighten"),lig}
                 ],BlendMode,[hook(enable,{?TAG,enabled,M})]
                 },
                 {label,?__(815,"<- Blend Mode")},
@@ -119,14 +121,14 @@ modulator_dialog({modulator,Ps}, Maps, M) when is_list(Ps) ->
                 panel,help_button(shader_dialog)
             ]},
             {vframe,[
-                {hframe,[
+                {hframe,[ % [hook(enable,['not',[member,aa_passes,1]])]
                     {label,?__(817,"Shader Type")},
                     {menu,[
                         {?__(818,"Diffuse Shader"),diff},
-                        {?__(819,"Mirror shader"),spec},
+                        {?__(819,"Mirror shader"),raymirr},
                         {?__(820,"Transparency shader"),transp},
                         {?__(821,"Translucency shader"),translu},
-                        {?__(822,"Mirror color shader"),colorspec},
+                        {?__(822,"Mirror color shader"),mirr},
                         {?__(823,"Bumpmap shader"),bump}
                     ],ModShaderType
                     }
@@ -139,7 +141,8 @@ modulator_dialog({modulator,Ps}, Maps, M) when is_list(Ps) ->
                     {vframe,[
                         {menu,[
                             {?__(826,"UV"),uv},
-                            {?__(827,"Global"),global}
+                            {?__(827,"Orco"),orco},
+                            {?__(840,"Global"),global}
                         ],Coordinates
                         },
                         {menu,[
@@ -380,7 +383,7 @@ mod_legend(Enabled, Mode, {map,Map}) ->
     mod_legend(Enabled, Mode, atom_to_list(Map));
 
 %------->
-mod_legend(Enabled, Mode, TexType) when is_atom(Mode) -> % povman last test
+mod_legend(Enabled, Mode, TexType) when is_atom(Mode) ->
     mod_legend(Enabled, wings_util:cap(Mode), TexType);
 
 
@@ -437,11 +440,7 @@ modulator(Minimized, Enabled, Mode, Res0, M) ->
     TypeTag = {?TAG,type,M},
     {value,{TypeTag,TexType}} = lists:keysearch(TypeTag, 1, Res1),
 
-    [
-    ModShaderType,
-    Coordinates,
-    Projection,
-    %StencilMode,
+    [ModShaderType,Coordinates,Projection,%StencilMode,
     SizeX, SizeY, SizeZ, OffX, OffY, OffZ,
     ModFactor,
     Filename, %28

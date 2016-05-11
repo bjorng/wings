@@ -1,3 +1,47 @@
+--- 2.0.4 ----------------------------------------------------------------------
+
+- Further updates of the German translation by Roy. [Björn Gustavsson]
+
+- Improved connect cut command to work in more cases [dgud]
+
+- Fix memory duplication when opening face/edge menu. [dgud]
+
+- Fixed a crash caused by the format_hotkey routine when an error was
+  handled in wings_hotkey module. Thanks ggaliens. [micheus]
+
+- Update French translation. [Enzo]
+
+--- 2.0.3 ----------------------------------------------------------------------
+
+- Added possibilty to cut and connect 2 or 3 vertices with MMB
+  [Mark Whittemore] [dgud]
+
+- Fixed the crash/hang caused by the slide color control. [micheus]
+
+- There was a strange black line being drawn in the background starting from
+  mini axis. Thanks to Asticles for report it. [Micheus]
+
+- Fixed fragment shader code for Marble and Noise that was causing
+  render crash in texture creation. Thanks tkbd. [micheus]
+
+- Fixed tweak information line and hotkey handling back to as it in
+  previous releases.  Thanks Fonte Boa. [micheus]
+
+- It was not possible set a hotkey for commands assigned to
+  RMB. Thanks Fonte Boa [micheus]
+
+- The German translation has been updated by Roy. [bjorng]
+
+- Fixed typo in absolute move, thanks Loefet [dgud]
+
+- Fixed crash in plugin-manager, thanks tkbd [dgud]
+
+- Fixed installation of vcredist package from Microsoft. [dgud]
+
+- Some keyboard fixes on Mac
+
+- Improved EPS/SVG Exporter [tkbd]
+
 --- 2.0.2 ----------------------------------------------------------------------
 
 - Fixed the background color exported when a Ambient light is used. Thanks oort;
